@@ -1,7 +1,11 @@
 # Reconstruct Java
 
-https://github.com/SynapseWeb/Reconstruct-Java/raw/master/source/Reconstruct.jar
+## Downloads:
 
+* https://github.com/SynapseWeb/Reconstruct-Java/raw/master/source/Reconstruct.jar (Reconstruct.jar)
+* https://github.com/SynapseWeb/Reconstruct-Java/raw/master/source/BezierTracing.jar (BezierTracing.jar)
+
+# Description
 
 ## Reconstruct.jar can write XML data compatible with Reconstruct.exe (June 20th, 2018)
 
