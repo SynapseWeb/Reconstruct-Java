@@ -6,7 +6,7 @@
 * https://github.com/SynapseWeb/Reconstruct-Java/raw/master/source/BezierTracing.jar (BezierTracing.jar)
 * https://github.com/SynapseWeb/Reconstruct-Java/raw/master/source/sha1sum.txt (SHA1 sums of jar files)
 
-# Description
+# Descriptions of Progress
 
 ## Reconstruct.jar can write XML data compatible with Reconstruct.exe (June 20th, 2018)
 
