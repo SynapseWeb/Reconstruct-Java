@@ -1,4 +1,13 @@
-# Reconstruct Java Experiments
+# Reconstruct Java
+
+## Downloads:
+
+* **[Download Reconstruct Jar File](https://github.com/SynapseWeb/Reconstruct-Java/raw/master/source/Reconstruct.jar)**
+* **[Download BezierTracing Jar File](https://github.com/SynapseWeb/Reconstruct-Java/raw/master/source/BezierTracing.jar)**
+* **[SHA1 sums of Jar Files](https://github.com/SynapseWeb/Reconstruct-Java/raw/master/source/sha1sum.txt)**
+
+
+# Descriptions of Progress
 
 ## Reconstruct.jar can write XML data compatible with Reconstruct.exe (June 20th, 2018)
 
