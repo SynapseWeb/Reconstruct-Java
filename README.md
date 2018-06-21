@@ -2,9 +2,10 @@
 
 ## Downloads:
 
-* https://github.com/SynapseWeb/Reconstruct-Java/raw/master/source/Reconstruct.jar (Reconstruct.jar)
-* https://github.com/SynapseWeb/Reconstruct-Java/raw/master/source/BezierTracing.jar (BezierTracing.jar)
-* https://github.com/SynapseWeb/Reconstruct-Java/raw/master/source/sha1sum.txt (SHA1 sums of jar files)
+* **[Download Reconstruct Jar File](https://github.com/SynapseWeb/Reconstruct-Java/raw/master/source/Reconstruct.jar)**
+* **[Download BezierTracing Jar File](https://github.com/SynapseWeb/Reconstruct-Java/raw/master/source/BezierTracing.jar)**
+* **[SHA1 sums of Jar Files](https://github.com/SynapseWeb/Reconstruct-Java/raw/master/source/sha1sum.txt)**
+
 
 # Descriptions of Progress
 
