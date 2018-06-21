@@ -4,6 +4,7 @@
 
 * https://github.com/SynapseWeb/Reconstruct-Java/raw/master/source/Reconstruct.jar (Reconstruct.jar)
 * https://github.com/SynapseWeb/Reconstruct-Java/raw/master/source/BezierTracing.jar (BezierTracing.jar)
+* https://github.com/SynapseWeb/Reconstruct-Java/raw/master/source/sha1sum.txt (SHA1 sums of jar files)
 
 # Description
 
