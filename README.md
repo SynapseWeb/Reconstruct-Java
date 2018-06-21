@@ -12,7 +12,7 @@ This image shows a short series of traces (with color) viewed with the current R
 
 ## Comparison of Reconstruct.jar and Reconstruct.exe (May 11th, 2018):
 
-![CompareJavaExe](Compare_Java_Exe_2018_05_11.gif?raw=true "Compare Java and Original Exe")
+![CompareJavaExe](images/Compare_Java_Exe_2018_05_11.gif?raw=true "Compare Java and Original Exe")
 
 This image shows a snapshot from the Windows version of Reconstruct 1.1.0.0 and a snapshot of
 the current Java version (as of this commit). The snapshots were taken from two different
@@ -26,7 +26,7 @@ in the code.
 
 ## Prototype Bezier Tracing Interface with BezierTracing.jar (April 16th, 2018):
 
-![Bezier Tracing](Trace_Round.gif?raw=true "Bezier Tracing")
+![Bezier Tracing](images/Trace_Round.gif?raw=true "Bezier Tracing")
 
 ## Use:
 
@@ -53,11 +53,11 @@ in the code.
 
 * When not creating a trace, the left button performs "click and drag" on all points and handles.
 
-![Bezier Point Adjustment](Bezier_Point_Adjustment.gif?raw=true "Bezier Point Adjustment")
+![Bezier Point Adjustment](images/Bezier_Point_Adjustment.gif?raw=true "Bezier Point Adjustment")
 
-![Bezier Slope Adjustment](Single_Cubic_Bezier_Control.gif?raw=true "Bezier Slope Adjustment")
+![Bezier Slope Adjustment](images/Single_Cubic_Bezier_Control.gif?raw=true "Bezier Slope Adjustment")
 
 
 #### Comparison with Polygon Tool:
 
-![Bezier v Polygon](Bezier_Polygon_Image.gif?raw=true "Bezier v Polygon")
+![Bezier v Polygon](images/Bezier_Polygon_Image.gif?raw=true "Bezier v Polygon")
