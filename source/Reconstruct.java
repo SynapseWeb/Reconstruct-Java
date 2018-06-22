@@ -331,6 +331,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 			if (segment_draw || bezier_draw) {
 				if (active_contour != null) {
 					active_contour.close();
+          active_contour.init_bezier ( active_contour.is_bezier );  // Recompute beziers after closing
 					series.add_contour ( active_contour );
 				}
 				active_contour = null;
@@ -356,6 +357,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		        // System.out.println ( "Saving previous stroke" );
 		        if (series != null) {
 							active_contour.close();
+              active_contour.init_bezier ( active_contour.is_bezier );  // Recompute beziers after closing
 							series.add_contour ( active_contour );
 		        }
 		      }
@@ -397,8 +399,10 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		      }
 	        double contour_point[] = { p[0], -p[1] };
 		      active_contour.add_point ( contour_point );
+          active_contour.init_bezier ( active_contour.is_bezier );
 		      if (series != null) {
 						active_contour.close();
+            active_contour.init_bezier ( active_contour.is_bezier );  // Recompute beziers after closing
 						series.add_contour ( active_contour );
 			    }
 		      active_contour = null;
@@ -419,6 +423,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       if (segment_draw) {
 				// Ignore mouse drags
 			} else if (bezier_draw) {
+			  // Not sure what to do here
       } else {
 		    if (center_draw) {
 		      super.mouseDragged(e);
@@ -435,6 +440,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		      }
 	        double contour_point[] = { p[0], -p[1] };
 		      active_contour.add_point ( contour_point );
+          active_contour.init_bezier ( active_contour.is_bezier );
 		      repaint();
 		    }
 		  }
