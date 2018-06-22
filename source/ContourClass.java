@@ -202,7 +202,7 @@ public class ContourClass {
 				// double seg_to_adjust[][] = 
 				//// CubicCurve2D.Double seg_to_adjust = curves.get(i);
 				// Adjust the h0 handle
-				if (closed || (i > 0)) {
+				if ( (closed || (i > 0)) && (stroke_points.size() > i) && (handle_points.size() > i) ) {
 					System.out.println ( " Adjusting h0 for segment " + i + ", with previous = " + prev );
 
 					double[] current_point = stroke_points.get(i);

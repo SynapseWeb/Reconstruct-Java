@@ -374,6 +374,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
         // System.out.println ( "Adding point " + p[0] + "," + p[1] );
         double contour_point[] = { p[0], -p[1] };
         active_contour.add_point ( contour_point );
+        active_contour.init_bezier ( active_contour.is_bezier );
         repaint();
       }
     }
