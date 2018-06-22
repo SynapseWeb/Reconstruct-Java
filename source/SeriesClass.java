@@ -59,6 +59,7 @@ public class SeriesClass {
     this.series_path = series_file.getParent();
 
     String series_file_name = series_file.getName();
+    this.series_file_name = series_file_name;
 
 
     this.series_doc = XML_Parser.parse_xml_file_to_doc ( series_file );
@@ -111,6 +112,7 @@ public class SeriesClass {
 	public void write_as_xml ( File series_file ) {
 		// In order to guarantee repeatability, this version exports "by hand" rather than using XML library functions
 		System.out.println ( "Writing XML to file " + series_file.getName() );
+
     try {
 		  PrintStream sf = new PrintStream ( series_file );
 		  sf.print ( "<?xml version=\"1.0\"?>\n" );
@@ -164,6 +166,8 @@ public class SeriesClass {
 		      this.sections[i].write_as_xml(series_file);
 		    }
 		  }
+      String series_file_name = series_file.getName();
+      this.series_file_name = series_file_name;
 		} catch (Exception e) {
 			System.out.println ( "Error writing to file " + series_file.getName() );
 		}
@@ -275,8 +279,10 @@ public class SeriesClass {
 
 	public String get_short_name() {
 	  if (series_file_name != null) {
+	    System.out.println ( "get_short_name returning " + new File(series_file_name).getName() );
 	    return ( new File(series_file_name).getName() );
 	  } else {
+	    System.out.println ( "get_short_name returning No Series" );
 			return ( "No Series" );
 	  }
 	}

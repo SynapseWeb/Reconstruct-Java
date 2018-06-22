@@ -454,7 +454,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		    int scroll_wheel_delta = -e.getWheelRotation();
 		    int section_index = this.series.position_by_n_sections ( scroll_wheel_delta );
 		    if (this.parent_frame != null) {
-		      this.parent_frame.setTitle ( "Series " + this.series.get_short_name() + ", Section " + (section_index+1) );
+		      this.parent_frame.setTitle ( "Series: " + this.series.get_short_name() + ", Section: " + (section_index+1) );
 			  }
 			} else {
 			  super.mouseWheelMoved ( e );
@@ -559,7 +559,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
         if (delta != 0) {
           int section_index = this.series.position_by_n_sections ( delta );
 		      if (this.parent_frame != null) {
-			      this.parent_frame.setTitle ( "Series " + this.series.get_short_name() + ", Section " + (section_index+1) );
+			      this.parent_frame.setTitle ( "Series: " + this.series.get_short_name() + ", Section: " + (section_index+1) );
 			    }
           repaint();
         }
@@ -850,7 +850,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 	    JOptionPane.showMessageDialog(null, "Option Not Implemented", "Option Not Implemented", JOptionPane.WARNING_MESSAGE);
 	  }
     if ( (this.parent_frame != null) && (this.series != null) ) {
-      this.parent_frame.setTitle ( "Series " + this.series.get_short_name() + ", Section " + (this.series.get_position()+1) );
+      this.parent_frame.setTitle ( "Series: " + this.series.get_short_name() + ", Section: " + (this.series.get_position()+1) );
 	  }
 
   }
