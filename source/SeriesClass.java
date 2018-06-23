@@ -279,10 +279,10 @@ public class SeriesClass {
 
 	public String get_short_name() {
 	  if (series_file_name != null) {
-	    System.out.println ( "get_short_name returning " + new File(series_file_name).getName() );
+	    // System.out.println ( "get_short_name returning " + new File(series_file_name).getName() );
 	    return ( new File(series_file_name).getName() );
 	  } else {
-	    System.out.println ( "get_short_name returning No Series" );
+	    // System.out.println ( "get_short_name returning No Series" );
 			return ( "No Series" );
 	  }
 	}

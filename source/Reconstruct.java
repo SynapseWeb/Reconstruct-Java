@@ -96,12 +96,12 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 	JFrame parent_frame = null;
 	static int w=800, h=600;
 
-	boolean show_points = false;
+	boolean show_points = true;
 	boolean show_arrows = false;
 	boolean drawing_mode = false;
   boolean center_draw = false;
   boolean segment_draw = true;
-  boolean bezier_draw = false;
+  boolean bezier_draw = true;
 	boolean stroke_started = false;
   String current_directory = "";
   MyFileChooser file_chooser = null;
@@ -471,6 +471,13 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 	}
 
 
+
+  JMenuItem about_menu_item = null;
+  JMenuItem menu_overview_menu_item = null;
+  JMenuItem mouse_clicks_menu_item = null;
+
+  JMenuItem version_menu_item = null;
+
   JMenuItem move_menu_item = null;
   JMenuItem draw_menu_item = null;
   JMenuItem center_draw_menu_item = null;
@@ -596,7 +603,98 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		// System.out.println ( "ActionPerformed got \"" + cmd + "\"" );
 		// System.out.println ( "ActionPerformed got \"" + action_source + "\"" );
 
-		if ( action_source == move_menu_item ) {
+		if ( action_source == version_menu_item ) {
+		  String s =
+        "Reconstruct Java\n" +
+        "\n" +
+        "  Version 0.5\n" +
+        "  June 22nd, 2018\n" +
+        "\n";
+	    JOptionPane.showMessageDialog(null, s, "Reconstruct Java Version", JOptionPane.INFORMATION_MESSAGE);
+		} else if ( action_source == about_menu_item ) {
+		  String s =
+        "Reconstruct Java is a prototype implementation of Reconstruct written in Java.\n" +
+        "\n" +
+        "Reconstruct Java was written to prove the feasability of using Java for this task. \n" +
+        "\n" +
+        "Reconstruct Java provides some useful functionality, but most of its features are \n" +
+        "not fully implemented in this version.";
+	    JOptionPane.showMessageDialog(null, s, "About Reconstruct Java", JOptionPane.INFORMATION_MESSAGE);
+		} else if ( action_source == menu_overview_menu_item ) {
+		  String s =
+        "Most menu items are inoperable except the following:\n" +
+        "\n" +
+        "Program...\n" +
+        "  Debug...\n" +
+        "    Dump: Prints lots of internal data to the console.\n" +
+        "    Dump Areas: Prints the areas for each contour on each section.\n" +
+        "    Clear: Clears any traces currently being drawn.\n" +
+        "  Exit: Exits the program.\n" +
+        "\n" +
+        "Series...\n" +
+        "  Open: Allows opening a Series file (.ser).\n" +
+        "  New: Creates a new empty Series file (.ser).\n" +
+        "  Save: Saves the current Series with a user-selected name.\n" +
+        "  Options: Allows setting the current trace (object) name.\n" +
+        "  Convert to CRLF: Converts any selected series to CRLF line endings.\n" +
+        "  Convert to LF: Converts any selected series to LF line endings.\n" +
+        "  Import/Images: Imports images to populate a new series file.\n" +
+        "\n" +
+        "Trace...\n" +
+        "  Reverse All: Reverses all traces (doesn't work for Bezier traces).\n" +
+        "\n" +
+        "Extras...\n" +
+        "  Color/<color name>: Chooses a color for all subsequent traces.\n" +
+        "  Color/Half: Sets color to 50% of full value for subsequent traces.\n" +
+        "  Color/Lighter: Brightens the current color for subsequent traces.\n" +
+        "  Color/Darker: Darkens the current color for subsequent traces.\n" +
+        "\n" +
+        "  Line/None: Sets line width to zero (lines aren't drawn).\n" +
+        "  Line/Width=#: Sets the line width to that number of pixels.\n" +
+        "  Line/Show Points: Draws an indicator for each point (and handle).\n" +
+        "  Line/Show Arrows: Draws start box and arrows for each trace segment.\n" +
+        "\n" +
+        "  Mode/Move: Click and drag of left mouse button will shift the display.\n" +
+        "  Mode/Draw: Click and drag of left mouse button will draw traces.\n" +
+        "  Mode/Segment Drawing: Traces are drawn click by click (not by dragging).\n" +
+        "  Mode/Bezier Drawing: Uses Bezier Curves when Segment Drawing is enabled.\n" +
+        "  Mode/Center Drawing: Image is dragged under a \"pen\" at the center.\n" +
+        "\n" +
+        "  Purge Images: Remove images from memory (helps with memory constraints).\n" +
+        "\n" +
+        "Any inoperable menu items should report \"Option Not Implemented\".\n" +
+        "\n";
+	    JOptionPane.showMessageDialog(null, s, "Reconstruct Java Menu Overview", JOptionPane.INFORMATION_MESSAGE);
+		} else if ( action_source == mouse_clicks_menu_item ) {
+		  String s =
+        "Mouse Operation:\n" +
+        "\n" +
+        "  Move Mode (4-arrow cursor):\n" +
+        "    Scroll Wheel zooms (scales the view).\n" +
+        "    Left Click and Drag moves (pans) the view.\n" +
+        "    Right Click switches to \"Draw Mode\".\n" +
+        "\n" +
+        "  Draw Mode (without Segment/Bezier Drawing):\n" +
+        "    Scroll Wheel moves through Sections in the Series.\n" +
+        "    Left Click and Drag draws a new contour.\n" +
+        "    Left Release completes the contour (returns to Move Mode).\n" +
+        "    Right Click switches to \"Move Mode\".\n" +
+        "\n" +
+        "  Draw Mode (with Segment/Bezier Drawing):\n" +
+        "    Scroll Wheel moves through Sections in the Series.\n" +
+        "    Left Click adds a new segment point.\n" +
+        "    Right Click completes the contour (returns to Move Mode).\n" +
+        "  Exit: Exits the program.\n" +
+        "\n" +
+        "  Draw Mode with Center Drawing (NOT Segment/Bezier Drawing):\n" +
+        "    Scroll Wheel moves through Sections in the Series.\n" +
+        "    Left Click and Drag draws a new contour.\n" +
+        "    Left Release completes the contour.\n" +
+        "    Right Click switches to \"Move Mode\".\n" +
+        "  Exit: Exits the program.\n" +
+        "\n";
+	    JOptionPane.showMessageDialog(null, s, "Reconstruct Java Mouse Operation", JOptionPane.INFORMATION_MESSAGE);
+		} else if ( action_source == move_menu_item ) {
       current_cursor = b_cursor;
       /*
         Alternative predefined cursors from java.awt.Cursor:
@@ -749,12 +847,12 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 	    repaint();
 
 		} else if ( action_source == show_points_menu_item ) {
-			System.out.println ( "show_points toggled." );
+			// System.out.println ( "show_points toggled." );
 		  JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
 		  show_points = item.getState();
 		  repaint();
 		} else if ( action_source == show_arrows_menu_item ) {
-			System.out.println ( "show_arrows toggled." );
+			// System.out.println ( "show_arrows toggled." );
 		  JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
 		  show_arrows = item.getState();
 		  repaint();
@@ -931,7 +1029,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 	  for (int i=0; i<args.length; i++) {
 		  System.out.println ( "Arg[" + i + "] = \"" + args[i] + "\"" );
 		}
-		System.out.println ( "Reconstruct: Use the mouse wheel to zoom, and drag to pan." );
+		// System.out.println ( "Reconstruct: Use the mouse wheel to zoom, and drag to pan." );
 		javax.swing.SwingUtilities.invokeLater ( new Runnable() {
 			public void run() {
 			  JFrame f = new JFrame("Reconstruct - No Active Series");
@@ -1186,20 +1284,6 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
             mi.addActionListener(zp);
             menu_bar.add ( object_menu );
 
-          JMenu help_menu = new JMenu("Help");
-            help_menu.add ( mi = new JMenuItem("Manual...") );
-            mi.addActionListener(zp);
-            help_menu.add ( mi = new JMenuItem("Key commands...") );
-            mi.addActionListener(zp);
-            help_menu.add ( mi = new JMenuItem("Mouse clicks...") );
-            mi.addActionListener(zp);
-            help_menu.addSeparator();
-            help_menu.add ( mi = new JMenuItem("License...") );
-            mi.addActionListener(zp);
-            help_menu.add ( mi = new JMenuItem("Version...") );
-            mi.addActionListener(zp);
-            menu_bar.add ( help_menu );
-
           JMenu extras_menu = new JMenu("Extras");
 
 		        JMenu color_menu = new JMenu("Color");
@@ -1290,6 +1374,25 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
             mi.addActionListener(zp);
 
 	          menu_bar.add ( extras_menu );
+
+          JMenu help_menu = new JMenu("Help");
+            help_menu.add ( zp.about_menu_item = mi = new JMenuItem("About...") );
+            mi.addActionListener(zp);
+            help_menu.add ( zp.menu_overview_menu_item = mi = new JMenuItem("Menu Items...") );
+            mi.addActionListener(zp);
+            help_menu.addSeparator();
+            help_menu.add ( mi = new JMenuItem("Manual...") );
+            mi.addActionListener(zp);
+            help_menu.add ( mi = new JMenuItem("Key commands...") );
+            mi.addActionListener(zp);
+            help_menu.add ( zp.mouse_clicks_menu_item = mi = new JMenuItem("Mouse clicks...") );
+            mi.addActionListener(zp);
+            help_menu.addSeparator();
+            help_menu.add ( mi = new JMenuItem("License...") );
+            mi.addActionListener(zp);
+            help_menu.add ( zp.version_menu_item = mi = new JMenuItem("Version...") );
+            mi.addActionListener(zp);
+            menu_bar.add ( help_menu );
 
 				f.setJMenuBar ( menu_bar );
 				

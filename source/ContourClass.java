@@ -203,7 +203,7 @@ public class ContourClass {
 				//// CubicCurve2D.Double seg_to_adjust = curves.get(i);
 				// Adjust the h0 handle
 				if ( (closed || (i > 0)) && (stroke_points.size() > i) && (handle_points.size() > i) ) {
-					System.out.println ( " Adjusting h0 for segment " + i + ", with previous = " + prev );
+					// System.out.println ( " Adjusting h0 for segment " + i + ", with previous = " + prev );
 
 					double[] current_point = stroke_points.get(i);
 					double[] next_point = stroke_points.get(next);
@@ -235,7 +235,7 @@ public class ContourClass {
 				}
 				// Adjust the h1 handle
 				if (closed || (i < n-1)) {
-					System.out.println ( " Adjusting h1 for segment " + i + ", with next = " + next );
+					// System.out.println ( " Adjusting h1 for segment " + i + ", with next = " + next );
 
 					double[] current_point = stroke_points.get(i);
 					double[] next_point = stroke_points.get(next);
@@ -332,9 +332,23 @@ public class ContourClass {
 				double h[][] = null;
 				double p[] = null;
 
+        // Put a box around the first point
+				if (r.show_points) {
+				  double pfirst[] = stroke_points.get(0);
+			    int x = r.x_to_pxi(pfirst[0]-dx);
+			    int y = r.y_to_pyi(dy-pfirst[1]);
+          g.setColor ( new Color ( 255, 255, 255 ) );
+          int l=5;
+				  g.drawLine ( x-l, y-l, x+l, y-l );
+				  g.drawLine ( x-l, y-l, x-l, y+l );
+				  g.drawLine ( x+l, y+l, x+l, y-l );
+				  g.drawLine ( x+l, y+l, x-l, y+l );
+				}
+
 				int line_padding = r.line_padding;
 
 				if (line_padding >= 0) {
+				  // Only draw lines when line_padding >= 0
 
 					if ( (is_bezier) && (handle_points != null) ) {
 
@@ -342,155 +356,65 @@ public class ContourClass {
 
 						g.setColor ( new Color ( 100, 100, 100 ) );
 
-						// Draw the control handle lines
-						for (int j=0; j<handle_points.size(); j++) {
-							int x, y, hx, hy;
-							h = handle_points.get(j);
-							p = stroke_points.get(j);
+						if (r.show_points) {
+						  // Draw the control handle lines
+						  for (int j=0; j<handle_points.size(); j++) {
+							  int x, y, hx, hy;
+							  h = handle_points.get(j);
+							  p = stroke_points.get(j);
 
-							x = r.x_to_pxi(p[0]-dx);
-							y = r.y_to_pyi(dy-p[1]);
-							hx = r.x_to_pxi(h[0][0]-dx);
-							hy = r.y_to_pyi(dy-h[0][1]);
-							g.setColor ( new Color ( 100, 0, 0 ) );
-							g.drawLine ( x, y, hx, hy );
+							  x = r.x_to_pxi(p[0]-dx);
+							  y = r.y_to_pyi(dy-p[1]);
+							  hx = r.x_to_pxi(h[0][0]-dx);
+							  hy = r.y_to_pyi(dy-h[0][1]);
+							  g.setColor ( new Color ( 100, 0, 0 ) );
+							  g.drawLine ( x, y, hx, hy );
 
-							x = r.x_to_pxi(p[0]-dx);
-							y = r.y_to_pyi(dy-p[1]);
-							hx = r.x_to_pxi(h[1][0]-dx);
-							hy = r.y_to_pyi(dy-h[1][1]);
-							g.setColor ( new Color ( 0, 100, 0 ) );
-							g.drawLine ( x, y, hx, hy );
+							  x = r.x_to_pxi(p[0]-dx);
+							  y = r.y_to_pyi(dy-p[1]);
+							  hx = r.x_to_pxi(h[1][0]-dx);
+							  hy = r.y_to_pyi(dy-h[1][1]);
+							  g.setColor ( new Color ( 0, 100, 0 ) );
+							  g.drawLine ( x, y, hx, hy );
+						  }
 						}
 
 						g.setColor ( new Color ( 150, 150, 150 ) );
 
-						// Draw the control handle points
-						for (int j=0; j<handle_points.size(); j++) {
-							h = handle_points.get(j);
-							int l = 4;
-							int x, y;
-							x = r.x_to_pxi(h[0][0]-dx);
-							y = r.y_to_pyi(dy-h[0][1]);
-							g.setColor ( new Color ( 150, 0, 0 ) );
-							g.drawOval ( x-l, y-l, 2*l, 2*l );
-							x = r.x_to_pxi(h[1][0]-dx);
-							y = r.y_to_pyi(dy-h[1][1]);
-							g.setColor ( new Color ( 0, 150, 0 ) );
-							g.drawOval ( x-l, y-l, 2*l, 2*l );
-						}
+						if (r.show_points) {
+						  // Draw the control handle points
+						  for (int j=0; j<handle_points.size(); j++) {
+							  h = handle_points.get(j);
+							  int l = 4;
+							  int x, y;
+							  x = r.x_to_pxi(h[0][0]-dx);
+							  y = r.y_to_pyi(dy-h[0][1]);
+							  g.setColor ( new Color ( 150, 0, 0 ) );
+							  g.drawOval ( x-l, y-l, 2*l, 2*l );
+							  x = r.x_to_pxi(h[1][0]-dx);
+							  y = r.y_to_pyi(dy-h[1][1]);
+							  g.setColor ( new Color ( 0, 150, 0 ) );
+							  g.drawOval ( x-l, y-l, 2*l, 2*l );
+						  }
+					  }
 
 						g.setColor ( new Color ( (int)(255*this.r), (int)(255*this.g), (int)(255*this.b) ) );
 
-						// Draw the end points for the curves
-						for (int j=0; j<stroke_points.size(); j++) {
-							if (j == 0) {
-								g.setColor ( new Color ( 255, 255, 255 ) );
-							} else {
-								g.setColor ( new Color ( (int)(255*this.r), (int)(255*this.g), (int)(255*this.b) ) );
-							}
-							p0 = stroke_points.get(j);
-							int l = 4;
-							int x = r.x_to_pxi(p0[0]-dx);
-							int y = r.y_to_pyi(dy-p0[1]);
-							g.drawOval ( x-l, y-l, 2*l, 2*l );
+						if (r.show_points) {
+						  // Draw the end points for the curves
+						  for (int j=0; j<stroke_points.size(); j++) {
+							  if (j == 0) {
+								  g.setColor ( new Color ( 255, 255, 255 ) );
+							  } else {
+								  g.setColor ( new Color ( (int)(255*this.r), (int)(255*this.g), (int)(255*this.b) ) );
+							  }
+							  p0 = stroke_points.get(j);
+							  int l = 4;
+							  int x = r.x_to_pxi(p0[0]-dx);
+							  int y = r.y_to_pyi(dy-p0[1]);
+							  g.drawOval ( x-l, y-l, 2*l, 2*l );
+						  }
 						}
-/*
-						// Draw the curve itself
-
-						ArrayList<CubicCurve2D.Double> curves = new ArrayList<CubicCurve2D.Double>();  // Argument (if any) specifies initial capacity (default 10)
-
-						// Draw the curves themselves
-						for (int j=1; j<stroke_points.size(); j++) {
-							int x, y, hx, hy;
-							p0 = stroke_points.get(j-1);
-							p1 = stroke_points.get(j);
-							h0 = handle_points.get(j-1);
-							h1 = handle_points.get(j);
-
-							double p0x = r.x_to_px(p0[0]-dx);
-							double p0y = r.y_to_py(dy-p0[1]);
-							double h0x = r.x_to_px(h0[1][0]-dx);
-							double h0y = r.y_to_py(dy-h0[1][0]);
-							double h1x = r.x_to_px(h1[0][0]-dx);
-							double h1y = r.y_to_py(dy-h1[0][1]);
-							double p1x = r.x_to_px(p1[0]-dx);
-							double p1y = r.y_to_py(dy-p1[1]);
-
-
-							h = handle_points.get(j);
-							h1 = handle_points.get(j-1);
-							h0x = r.x_to_px(h[0][0]-dx);
-							h0y = r.y_to_py(dy-h[0][1]);
-							h1x = r.x_to_px(h1[1][0]-dx);
-							h1y = r.y_to_py(dy-h1[1][1]);
-
-
-
-							// CubicCurve2D.Double(double x1, double y1, double ctrlx1, double ctrly1, double ctrlx2, double ctrly2, double x2, double y2) 
-							curves.add ( new CubicCurve2D.Double ( p0x, p0y, h0x, h0y, h1x, h1y, p1x, p1y ) );
-
-							// curves.add ( new CubicCurve2D.Double ( p0[0], p0[1], h0[1][0], h0[1][1], h1[0][0], h1[0][1], p1[0], p1[1] ) );
-
-						}
-
-
-						for (int j=0; j<curves.size(); j++) {
-							g2.draw ( curves.get(j) );
-						}
-
-						g2.setStroke(previous_stroke);
-
-*/
-
-/*
-						// path.moveTo ( r.x_to_pxi(p0[0]-dx), r.y_to_pyi(dy-p0[1]) );
-						p0 = translate_to_screen ( stroke_points.get(0), r );
-						for (int j=1; j<stroke_points.size(); j++) {
-							p1 = translate_to_screen ( stroke_points.get(j), r );
-							curves.add ( new CubicCurve2D.Double ( p0[0], p0[1], h0[0], h0[1], h1[0], h1[1], p1[0], p1[1] ) );
-default_curve ( p0, p1 ) );
-							p0 = p1;
-						}
-						if (closed) {
-							p1 = translate_to_screen ( stroke_points.get(0), r );
-							curves.add ( default_curve ( p0, p1 ) );
-						}
-
-						for (int j=0; j<curves.size(); j++) {
-							g2.draw ( curves.get(j) );
-						}
-
-						g2.setStroke(previous_stroke);
-*/
-
-/*
-						// Draw the curve itself
-						ArrayList<CubicCurve2D.Double> curves = new ArrayList<CubicCurve2D.Double>();  // Argument (if any) specifies initial capacity (default 10)
-
-						// CubicCurve2D.Double(double x1, double y1, double ctrlx1, double ctrly1, double ctrlx2, double ctrly2, double x2, double y2) 
-
-						// path.moveTo ( r.x_to_pxi(p0[0]-dx), r.y_to_pyi(dy-p0[1]) );
-						p0 = translate_to_screen ( stroke_points.get(0), r );
-						for (int j=1; j<stroke_points.size(); j++) {
-							p1 = translate_to_screen ( stroke_points.get(j), r );
-							curves.add ( new CubicCurve2D.Double ( p0[0], p0[1], h0[0], h0[1], h1[0], h1[1], p1[0], p1[1] ) );
-default_curve ( p0, p1 ) );
-							p0 = p1;
-						}
-						if (closed) {
-							p1 = translate_to_screen ( stroke_points.get(0), r );
-							curves.add ( default_curve ( p0, p1 ) );
-						}
-
-						for (int j=0; j<curves.size(); j++) {
-							g2.draw ( curves.get(j) );
-						}
-
-						g2.setStroke(previous_stroke);
-*/
-
-
 
 
 						double factor = 0.2;
@@ -518,15 +442,6 @@ default_curve ( p0, p1 ) );
 							// Adjust the h0 handle
 							if (closed || (i > 0)) {
 								// System.out.println ( " Adjusting h0 for segment " + i + ", with previous = " + ((n+i-1)%n) );
-								// These notes map the variables from BezierTracing.java to the CubicCurve2D members:
-								// p0.x = x1
-								// p0.y = y1
-								// p1.x = x2
-								// p1.y = y2
-								// h0.x = ctrlx1
-								// h0.y = ctrly1
-								// h1.x = ctrlx2
-								// h1.y = ctrly2
 								CubicCurve2D.Double prev_seg = curves.get((n+i-1)%n);
 								double cdx = seg_to_adjust.x2 - prev_seg.x1;
 								double cdy = seg_to_adjust.y2 - prev_seg.y1;
@@ -553,20 +468,7 @@ default_curve ( p0, p1 ) );
 							g2.draw ( curves.get(j) );
 						}
 
-/*
-						// Draw the control points
-						for (int j=0; j<stroke_points.size(); j++) {
-							p0 = stroke_points.get(j);
-							int l = 4;
-							int x = r.x_to_pxi(p0[0]-dx);
-							int y = r.y_to_pyi(dy-p0[1]);
-							g.drawOval ( x-l, y-l, 2*l, 2*l );
-						}
-*/
-
 						g2.setStroke(previous_stroke);
-
-
 
 					} else {
 
@@ -596,32 +498,6 @@ default_curve ( p0, p1 ) );
 							g2.setStroke(previous_stroke);
 						}
 
-						if (r.show_arrows) {
-              int x=0, y=0, last_x=0, last_y=0;
-							for (int j=0; j<stroke_points.size(); j++) {
-							  p0 = stroke_points.get(j);
-                last_x = x;
-                last_y = y;
-							  x = r.x_to_pxi(p0[0]-dx);
-							  y = r.y_to_pyi(dy-p0[1]);
-							  if (j > 0) {
-							    // Draw an arrow
-                  int dxdydxdy[] = r.arrows.get ( x-last_x, y-last_y );
-                  g.setColor ( new Color ( 255, 255, 255 ) );
-                  g.drawLine ( dxdydxdy[0]+(int)x, dxdydxdy[1]+(int)y, (int)x, (int)y );
-                  g.drawLine ( dxdydxdy[2]+(int)x, dxdydxdy[3]+(int)y, (int)x, (int)y );
-								} else {
-								  // Draw a box
-                  g.setColor ( new Color ( 255, 255, 255 ) );
-                  int l=8;
-								  g.drawLine ( x-l, y-l, x+l, y-l );
-								  g.drawLine ( x-l, y-l, x-l, y+l );
-								  g.drawLine ( x+l, y+l, x+l, y-l );
-								  g.drawLine ( x+l, y+l, x-l, y+l );
-								}
-							}
-						}
-
 						if (r.show_points) {
 							int l = 4;
 							int x, y;
@@ -634,6 +510,34 @@ default_curve ( p0, p1 ) );
 						}
 
 					}
+
+          // Draw arrows last so they're on top of everything else
+					if (r.show_arrows) {
+            int x=0, y=0, last_x=0, last_y=0;
+						for (int j=0; j<stroke_points.size(); j++) {
+						  p0 = stroke_points.get(j);
+              last_x = x;
+              last_y = y;
+						  x = r.x_to_pxi(p0[0]-dx);
+						  y = r.y_to_pyi(dy-p0[1]);
+						  if (j > 0) {
+						    // Draw an arrow
+                int dxdydxdy[] = r.arrows.get ( x-last_x, y-last_y );
+                g.setColor ( new Color ( 255, 255, 255 ) );
+                g.drawLine ( dxdydxdy[0]+(int)x, dxdydxdy[1]+(int)y, (int)x, (int)y );
+                g.drawLine ( dxdydxdy[2]+(int)x, dxdydxdy[3]+(int)y, (int)x, (int)y );
+							} else {
+							  // Draw a box
+                g.setColor ( new Color ( 255, 255, 255 ) );
+                int l=8;
+							  g.drawLine ( x-l, y-l, x+l, y-l );
+							  g.drawLine ( x-l, y-l, x-l, y+l );
+							  g.drawLine ( x+l, y+l, x+l, y-l );
+							  g.drawLine ( x+l, y+l, x-l, y+l );
+							}
+						}
+					}
+
 
 				}
 
