@@ -9,6 +9,19 @@
 
 # Descriptions of Progress
 
+## Reconstruct.jar supports an easy Bezier tracing mode (June 22nd, 2018)
+
+![BezierTracing](images/Mystery_Series_DH_Sec_15_handles_bright_crop.png?raw=true "Bezier Tracing")
+![BezierDetail](images/Mystery_Series_DH_Sec_15_detail_bright_crop.png?raw=true "Bezier Detail")
+
+## Reconstruct.jar displays optional tracing direction (June 22nd, 2018)
+
+![TracingArrows](images/Mystery_Series_DH_Sec_15_arrows_crop.png?raw=true "Tracing Arrows")
+
+## Reconstruct.jar offers several help menus (June 22nd, 2018)
+
+![HelpMenu](images/Mouse_Help.png?raw=true "Help Menus")
+
 ## Reconstruct.jar can write XML data compatible with Reconstruct.exe (June 20th, 2018)
 
 ![SeriesFromJavaAndExe](images/2018_06_20_2004.gif?raw=true "Series with objects traced in both Java and Exe Versions")
