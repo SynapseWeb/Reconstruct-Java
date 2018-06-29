@@ -545,6 +545,41 @@ public class ContourClass {
 		}
   }
 
+  public double[] find_closest( double p[] ) {
+    System.out.println ( "Contour looking for closest to " + p[0] + ", " + p[1] );
+    double closest[] = null;
+    double closest_dist_sq = Double.MAX_VALUE;
+	  if (stroke_points != null) {
+	    for (int i=0; i<stroke_points.size(); i++) {
+	      double stroke_point[] = stroke_points.get(i);
+        double dx = p[0]-stroke_point[0];
+        double dy = p[1]-stroke_point[1];
+        double dist_sq = (dx*dx) + (dy*dy);
+        // System.out.println ( "Checking " + stroke_point[0] + ", " + stroke_point[1] );
+        if ( (closest == null) || (dist_sq < closest_dist_sq) ) {
+          closest = stroke_point;
+          closest_dist_sq = dist_sq;
+        }
+	    }
+    }
+	  if (handle_points != null) {
+	    for (int i=0; i<handle_points.size(); i++) {
+  			double[][]handles = handle_points.get(i);
+  			for (int h=0; h<2; h++) {
+          double dx = p[0]-handles[h][0];
+          double dy = p[1]-handles[h][1];
+          double dist_sq = (dx*dx) + (dy*dy);
+          // System.out.println ( "Checking " + handles[h][0] + ", " + handles[h][1] );
+          if ( (closest == null) || (dist_sq < closest_dist_sq) ) {
+            closest = handles[h];
+            closest_dist_sq = dist_sq;
+          }
+        }
+	    }
+    }
+    return ( closest );
+  }
+
 
   public void reverse_stroke() {
 		System.out.println ( "   Contour reversing stroke" );

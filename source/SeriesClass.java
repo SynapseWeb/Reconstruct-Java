@@ -257,6 +257,26 @@ public class SeriesClass {
     }
   }
 
+  public double[] find_closest( double p[] ) {
+    double closest[] = null;
+    double closest_dist_sq = Double.MAX_VALUE;
+	  if (sections != null) {
+	    for (int i=0; i<sections.length; i++) {
+        double closest_in_section[] = sections[i].find_closest( p );
+        if (closest_in_section != null) {
+          double dx = p[0]-closest_in_section[0];
+          double dy = p[1]-closest_in_section[1];
+          double dist_sq = (dx*dx) + (dy*dy);
+          if ( (closest == null) || (dist_sq < closest_dist_sq) ) {
+            closest = closest_in_section;
+            closest_dist_sq = dist_sq;
+          }
+        }
+	    }
+    }
+    return ( closest );
+  }
+
   public void clear_strokes() {
 	  if (sections != null) {
 	    if (section_index < sections.length) {

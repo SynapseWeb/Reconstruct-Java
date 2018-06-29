@@ -117,6 +117,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
   String current_trace_name = null;
 
+  double[] click_point = null;
+  double[] active_point = null;
 
   void dump_strokes() {
     if (series != null) {
@@ -332,6 +334,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   public void mouseClicked ( MouseEvent e ) {
     // System.out.println ( "Mouse clicked: " + e );
     if (editing_mode) {
+      System.out.println ( "Mouse clicked in edit mode" );
     } else {
       if (e.getButton() == MouseEvent.BUTTON3) {
 			  if (segment_draw || bezier_draw) {
@@ -356,7 +359,24 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     // System.out.println ( "Mouse pressed with drawing_mode = " + drawing_mode );
     super.mousePressed(e);
     if (editing_mode) {
+      System.out.println ( "Mouse pressed in edit mode at " + e.getX() + ", " + e.getY() );
+      if (click_point == null) {
+        click_point = new double[2];
+      }
+      click_point[0] = px_to_x(e.getX());
+      click_point[1] = -py_to_y(e.getY());
+      if (series != null) {
+        double closest[] = series.find_closest ( click_point );
+        if (closest == null) {
+          System.out.println ( "Series found no closest!" );
+        } else {
+          System.out.println ( "Series found closest at " + closest[0] + ", " + closest[1] );
+          // It would be good to have a limit radius here, but that can be done later
+          active_point = closest;
+        }
+      }
     } else {
+      active_point = null;
       if (e.getButton() == MouseEvent.BUTTON1) {
         if (drawing_mode == true) {
 				  if (segment_draw) {
@@ -395,6 +415,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   public void mouseReleased ( MouseEvent e ) {
     // System.out.println ( "Mouse released" );
     if (editing_mode) {
+      System.out.println ( "Mouse released in edit mode" );
     } else {
       if (drawing_mode == false) {
         super.mouseReleased(e);
@@ -431,6 +452,14 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   public void mouseDragged ( MouseEvent e ) {
     // System.out.println ( "Mouse dragged" );
     if (editing_mode) {
+      // System.out.println ( "Mouse dragged in edit mode" );
+      if (active_point != null) {
+        double p[] = { px_to_x(e.getX()), -py_to_y(e.getY()) };
+        active_point[0] += p[0] - click_point[0];
+        active_point[1] += p[1] - click_point[1];
+        click_point = p;
+        repaint();
+      }
     } else {
       if (drawing_mode == false) {
         super.mouseDragged(e);
