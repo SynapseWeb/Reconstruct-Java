@@ -99,6 +99,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 	boolean show_points = true;
 	boolean show_arrows = false;
 	boolean drawing_mode = false;
+	boolean editing_mode = false;
   boolean center_draw = false;
   boolean segment_draw = true;
   boolean bezier_draw = true;
@@ -174,6 +175,9 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       if (draw_menu_item != null) {
         draw_menu_item.setSelected(true);
       }
+    } else if (editing_mode) {
+      current_cursor = Cursor.getPredefinedCursor ( Cursor.DEFAULT_CURSOR );
+      setCursor ( current_cursor );
     } else {
       current_cursor = b_cursor;
       setCursor ( current_cursor );
@@ -327,87 +331,96 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
   public void mouseClicked ( MouseEvent e ) {
     // System.out.println ( "Mouse clicked: " + e );
-    if (e.getButton() == MouseEvent.BUTTON3) {
-			if (segment_draw || bezier_draw) {
-				if (active_contour != null) {
-					active_contour.close();
-          active_contour.init_bezier ( active_contour.is_bezier );  // Recompute beziers after closing
-					series.add_contour ( active_contour );
-				}
-				active_contour = null;
-				// segment_draw = false;
-			}
-      drawing_mode = !drawing_mode;
-      set_cursor();
-      repaint();
+    if (editing_mode) {
     } else {
-      super.mouseClicked(e);
+      if (e.getButton() == MouseEvent.BUTTON3) {
+			  if (segment_draw || bezier_draw) {
+				  if (active_contour != null) {
+					  active_contour.close();
+            active_contour.init_bezier ( active_contour.is_bezier );  // Recompute beziers after closing
+					  series.add_contour ( active_contour );
+				  }
+				  active_contour = null;
+				  // segment_draw = false;
+			  }
+        drawing_mode = !drawing_mode;
+        set_cursor();
+        repaint();
+      } else {
+        super.mouseClicked(e);
+      }
     }
   }
 
   public void mousePressed ( MouseEvent e ) {
     // System.out.println ( "Mouse pressed with drawing_mode = " + drawing_mode );
     super.mousePressed(e);
-    if (e.getButton() == MouseEvent.BUTTON1) {
-      if (drawing_mode == true) {
-				if (segment_draw) {
-				} else if (bezier_draw) {
-				} else {
-		      if (active_contour != null) {
-		        // System.out.println ( "Saving previous stroke" );
-		        if (series != null) {
-							active_contour.close();
-              active_contour.init_bezier ( active_contour.is_bezier );  // Recompute beziers after closing
-							series.add_contour ( active_contour );
+    if (editing_mode) {
+    } else {
+      if (e.getButton() == MouseEvent.BUTTON1) {
+        if (drawing_mode == true) {
+				  if (segment_draw) {
+				  } else if (bezier_draw) {
+				  } else {
+		        if (active_contour != null) {
+		          // System.out.println ( "Saving previous stroke" );
+		          if (series != null) {
+							  active_contour.close();
+                active_contour.init_bezier ( active_contour.is_bezier );  // Recompute beziers after closing
+							  series.add_contour ( active_contour );
+		          }
 		        }
 		      }
-		    }
-		    if (active_contour == null) {
-	        // System.out.println ( "Making new stroke" );
-	        active_contour = new ContourClass ( new ArrayList<double[]>(100), new_trace_color, false, bezier_draw );
-	        active_contour.contour_name = current_trace_name;
-	        active_contour.is_bezier = bezier_draw;
-	      }
-        double p[] = { px_to_x(e.getX()), py_to_y(e.getY()) };
-        if (center_draw) {
-          p[0] = px_to_x(getSize().width / 2);
-          p[1] = py_to_y(getSize().height / 2);
+		      if (active_contour == null) {
+	          // System.out.println ( "Making new stroke" );
+	          active_contour = new ContourClass ( new ArrayList<double[]>(100), new_trace_color, false, bezier_draw );
+	          active_contour.contour_name = current_trace_name;
+	          active_contour.is_bezier = bezier_draw;
+	        }
+          double p[] = { px_to_x(e.getX()), py_to_y(e.getY()) };
+          if (center_draw) {
+            p[0] = px_to_x(getSize().width / 2);
+            p[1] = py_to_y(getSize().height / 2);
+          }
+          // System.out.println ( "Adding point " + p[0] + "," + p[1] );
+          double contour_point[] = { p[0], -p[1] };
+          active_contour.add_point ( contour_point );
+          active_contour.init_bezier ( active_contour.is_bezier );
+          repaint();
         }
-        // System.out.println ( "Adding point " + p[0] + "," + p[1] );
-        double contour_point[] = { p[0], -p[1] };
-        active_contour.add_point ( contour_point );
-        active_contour.init_bezier ( active_contour.is_bezier );
-        repaint();
       }
     }
   }
 
   public void mouseReleased ( MouseEvent e ) {
     // System.out.println ( "Mouse released" );
-    if (drawing_mode == false) {
-      super.mouseReleased(e);
+    if (editing_mode) {
     } else {
-      if (active_contour != null) {
-        double p[] = { px_to_x(e.getX()), py_to_y(e.getY()) };
-        if (segment_draw) {
-		      // ?? active_contour.add_point ( p );
-		    } else if (bezier_draw) {
-        } else {
-		      if (center_draw) {
-		        p[0] = px_to_x(getSize().width / 2);
-		        p[1] = py_to_y(getSize().height / 2);
+      if (drawing_mode == false) {
+        super.mouseReleased(e);
+      } else {
+        if (active_contour != null) {
+          double p[] = { px_to_x(e.getX()), py_to_y(e.getY()) };
+          if (segment_draw) {
+		        // ?? active_contour.add_point ( p );
+		      } else if (bezier_draw) {
+          } else {
+		        if (center_draw) {
+		          p[0] = px_to_x(getSize().width / 2);
+		          p[1] = py_to_y(getSize().height / 2);
+		        }
+	          double contour_point[] = { p[0], -p[1] };
+		        active_contour.add_point ( contour_point );
+            active_contour.init_bezier ( active_contour.is_bezier );
+		        if (series != null) {
+						  active_contour.close();
+              active_contour.init_bezier ( active_contour.is_bezier );  // Recompute beziers after closing
+						  series.add_contour ( active_contour );
+			      }
+		        active_contour = null;
 		      }
-	        double contour_point[] = { p[0], -p[1] };
-		      active_contour.add_point ( contour_point );
-          active_contour.init_bezier ( active_contour.is_bezier );
-		      if (series != null) {
-						active_contour.close();
-            active_contour.init_bezier ( active_contour.is_bezier );  // Recompute beziers after closing
-						series.add_contour ( active_contour );
-			    }
-		      active_contour = null;
-		    }
-        repaint();
+          repaint();
+        }
       }
     }
   }
@@ -417,33 +430,36 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
   public void mouseDragged ( MouseEvent e ) {
     // System.out.println ( "Mouse dragged" );
-    if (drawing_mode == false) {
-      super.mouseDragged(e);
+    if (editing_mode) {
     } else {
-      if (segment_draw) {
-				// Ignore mouse drags
-			} else if (bezier_draw) {
-			  // Not sure what to do here
+      if (drawing_mode == false) {
+        super.mouseDragged(e);
       } else {
-		    if (center_draw) {
-		      super.mouseDragged(e);
-		    }
-		    if (active_contour == null) {
-		      active_contour  = new ContourClass ( new ArrayList<double[]>(100), new_trace_color, false, bezier_draw );
-	        active_contour.is_bezier = bezier_draw;
-		    }
-		    if (active_contour != null) {
-		      double p[] = { px_to_x(e.getX()), py_to_y(e.getY()) };
+        if (segment_draw) {
+				  // Ignore mouse drags
+			  } else if (bezier_draw) {
+			    // Not sure what to do here
+        } else {
 		      if (center_draw) {
-		        p[0] = px_to_x(getSize().width / 2);
-		        p[1] = py_to_y(getSize().height / 2);
+		        super.mouseDragged(e);
 		      }
-	        double contour_point[] = { p[0], -p[1] };
-		      active_contour.add_point ( contour_point );
-          active_contour.init_bezier ( active_contour.is_bezier );
-		      repaint();
+		      if (active_contour == null) {
+		        active_contour  = new ContourClass ( new ArrayList<double[]>(100), new_trace_color, false, bezier_draw );
+	          active_contour.is_bezier = bezier_draw;
+		      }
+		      if (active_contour != null) {
+		        double p[] = { px_to_x(e.getX()), py_to_y(e.getY()) };
+		        if (center_draw) {
+		          p[0] = px_to_x(getSize().width / 2);
+		          p[1] = py_to_y(getSize().height / 2);
+		        }
+	          double contour_point[] = { p[0], -p[1] };
+		        active_contour.add_point ( contour_point );
+            active_contour.init_bezier ( active_contour.is_bezier );
+		        repaint();
+		      }
 		    }
-		  }
+      }
     }
   }
 
@@ -480,6 +496,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
   JMenuItem move_menu_item = null;
   JMenuItem draw_menu_item = null;
+  JMenuItem edit_menu_item = null;
   JMenuItem center_draw_menu_item = null;
   JMenuItem segment_draw_menu_item = null;
   JMenuItem bezier_draw_menu_item = null;
@@ -533,23 +550,25 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     // System.out.println ( "Key: " + e );
     if (Character.toUpperCase(e.getKeyChar()) == ' ') {
       // Space bar toggles between drawing mode and move mode
-      drawing_mode = !drawing_mode;
-      if (drawing_mode) {
-        current_cursor = Cursor.getPredefinedCursor ( Cursor.CROSSHAIR_CURSOR );
-        if (center_draw) {
-          current_cursor = Cursor.getPredefinedCursor ( Cursor.HAND_CURSOR );
-        }
-        setCursor ( current_cursor );
-        stroke_started = false;
-        if (draw_menu_item != null) {
-          draw_menu_item.setSelected(true);
-        }
-      } else {
-        current_cursor = b_cursor;
-        setCursor ( current_cursor );
-        stroke_started = false;
-        if (move_menu_item != null) {
-          move_menu_item.setSelected(true);
+      if (!editing_mode) {
+        drawing_mode = !drawing_mode;
+        if (drawing_mode) {
+          current_cursor = Cursor.getPredefinedCursor ( Cursor.CROSSHAIR_CURSOR );
+          if (center_draw) {
+            current_cursor = Cursor.getPredefinedCursor ( Cursor.HAND_CURSOR );
+          }
+          setCursor ( current_cursor );
+          stroke_started = false;
+          if (draw_menu_item != null) {
+            draw_menu_item.setSelected(true);
+          }
+        } else {
+          current_cursor = b_cursor;
+          setCursor ( current_cursor );
+          stroke_started = false;
+          if (move_menu_item != null) {
+            move_menu_item.setSelected(true);
+          }
         }
       }
     } else if (Character.toUpperCase(e.getKeyChar()) == 'P') {
@@ -694,6 +713,14 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
         "  Exit: Exits the program.\n" +
         "\n";
 	    JOptionPane.showMessageDialog(null, s, "Reconstruct Java Mouse Operation", JOptionPane.INFORMATION_MESSAGE);
+		} else if ( action_source == edit_menu_item ) {
+      current_cursor = Cursor.getPredefinedCursor ( Cursor.DEFAULT_CURSOR );
+      setCursor ( current_cursor );
+		  center_draw = false;
+		  drawing_mode = false;
+		  stroke_started = false;
+		  editing_mode = true;
+		  repaint();
 		} else if ( action_source == move_menu_item ) {
       current_cursor = b_cursor;
       /*
@@ -706,6 +733,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		  //center_draw = false;
 		  drawing_mode = false;
 		  stroke_started = false;
+		  editing_mode = false;
 		  repaint();
 		} else if ( action_source == draw_menu_item ) {
       current_cursor = Cursor.getPredefinedCursor ( Cursor.CROSSHAIR_CURSOR );
@@ -716,6 +744,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		  // center_draw = false;
 		  drawing_mode = true;
 		  stroke_started = false;
+		  editing_mode = false;
 		  repaint();
 		} else if ( action_source == center_draw_menu_item ) {
 		  JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
@@ -1356,10 +1385,15 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		          mode_menu.add ( zp.draw_menu_item = mi = new JRadioButtonMenuItem("Draw", zp.drawing_mode) );
 		          mi.addActionListener(zp);
 		          bg.add ( mi );
+		          mode_menu.add ( zp.edit_menu_item = mi = new JRadioButtonMenuItem("Edit", zp.drawing_mode) );
+		          mi.addActionListener(zp);
+		          bg.add ( mi );
+              mode_menu.addSeparator();
 		          mode_menu.add ( zp.segment_draw_menu_item = mi = new JCheckBoxMenuItem("Segment Drawing", zp.segment_draw) );
 		          mi.addActionListener(zp);
 		          mode_menu.add ( zp.bezier_draw_menu_item = mi = new JCheckBoxMenuItem("Bezier Drawing", zp.bezier_draw) );
 		          mi.addActionListener(zp);
+              mode_menu.addSeparator();
 		          mode_menu.add ( zp.center_draw_menu_item = mi = new JCheckBoxMenuItem("Center Drawing", zp.center_draw) );
 		          mi.addActionListener(zp);
 		          // mode_menu.add ( zp.dump_menu_item );
