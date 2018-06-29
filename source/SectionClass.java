@@ -35,6 +35,7 @@ public class SectionClass {
   ArrayList<String> bad_image_file_names = new ArrayList<String>();
 
   int highest_xform_dim = 0;
+
   double image_magnification = 1.0; // This is in units per pixel, equivalent to 1 / (pixels per unit)
 
   // ArrayList<ArrayList<double[]>> strokes = new ArrayList<ArrayList<double[]>>();  // Argument (if any) specifies initial capacity (default 10)
@@ -73,11 +74,48 @@ public class SectionClass {
           priority_println ( 50, "      dim = \"" + xform_dim + "\"" );
           priority_println ( 50, "      xcoef = " + xform_xcoef );
           priority_println ( 50, "      ycoef = " + xform_ycoef );
-          if ( (!(xform_dim == 0)) && (!(xform_dim == 1)) )  {
-            priority_println ( 100, "Transforms must be 0 or 1 dimension in this version." );
-            JOptionPane.showMessageDialog(null, "Error: Dim=" + xform_dim + ", transforms must be 0 or 1 dimension in this version.", "SectionClass: Dim error", JOptionPane.WARNING_MESSAGE);
-          }
           current_transform = new TransformClass ( xform_dim, xform_xcoef, xform_ycoef );
+
+          if ( (!(xform_dim == 0)) && (!(xform_dim == 1)) )  {
+            boolean transform_ok = false;
+            // Check if the transform is something recognized
+            double xc[] = current_transform.xcoef;
+            double yc[] = current_transform.ycoef;
+            if (xform_dim == 3) {
+              if ( (xc.length==3) && (yc.length==3) ) {
+                if ( (xc[0]==0) && (xc[2]==0) && (yc[0]==0) && (yc[1]==0) ) {
+                  transform_ok = true;
+                }
+              }
+            }
+            if (xform_dim == 6) {
+              if ( (xc.length==6) && (yc.length==6) ) {
+                if ( (xc[0]==0) && (xc[2]==0) && (xc[3]==0) && (xc[4]==0) && (xc[5]==0) &&
+                     (yc[0]==0) && (yc[1]==0) && (yc[3]==0) && (yc[4]==0) && (yc[5]==0) ) {
+                  transform_ok = true;
+                }
+              }
+            }
+            if (!transform_ok) {
+              String msg = "Unhandled Transform[" + xform_dim + "] = x[";
+              for (int i=0; i<current_transform.xcoef.length; i++) {
+                if (i > 0) {
+                  msg += ",";
+                }
+                msg += "" + current_transform.xcoef[i];
+              }
+              msg += "], y[";
+              for (int i=0; i<current_transform.ycoef.length; i++) {
+                if (i > 0) {
+                  msg += ",";
+                }
+                msg += "" + current_transform.ycoef[i];
+              }
+              msg += "]";
+              priority_println ( 100, msg );
+              JOptionPane.showMessageDialog(null, msg, "SectionClass: Unhandled Transform", JOptionPane.WARNING_MESSAGE);
+            }
+          }
 
           if (xform_dim > highest_xform_dim) {
             highest_xform_dim = xform_dim;
