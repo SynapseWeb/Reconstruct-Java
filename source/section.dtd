@@ -41,7 +41,8 @@
     fill       %SFColor;   "1 0 1"
     mode       %SFInt32;   "9"
     comment    %SFString;  #IMPLIED
-    points     %MFVec2f;   #IMPLIED>
+    points     %MFVec2f;   #IMPLIED
+    handles    %MFVec2f;   #IMPLIED>
 
                     <!-- Images refer to external files that are (can be) mapped to rastered pixels.
                            mag = width of a square pixel in Series units
@@ -59,7 +60,7 @@
     green       %SFBool;    "true"
     blue        %SFBool;    "true"
     src         %SFString;  ""
-    proxy_src	%SFString;  ""
+    proxy_src	  %SFString;  ""
     proxy_scale %SFFloat;   "1.0">
 
                     <!-- A Transform maps the Section pixels to an Image. Only points falling within the
