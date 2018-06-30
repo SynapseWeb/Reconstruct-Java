@@ -280,6 +280,8 @@ public class SectionClass {
                       for ( /*int ca=0 */; ca<contour_attr_names.length; ca++) {
                         if (contour_attr_names[ca].equals("points")) {
                           sf.print ( " " + contour_attr_names[ca] + "=\"" + format_comma_sep(contour_element.getAttribute(contour_attr_names[ca]),"\t") + "\"" );
+                        } else if (contour_attr_names[ca].equals("handles")) {
+                          sf.print ( " " + contour_attr_names[ca] + "=\"" + format_comma_sep(contour_element.getAttribute(contour_attr_names[ca]),"\t") + "\"" );
                         } else if (contour_attr_names[ca].equals("type")) {
                           sf.print ( " " + contour_attr_names[ca] + "=\"" + contour_element.getAttribute(contour_attr_names[ca]) + "\"" );
                         } else {
@@ -303,6 +305,7 @@ public class SectionClass {
           for (int i=0; i<contours.size(); i++) {
             ContourClass contour = contours.get(i);
             ArrayList<double[]> s = contour.stroke_points;
+          	ArrayList<double[][]> h = contour.handle_points;
             if (s.size() > 0) {
               if (contour.modified) {
                 if (contour.contour_name == null) {
@@ -320,10 +323,27 @@ public class SectionClass {
                   sf.print ( "type=\"bezier\" " );
                 }
                 sf.print ( "hidden=\"false\" closed=\"true\" simplified=\"false\" border=" + contour_color + " fill=" + contour_color + " mode=\"13\"\n" );
+
+                if (contour.is_bezier) {
+                  sf.print ( " handles=\"" );
+                  for (int j=h.size()-1; j>=0; j+=-1) {
+                    double p[][] = h.get(j);
+                    if (j != h.size()-1) {
+                      sf.print ( "  " );
+                    }
+                    sf.print (      + p[0][0] + " " + p[0][1] + ",\n" );
+                    sf.print ( "  " + p[1][0] + " " + p[1][1] + ",\n" );
+                  }
+                  sf.print ( "  \"\n" );
+                }
+
                 sf.print ( " points=\"" );
                 for (int j=s.size()-1; j>=0; j+=-1) {
                   double p[] = s.get(j);
-                  sf.print ( "  " + p[0] + " " + p[1] + ",\n" );
+                  if (j != s.size()-1) {
+                    sf.print ( "  " );
+                  }
+                  sf.print ( p[0] + " " + p[1] + ",\n" );
                 }
                 sf.print ( "  \"/>\n" );
                 sf.print ( "</Transform>\n\n" );
