@@ -368,9 +368,9 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       if (series != null) {
         double closest[] = series.find_closest ( click_point );
         if (closest == null) {
-          System.out.println ( "Series found no closest!" );
+          // System.out.println ( "Series found no closest!" );
         } else {
-          System.out.println ( "Series found closest at " + closest[0] + ", " + closest[1] );
+          // System.out.println ( "Series found closest at " + closest[0] + ", " + closest[1] );
           // It would be good to have a limit radius here, but that can be done later
           active_point = closest;
         }

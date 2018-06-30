@@ -202,7 +202,7 @@ public class SectionClass {
   };
 
   String contour_attr_names[] = {
-    "name", "type", "hidden", "closed", "simplified", "border", "fill", "mode", "points"
+    "name", "type", "hidden", "closed", "simplified", "border", "fill", "mode", "handles", "points"
   };
 
   public String format_comma_sep ( String comma_sep_string, String indent_with ) {
@@ -278,10 +278,18 @@ public class SectionClass {
                       int ca = 0;
                       sf.print ( "<" + contour_element.getNodeName() );
                       for ( /*int ca=0 */; ca<contour_attr_names.length; ca++) {
+                        // System.out.println ( "Writing " + contour_attr_names[ca] );
                         if (contour_attr_names[ca].equals("points")) {
                           sf.print ( " " + contour_attr_names[ca] + "=\"" + format_comma_sep(contour_element.getAttribute(contour_attr_names[ca]),"\t") + "\"" );
                         } else if (contour_attr_names[ca].equals("handles")) {
-                          sf.print ( " " + contour_attr_names[ca] + "=\"" + format_comma_sep(contour_element.getAttribute(contour_attr_names[ca]),"\t") + "\"" );
+                          String handles_str = contour_element.getAttribute(contour_attr_names[ca]);
+                          if (handles_str != null) {
+                            handles_str = handles_str.trim();
+                            if (handles_str.length() > 0) {
+                              // System.out.println ( "Writing a handles attribute = " + contour_element.getAttribute(contour_attr_names[ca]) );
+                              sf.print ( " " + contour_attr_names[ca] + "=\"" + format_comma_sep(contour_element.getAttribute(contour_attr_names[ca]),"\t") + "\"\n" );
+                            }
+                          }
                         } else if (contour_attr_names[ca].equals("type")) {
                           sf.print ( " " + contour_attr_names[ca] + "=\"" + contour_element.getAttribute(contour_attr_names[ca]) + "\"" );
                         } else {
@@ -321,20 +329,23 @@ public class SectionClass {
                 sf.print ( "<Contour name=\"" + contour.contour_name + "\" " );
                 if (contour.is_bezier) {
                   sf.print ( "type=\"bezier\" " );
+                } else {
+                  // sf.print ( "type=\"line\" " );
                 }
                 sf.print ( "hidden=\"false\" closed=\"true\" simplified=\"false\" border=" + contour_color + " fill=" + contour_color + " mode=\"13\"\n" );
 
                 if (contour.is_bezier) {
-                  sf.print ( " handles=\"" );
-                  for (int j=h.size()-1; j>=0; j+=-1) {
-                    double p[][] = h.get(j);
-                    if (j != h.size()-1) {
-                      sf.print ( "  " );
+                  if (h.size() > 0) {
+                    sf.print ( " handles=\"" );
+                    for (int j=h.size()-1; j>=0; j+=-1) {
+                      double p[][] = h.get(j);
+                      if (j != h.size()-1) {
+                        sf.print ( "  " );
+                      }
+                      sf.print ( p[0][0] + " " + p[0][1] + " " + p[1][0] + " " + p[1][1] + ",\n" );
                     }
-                    sf.print (      + p[0][0] + " " + p[0][1] + ",\n" );
-                    sf.print ( "  " + p[1][0] + " " + p[1][1] + ",\n" );
+                    sf.print ( "  \"\n" );
                   }
-                  sf.print ( "  \"\n" );
                 }
 
                 sf.print ( " points=\"" );
