@@ -411,7 +411,7 @@ public class ContourClass {
 
 						g.setColor ( new Color ( 100, 100, 100 ) );
 
-						if (r.show_points) {
+						if (r.show_points && (r.show_handles)) {
 						  // Draw the control handle lines
 						  for (int j=0; j<handle_points.size(); j++) {
 							  int x, y, hx, hy;
@@ -436,7 +436,7 @@ public class ContourClass {
 
 						g.setColor ( new Color ( 150, 150, 150 ) );
 
-						if (r.show_points) {
+						if (r.show_points && (r.show_handles)) {
 						  // Draw the control handle points
 						  for (int j=0; j<handle_points.size(); j++) {
 							  h = handle_points.get(j);

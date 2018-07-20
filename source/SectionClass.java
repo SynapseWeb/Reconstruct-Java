@@ -206,10 +206,23 @@ public class SectionClass {
   };
 
   public String format_comma_sep ( String comma_sep_string, String indent_with ) {
-    String comma_sep_terms[] = comma_sep_string.trim().split(",");
     String formatted = "";
+    String comma_sep_terms[] = comma_sep_string.trim().split(",");
     for (int i=0; i<comma_sep_terms.length; i++) {
       formatted += comma_sep_terms[i].trim() + ",\n" + indent_with;
+    }
+    return ( formatted );
+  }
+
+  public String format_comma_sep ( ArrayList<double[]> stroke_points, String indent_with ) {
+    String formatted = "";
+    if (stroke_points != null) {
+      double p[] = null;
+			int n = stroke_points.size();
+      for (int i=0; i<n; i++) {
+			  p = stroke_points.get(i);
+        formatted += "" + p[0] + " " + p[1] + ",\n" + indent_with;
+      }
     }
     return ( formatted );
   }
@@ -280,7 +293,23 @@ public class SectionClass {
                       for ( /*int ca=0 */; ca<contour_attr_names.length; ca++) {
                         // System.out.println ( "Writing " + contour_attr_names[ca] );
                         if (contour_attr_names[ca].equals("points")) {
-                          sf.print ( " " + contour_attr_names[ca] + "=\"" + format_comma_sep(contour_element.getAttribute(contour_attr_names[ca]),"\t") + "\"" );
+                          // Check to see if this contour element has been modified
+                          boolean modified = false;
+                          ContourClass matching_contour = null;
+                          for (int cci=0; cci<contours.size(); cci++) {
+                            ContourClass contour = contours.get(cci);
+                            if (contour.contour_element == contour_element) {
+                              matching_contour = contour;
+                              break;
+                            }
+                          }
+                          if (matching_contour == null) {
+                            // Write out the data from the original XML
+                            sf.print ( " " + contour_attr_names[ca] + "=\"" + format_comma_sep(contour_element.getAttribute(contour_attr_names[ca]),"\t") + "\"" );
+                          } else {
+                            // Write out the data from the stroke points
+                            sf.print ( " " + contour_attr_names[ca] + "=\"" + format_comma_sep(matching_contour.stroke_points,"\t") + "\"" );
+                          }
                         } else if (contour_attr_names[ca].equals("handles")) {
                           String handles_str = contour_element.getAttribute(contour_attr_names[ca]);
                           if (handles_str != null) {

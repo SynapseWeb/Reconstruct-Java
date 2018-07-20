@@ -98,6 +98,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
 	boolean show_points = true;
 	boolean show_arrows = false;
+	boolean show_handles = false;
 	boolean drawing_mode = false;
 	boolean editing_mode = false;
   boolean center_draw = false;
@@ -550,6 +551,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   JMenuItem line_menu_2_item = null;
   JMenuItem show_points_menu_item = null;
   JMenuItem show_arrows_menu_item = null;
+  JMenuItem show_handles_menu_item = null;
 
   JMenuItem color_menu_red_item = null;
   JMenuItem color_menu_green_item = null;
@@ -701,6 +703,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
         "  Line/Width=#: Sets the line width to that number of pixels.\n" +
         "  Line/Show Points: Draws an indicator for each point (and handle).\n" +
         "  Line/Show Arrows: Draws start box and arrows for each trace segment.\n" +
+        "  Line/Show Handles: Draws handles on Bezier curve points.\n" +
         "\n" +
         "  Mode/Move: Click and drag of left mouse button will shift the display.\n" +
         "  Mode/Draw: Click and drag of left mouse button will draw traces.\n" +
@@ -913,6 +916,11 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 			// System.out.println ( "show_arrows toggled." );
 		  JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
 		  show_arrows = item.getState();
+		  repaint();
+		} else if ( action_source == show_handles_menu_item ) {
+			// System.out.println ( "show_handles toggled." );
+		  JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
+		  show_handles = item.getState();
 		  repaint();
 		} else if ( action_source == dump_menu_item ) {
       if (this.series != null) {
@@ -1401,6 +1409,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		          line_menu.add ( zp.show_points_menu_item = mi = new JCheckBoxMenuItem("Show Points", zp.show_points) );
 		          mi.addActionListener(zp);
 		          line_menu.add ( zp.show_arrows_menu_item = mi = new JCheckBoxMenuItem("Show Arrows", zp.show_arrows) );
+		          mi.addActionListener(zp);
+		          line_menu.add ( zp.show_handles_menu_item = mi = new JCheckBoxMenuItem("Show Handles", zp.show_handles) );
 		          mi.addActionListener(zp);
             extras_menu.add ( line_menu );
 
