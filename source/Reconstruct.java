@@ -99,8 +99,10 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 	boolean show_points = true;
 	boolean show_arrows = false;
 	boolean show_handles = false;
+
 	boolean drawing_mode = false;
 	boolean editing_mode = false;
+
   boolean center_draw = false;
   boolean segment_draw = true;
   boolean bezier_draw = true;
@@ -499,10 +501,17 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
   // MouseWheelListener methods:
 	public void mouseWheelMoved ( MouseWheelEvent e ) {
+	  /*
+	  if (e.isShiftDown()) System.out.println ( "Wheel Event with Shift" );
+	  if (e.isControlDown()) System.out.println ( "Wheel Event with Control" );
+	  if (e.isAltDown()) System.out.println ( "Wheel Event with Alt" );
+	  if (e.isMetaDown()) System.out.println ( "Wheel Event with Meta" );
+	  */
 		if (this.series == null) {
 			// Don't change the section index in this case
 		} else {
-		  if (drawing_mode == true) {
+		  //if (drawing_mode == true) {
+		  if (e.isShiftDown()) {
 		    // scroll_wheel_position += e.getWheelRotation();
 		    int scroll_wheel_delta = -e.getWheelRotation();
 		    int section_index = this.series.position_by_n_sections ( scroll_wheel_delta );

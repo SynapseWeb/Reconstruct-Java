@@ -108,7 +108,7 @@ public class ZoomPanLib extends Panel implements MouseListener, MouseMotionListe
       g_buffer = img_buffer.getGraphics();
       g_buffer.setColor ( this.getBackground() );
       g_buffer.fillRect (0,0,size().width, size().height);
-      recalculate = true;
+      // recalculate = true;
     }
   }
 
@@ -127,7 +127,7 @@ public class ZoomPanLib extends Panel implements MouseListener, MouseMotionListe
 
 	public void paint_frame (Graphics g) {
 	  if (recalculate) {
-      set_scale_to_fit ( -100, 100, -100, 100, getSize().width, getSize().height );
+      // set_scale_to_fit ( -100, 100, -100, 100, getSize().width, getSize().height );
 	    recalculate = false;
 	  }
     for (int r=0; r<100; r++) {
