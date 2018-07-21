@@ -100,7 +100,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 	boolean show_arrows = false;
 	boolean show_handles = false;
 
-	boolean drawing_mode = false;
+	boolean modify_mode = false;
 	boolean editing_mode = false;
 
   boolean center_draw = false;
@@ -165,7 +165,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
 
   public void set_cursor() {
-    if (drawing_mode) {
+    if (modify_mode) {
       current_cursor = Cursor.getPredefinedCursor ( Cursor.CROSSHAIR_CURSOR );
       if (center_draw) {
         current_cursor = Cursor.getPredefinedCursor ( Cursor.HAND_CURSOR );
@@ -349,7 +349,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 				  active_contour = null;
 				  // segment_draw = false;
 			  }
-        drawing_mode = !drawing_mode;
+        modify_mode = !modify_mode;
         set_cursor();
         repaint();
       } else {
@@ -359,7 +359,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   }
 
   public void mousePressed ( MouseEvent e ) {
-    // System.out.println ( "Mouse pressed with drawing_mode = " + drawing_mode );
+    // System.out.println ( "Mouse pressed with modify_mode = " + modify_mode );
     super.mousePressed(e);
     if (editing_mode) {
       System.out.println ( "Mouse pressed in edit mode at " + e.getX() + ", " + e.getY() );
@@ -381,7 +381,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     } else {
       active_point = null;
       if (e.getButton() == MouseEvent.BUTTON1) {
-        if (drawing_mode == true) {
+        if (modify_mode == true) {
 				  if (segment_draw) {
 				  } else if (bezier_draw) {
 				  } else {
@@ -420,7 +420,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     if (editing_mode) {
       System.out.println ( "Mouse released in edit mode" );
     } else {
-      if (drawing_mode == false) {
+      if (modify_mode == false) {
         super.mouseReleased(e);
       } else {
         if (active_contour != null) {
@@ -464,7 +464,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
         repaint();
       }
     } else {
-      if (drawing_mode == false) {
+      if (modify_mode == false) {
         super.mouseDragged(e);
       } else {
         if (segment_draw) {
@@ -510,7 +510,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		if (this.series == null) {
 			// Don't change the section index in this case
 		} else {
-		  //if (drawing_mode == true) {
+		  //if (modify_mode == true) {
 		  if (e.isShiftDown()) {
 		    // scroll_wheel_position += e.getWheelRotation();
 		    int scroll_wheel_delta = -e.getWheelRotation();
@@ -591,8 +591,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     if (Character.toUpperCase(e.getKeyChar()) == ' ') {
       // Space bar toggles between drawing mode and move mode
       if (!editing_mode) {
-        drawing_mode = !drawing_mode;
-        if (drawing_mode) {
+        modify_mode = !modify_mode;
+        if (modify_mode) {
           current_cursor = Cursor.getPredefinedCursor ( Cursor.CROSSHAIR_CURSOR );
           if (center_draw) {
             current_cursor = Cursor.getPredefinedCursor ( Cursor.HAND_CURSOR );
@@ -758,7 +758,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       current_cursor = Cursor.getPredefinedCursor ( Cursor.DEFAULT_CURSOR );
       setCursor ( current_cursor );
 		  center_draw = false;
-		  drawing_mode = false;
+		  modify_mode = false;
 		  stroke_started = false;
 		  editing_mode = true;
 		  repaint();
@@ -772,7 +772,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       */
       setCursor ( current_cursor );
 		  //center_draw = false;
-		  drawing_mode = false;
+		  modify_mode = false;
 		  stroke_started = false;
 		  editing_mode = false;
 		  repaint();
@@ -783,14 +783,14 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       }
       setCursor ( current_cursor );
 		  // center_draw = false;
-		  drawing_mode = true;
+		  modify_mode = true;
 		  stroke_started = false;
 		  editing_mode = false;
 		  repaint();
 		} else if ( action_source == center_draw_menu_item ) {
 		  JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
 		  center_draw = item.getState();
-		  if (drawing_mode) {
+		  if (modify_mode) {
         current_cursor = Cursor.getPredefinedCursor ( Cursor.HAND_CURSOR );
       }
 		  repaint();
@@ -1427,13 +1427,13 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
 		        JMenu mode_menu = new JMenu("Mode");
 		          bg = new ButtonGroup();
-		          mode_menu.add ( zp.move_menu_item = mi = new JRadioButtonMenuItem("Move", !zp.drawing_mode) );
+		          mode_menu.add ( zp.move_menu_item = mi = new JRadioButtonMenuItem("Move", !zp.modify_mode) );
 		          mi.addActionListener(zp);
 		          bg.add ( mi );
-		          mode_menu.add ( zp.draw_menu_item = mi = new JRadioButtonMenuItem("Draw", zp.drawing_mode) );
+		          mode_menu.add ( zp.draw_menu_item = mi = new JRadioButtonMenuItem("Draw", zp.modify_mode) );
 		          mi.addActionListener(zp);
 		          bg.add ( mi );
-		          mode_menu.add ( zp.edit_menu_item = mi = new JRadioButtonMenuItem("Edit", zp.drawing_mode) );
+		          mode_menu.add ( zp.edit_menu_item = mi = new JRadioButtonMenuItem("Edit", zp.editing_mode) );
 		          mi.addActionListener(zp);
 		          bg.add ( mi );
               mode_menu.addSeparator();
