@@ -223,7 +223,7 @@ public class ContourClass {
 	public void init_bezier ( boolean bezier ) {
 		// Create the default Bezier handles for the current set of points
 
-		System.out.println ( "Creating default Bezier handles" );
+		// System.out.println ( "Creating default Bezier handles" );
 
 		this.is_bezier = bezier;
 

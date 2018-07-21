@@ -542,8 +542,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   JMenuItem draw_menu_item = null;
   JMenuItem edit_menu_item = null;
   JMenuItem center_draw_menu_item = null;
-  JMenuItem segment_draw_menu_item = null;
-  JMenuItem bezier_draw_menu_item = null;
+  JCheckBoxMenuItem segment_draw_menu_item = null;
+  JCheckBoxMenuItem bezier_draw_menu_item = null;
 
 	JMenuItem new_series_menu_item=null;
 	JMenuItem open_series_menu_item=null;
@@ -671,8 +671,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		  String s =
         "Reconstruct Java\n" +
         "\n" +
-        "  Version 0.5\n" +
-        "  June 22nd, 2018\n" +
+        "  Version 0.51\n" +
+        "  July 20th, 2018\n" +
         "\n";
 	    JOptionPane.showMessageDialog(null, s, "Reconstruct Java Version", JOptionPane.INFORMATION_MESSAGE);
 		} else if ( action_source == about_menu_item ) {
@@ -719,11 +719,11 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
         "  Line/Show Arrows: Draws start box and arrows for each trace segment.\n" +
         "  Line/Show Handles: Draws handles on Bezier curve points.\n" +
         "\n" +
-        "  Mode/Move: Click and drag of left mouse button will shift the display.\n" +
-        "  Mode/Draw: Click and drag of left mouse button will draw traces.\n" +
+        // "  Mode/Move: Click and drag of left mouse button will shift the display.\n" +
+        // "  Mode/Draw: Click and drag of left mouse button will draw traces.\n" +
         "  Mode/Segment Drawing: Traces are drawn click by click (not by dragging).\n" +
         "  Mode/Bezier Drawing: Uses Bezier Curves when Segment Drawing is enabled.\n" +
-        "  Mode/Center Drawing: Image is dragged under a \"pen\" at the center.\n" +
+        // "  Mode/Center Drawing: Image is dragged under a \"pen\" at the center.\n" +
         "\n" +
         "  Purge Images: Remove images from memory (helps with memory constraints).\n" +
         "\n" +
@@ -736,27 +736,28 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
         "\n" +
         "  Move Mode (4-arrow cursor):\n" +
         "    Scroll Wheel zooms (scales the view).\n" +
+        "    Shifted Scroll Wheel moves through sections.\n" +
         "    Left Click and Drag moves (pans) the view.\n" +
-        "    Right Click switches to \"Draw Mode\".\n" +
+        "    Right Click switches to \"Modify Mode\" (Draw or Edit).\n" +
         "\n" +
         "  Draw Mode (without Segment/Bezier Drawing):\n" +
-        "    Scroll Wheel moves through Sections in the Series.\n" +
+        "    Scroll Wheel zooms (scales the view).\n" +
+        "    Shifted Scroll Wheel moves through sections.\n" +
         "    Left Click and Drag draws a new contour.\n" +
-        "    Left Release completes the contour (returns to Move Mode).\n" +
+        "    Left Release completes the contour (ready to draw again).\n" +
         "    Right Click switches to \"Move Mode\".\n" +
         "\n" +
         "  Draw Mode (with Segment/Bezier Drawing):\n" +
-        "    Scroll Wheel moves through Sections in the Series.\n" +
-        "    Left Click adds a new segment point.\n" +
+        "    Scroll Wheel zooms (scales the view).\n" +
+        "    Shifted Scroll Wheel moves through sections.\n" +
+        "    Left Click adds a new segment point (repeat as needed).\n" +
         "    Right Click completes the contour (returns to Move Mode).\n" +
-        "  Exit: Exits the program.\n" +
         "\n" +
-        "  Draw Mode with Center Drawing (NOT Segment/Bezier Drawing):\n" +
-        "    Scroll Wheel moves through Sections in the Series.\n" +
-        "    Left Click and Drag draws a new contour.\n" +
-        "    Left Release completes the contour.\n" +
-        "    Right Click switches to \"Move Mode\".\n" +
-        "  Exit: Exits the program.\n" +
+        "  Edit Mode (toggled by shifted right click):\n" +
+        "    Scroll Wheel zooms (scales the view).\n" +
+        "    Shifted Scroll Wheel moves through sections.\n" +
+        "    Left Click and drag moves a single point.\n" +
+        "    Right Click returns to Move Mode.\n" +
         "\n";
 	    JOptionPane.showMessageDialog(null, s, "Reconstruct Java Mouse Operation", JOptionPane.INFORMATION_MESSAGE);
 		} else if ( action_source == edit_menu_item ) {
@@ -804,12 +805,17 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		  segment_draw = item.getState();
 		  if (segment_draw) {
         current_cursor = Cursor.getPredefinedCursor ( Cursor.HAND_CURSOR );
+      } else {
+		    bezier_draw = false;
+		    bezier_draw_menu_item.setState ( bezier_draw );
       }
 		  repaint();
 		} else if ( action_source == bezier_draw_menu_item ) {
 		  JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
 		  bezier_draw = item.getState();
 		  if (bezier_draw) {
+		    segment_draw = true;
+		    segment_draw_menu_item.setState ( segment_draw );
         current_cursor = Cursor.getPredefinedCursor ( Cursor.HAND_CURSOR );
       }
 		  repaint();
@@ -1432,6 +1438,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
 		        JMenu mode_menu = new JMenu("Mode");
 		          bg = new ButtonGroup();
+		          /*
 		          mode_menu.add ( zp.move_menu_item = mi = new JRadioButtonMenuItem("Move", !zp.modify_mode) );
 		          mi.addActionListener(zp);
 		          bg.add ( mi );
@@ -1442,13 +1449,16 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		          mi.addActionListener(zp);
 		          bg.add ( mi );
               mode_menu.addSeparator();
-		          mode_menu.add ( zp.segment_draw_menu_item = mi = new JCheckBoxMenuItem("Segment Drawing", zp.segment_draw) );
-		          mi.addActionListener(zp);
-		          mode_menu.add ( zp.bezier_draw_menu_item = mi = new JCheckBoxMenuItem("Bezier Drawing", zp.bezier_draw) );
-		          mi.addActionListener(zp);
+              */
+		          mode_menu.add ( zp.segment_draw_menu_item = new JCheckBoxMenuItem("Segment Drawing", zp.segment_draw) );
+		          zp.segment_draw_menu_item.addActionListener(zp);
+		          mode_menu.add ( zp.bezier_draw_menu_item = new JCheckBoxMenuItem("Bezier Drawing", zp.bezier_draw) );
+		          zp.bezier_draw_menu_item.addActionListener(zp);
+		          /*
               mode_menu.addSeparator();
 		          mode_menu.add ( zp.center_draw_menu_item = mi = new JCheckBoxMenuItem("Center Drawing", zp.center_draw) );
 		          mi.addActionListener(zp);
+		          */
 		          // mode_menu.add ( zp.dump_menu_item );
 		          // mi.addActionListener(zp);
 		          // mode_menu.add ( mi = new JMenuItem("Clear") );

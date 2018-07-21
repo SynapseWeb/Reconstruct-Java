@@ -591,23 +591,29 @@ public class SectionClass {
       ContourClass c = contours.get(i);
       c.draw ( g, r );
     }
-    // if (highest_xform_dim > 0) {
+    // if (highest_xform_dim > 0)
+    {
+      int y = 24;
       g.setColor ( new Color ( 255, 255, 255 ) );
-      g.drawString ( "Transform Dimension = " + highest_xform_dim, 10, 24 );
-      g.drawString ( "Image Magnification = " + image_magnification, 10, 44 );
+      // g.drawString ( "Transform Dimension = " + highest_xform_dim, 10, y );     y+=20;
+      // g.drawString ( "Image Magnification = " + image_magnification, 10, y );   y+=20;
       String mode_status = "";
-      if (r.modify_mode) {
-        mode_status += "Modify";
+      if (r.modify_mode && r.editing_mode) {
+        mode_status += "Modify by Editing";
+      } else if (r.modify_mode) {
+        mode_status += "Modify by Drawing";
+        if (r.bezier_draw) {
+          mode_status += " Bezier Points";
+        } else if (r.segment_draw) {
+          mode_status += " Segments";
+        } else {
+          mode_status += " Free Hand";
+        }
       } else {
-        mode_status += "Move";
+        mode_status += "Zoom and Pan View";
       }
-      if (r.editing_mode) {
-        mode_status += " Edit";
-      } else {
-        mode_status += " Draw";
-      }
-      g.drawString ( mode_status, 10, 64 );
-    // }
+      g.drawString ( mode_status, 10, y );     y+=20;
+    }
   }
 
 
