@@ -367,7 +367,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     // System.out.println ( "Mouse pressed with modify_mode = " + modify_mode );
     super.mousePressed(e);
     if (editing_mode && modify_mode) {
-      System.out.println ( "Mouse pressed in edit mode at " + e.getX() + ", " + e.getY() );
+      // System.out.println ( "Mouse pressed in edit mode at " + e.getX() + ", " + e.getY() );
       if (click_point == null) {
         click_point = new double[2];
       }
@@ -423,7 +423,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   public void mouseReleased ( MouseEvent e ) {
     // System.out.println ( "Mouse released" );
     if (editing_mode && modify_mode) {
-      System.out.println ( "Mouse released in edit mode" );
+      // System.out.println ( "Mouse released in edit mode" );
     } else {
       if (modify_mode == false) {
         super.mouseReleased(e);
@@ -646,7 +646,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       this.recalculate = true;
       repaint();
     } else {
-      System.out.println ( "Key Pressed, e = " + e );
+      // System.out.println ( "Key Pressed, e = " + e );
     }
     //super.keyPressed ( e );
   }
