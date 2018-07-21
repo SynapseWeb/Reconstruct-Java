@@ -165,7 +165,17 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
 
   public void set_cursor() {
-    if (modify_mode) {
+    if (!modify_mode) {
+      // This is move mode
+      current_cursor = b_cursor;
+      setCursor ( current_cursor );
+      //if (move_menu_item != null) {
+      //  move_menu_item.setSelected(true);
+      //}
+    } else if (editing_mode) {
+      current_cursor = Cursor.getPredefinedCursor ( Cursor.DEFAULT_CURSOR );
+      setCursor ( current_cursor );
+    } else {
       current_cursor = Cursor.getPredefinedCursor ( Cursor.CROSSHAIR_CURSOR );
       if (center_draw) {
         current_cursor = Cursor.getPredefinedCursor ( Cursor.HAND_CURSOR );
@@ -177,18 +187,9 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
         current_cursor = Cursor.getPredefinedCursor ( Cursor.CROSSHAIR_CURSOR );
       }
       setCursor ( current_cursor );
-      if (draw_menu_item != null) {
-        draw_menu_item.setSelected(true);
-      }
-    } else if (editing_mode) {
-      current_cursor = Cursor.getPredefinedCursor ( Cursor.DEFAULT_CURSOR );
-      setCursor ( current_cursor );
-    } else {
-      current_cursor = b_cursor;
-      setCursor ( current_cursor );
-      if (move_menu_item != null) {
-        move_menu_item.setSelected(true);
-      }
+      //if (draw_menu_item != null) {
+      //  draw_menu_item.setSelected(true);
+      //}
     }
   }
 
@@ -336,32 +337,36 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
   public void mouseClicked ( MouseEvent e ) {
     // System.out.println ( "Mouse clicked: " + e );
-    if (editing_mode) {
-      System.out.println ( "Mouse clicked in edit mode" );
-    } else {
-      if (e.getButton() == MouseEvent.BUTTON3) {
-			  if (segment_draw || bezier_draw) {
-				  if (active_contour != null) {
-					  active_contour.close();
-            active_contour.init_bezier ( active_contour.is_bezier );  // Recompute beziers after closing
-					  series.add_contour ( active_contour );
-				  }
-				  active_contour = null;
-				  // segment_draw = false;
-			  }
+    if (e.getButton() == MouseEvent.BUTTON3) {
+      // This is a mode change of some sort
+		  if (e.isShiftDown()) {
+		    // This is changing between drawing and editing
+		    editing_mode = !editing_mode;
+		  } else {
+		    // This is changing between moving and modifying
         modify_mode = !modify_mode;
-        set_cursor();
-        repaint();
-      } else {
-        super.mouseClicked(e);
-      }
+		  }
+		  if (segment_draw || bezier_draw) {
+			  if (active_contour != null) {
+				  active_contour.close();
+          active_contour.init_bezier ( active_contour.is_bezier );  // Recompute beziers after closing
+				  series.add_contour ( active_contour );
+			  }
+			  active_contour = null;
+			  // segment_draw = false;
+		  }
+      // modify_mode = !modify_mode;
+      set_cursor();
+      repaint();
+    } else {
+      super.mouseClicked(e);
     }
   }
 
   public void mousePressed ( MouseEvent e ) {
     // System.out.println ( "Mouse pressed with modify_mode = " + modify_mode );
     super.mousePressed(e);
-    if (editing_mode) {
+    if (editing_mode && modify_mode) {
       System.out.println ( "Mouse pressed in edit mode at " + e.getX() + ", " + e.getY() );
       if (click_point == null) {
         click_point = new double[2];
@@ -417,7 +422,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
   public void mouseReleased ( MouseEvent e ) {
     // System.out.println ( "Mouse released" );
-    if (editing_mode) {
+    if (editing_mode && modify_mode) {
       System.out.println ( "Mouse released in edit mode" );
     } else {
       if (modify_mode == false) {
@@ -454,7 +459,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
   public void mouseDragged ( MouseEvent e ) {
     // System.out.println ( "Mouse dragged" );
-    if (editing_mode) {
+    if (editing_mode && modify_mode) {
       // System.out.println ( "Mouse dragged in edit mode" );
       if (active_point != null) {
         double p[] = { px_to_x(e.getX()), -py_to_y(e.getY()) };

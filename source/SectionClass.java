@@ -595,6 +595,18 @@ public class SectionClass {
       g.setColor ( new Color ( 255, 255, 255 ) );
       g.drawString ( "Transform Dimension = " + highest_xform_dim, 10, 24 );
       g.drawString ( "Image Magnification = " + image_magnification, 10, 44 );
+      String mode_status = "";
+      if (r.modify_mode) {
+        mode_status += "Modify";
+      } else {
+        mode_status += "Move";
+      }
+      if (r.editing_mode) {
+        mode_status += " Edit";
+      } else {
+        mode_status += " Draw";
+      }
+      g.drawString ( mode_status, 10, 64 );
     // }
   }
 
