@@ -293,6 +293,14 @@ public class SeriesClass {
 	  }
   }
 
+  public void fix_handles() {
+	  if (sections != null) {
+	    for (int i=0; i<sections.length; i++) {
+	      sections[i].fix_handles();
+	    }
+    }
+  }
+
 	public int get_position() {
     return ( section_index );
 	}

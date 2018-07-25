@@ -441,6 +441,13 @@ public class SectionClass {
     }
   }
 
+  public void fix_handles() {
+    for (int i=0; i<contours.size(); i++) {
+      ContourClass contour = contours.get(i);
+      contour.fix_handles();
+    }
+  }
+
   public void dump_areas(int index) {
     System.out.println ( "Dumping Areas for Section " + index + ":" );
     for (int i=0; i<contours.size(); i++) {

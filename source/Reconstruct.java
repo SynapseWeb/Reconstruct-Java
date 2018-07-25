@@ -351,6 +351,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 			  if (active_contour != null) {
 				  active_contour.close();
           active_contour.init_bezier ( active_contour.is_bezier );  // Recompute beziers after closing
+          active_contour.fix_handles();
 				  series.add_contour ( active_contour );
 			  }
 			  active_contour = null;
@@ -396,6 +397,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		          if (series != null) {
 							  active_contour.close();
                 active_contour.init_bezier ( active_contour.is_bezier );  // Recompute beziers after closing
+                active_contour.fix_handles();
 							  series.add_contour ( active_contour );
 		          }
 		        }
@@ -445,6 +447,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		        if (series != null) {
 						  active_contour.close();
               active_contour.init_bezier ( active_contour.is_bezier );  // Recompute beziers after closing
+              active_contour.fix_handles();
 						  series.add_contour ( active_contour );
 			      }
 		        active_contour = null;
@@ -591,6 +594,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 	JMenuItem dump_menu_item=null;
 	JMenuItem dump_areas_menu_item=null;
 	JMenuItem clear_menu_item=null;
+	JMenuItem fix_menu_item=null;
 
 	JMenuItem exit_menu_item=null;
 
@@ -1028,6 +1032,11 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       }
 	    active_contour = null;
 	    repaint();
+		} else if ( action_source == fix_menu_item ) {
+      if (this.series != null) {
+        this.series.fix_handles();
+      }
+	    repaint();
 		} else if ( action_source == import_images_menu_item ) {
 		  file_chooser.setMultiSelectionEnabled(true);
 		  FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "gif", "png", "tiff");
@@ -1169,6 +1178,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
               debug_menu.add ( zp.dump_areas_menu_item = mi = new JMenuItem("Dump Areas") );
               mi.addActionListener(zp);
               debug_menu.add ( zp.clear_menu_item = mi = new JMenuItem("Clear") );
+              mi.addActionListener(zp);
+              debug_menu.add ( zp.fix_menu_item = mi = new JMenuItem("Fix Handles") );
               mi.addActionListener(zp);
             program_menu.add ( debug_menu );
 

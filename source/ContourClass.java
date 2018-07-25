@@ -213,9 +213,16 @@ public class ContourClass {
 	}
 
 	public void dump_stroke() {
+	  dump_contour ( "dump_stroke" );
+    priority_println ( 150, "=============" );
     for (int j=0; j<stroke_points.size(); j++) {
       double p[] = stroke_points.get(j);
       priority_println ( 150, "   Contour Point " + j + " = [" + p[0] + "," + p[1] + "]" );
+    }
+    for (int j=0; j<handle_points.size(); j++) {
+      double hh[][] = handle_points.get(j);
+      priority_println ( 150, "     Contour Handle[0] " + j + " = [" + hh[0][0] + "," + hh[0][1] + "]" );
+      priority_println ( 150, "     Contour Handle[1] " + j + " = [" + hh[1][0] + "," + hh[1][1] + "]" );
     }
     priority_println ( 150, "   Contour Area = " + (0.5 * twice_area()) );
 	}
@@ -245,6 +252,36 @@ public class ContourClass {
 	}
 
 
+  public void fix_handles() {
+    // Rearrange the handle points to fix an ordering problem
+    int nh = handle_points.size();
+
+    ArrayList<double[]> old_handle_points_list = new ArrayList<double[]>();
+    for (int i=0; i<nh; i++) {
+      double h[][] = handle_points.get(i);
+      for (int j=0; j<2; j++) {
+        old_handle_points_list.add ( h[j] );
+      }
+    }
+
+    ArrayList<double[]> new_handle_points_list = new ArrayList<double[]>();
+    for (int i=0; i<(2*nh); i++) {
+      new_handle_points_list.add ( old_handle_points_list.get((i+(2*nh)-1)%(2*nh)) );
+    }
+
+    ArrayList<double[][]> rearranged_handle_points = new ArrayList<double[][]>();
+
+    for (int i=0; i<nh; i++) {
+      double h[][] = new double[2][2];
+      h[0] = new_handle_points_list.get(2*i);
+      h[1] = new_handle_points_list.get((2*i)+1);
+      rearranged_handle_points.add ( h );
+    }
+
+    handle_points = rearranged_handle_points;
+  }
+
+
 	public void init_bezier ( boolean bezier ) {
 		// Create the default Bezier handles for the current set of points
 
@@ -272,7 +309,6 @@ public class ContourClass {
 				p1 = stroke_points.get(0);
 				handle_points.add ( default_handle_points ( p0, p1 ) );
 			}
-      // dump_contour("In init_bezier after adding handles");
 
 			// Smooth the handles on all of the curves
 			double factor = 0.2;
@@ -349,8 +385,6 @@ public class ContourClass {
 					*/
 				}
 			}
-
-
 
 		} else {
 			handle_points = null;
@@ -513,7 +547,7 @@ public class ContourClass {
               // dump_contour("In drawing function before adding curves");
 
 							if (true && handle_points.size() > j) {
-							  // Attempt to draw from the handle_points array ... doesn't work yet
+							  // Draw from the handle_points array
 							  double[][] hh = handle_points.get(j);
 							  double[][] hht = new double[2][2];
 							  hht[0] = translate_to_screen ( hh[0], r );
@@ -531,9 +565,8 @@ public class ContourClass {
 
 						if (closed) {
 							p1 = translate_to_screen ( stroke_points.get(0), r );
-
 							if (true) {
-							  // Attempt to draw from the handle_points array ... doesn't work yet
+							  // Draw from the handle_points array
 							  double[][] hh = handle_points.get(0);
 							  double[][] hht = new double[2][2];
 							  hht[0] = translate_to_screen ( hh[0], r );
@@ -709,6 +742,8 @@ public class ContourClass {
 
   public void close() {
     closed = true;
+    // Rearrange the handle points ... it's not clear why!!
+    System.out.println ( "Rearrange handle points!!" );
   }
 
   public void add_point (	double[] point ) {
