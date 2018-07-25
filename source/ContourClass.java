@@ -127,8 +127,9 @@ public class ContourClass {
 		this.init_bezier ( bezier );
   }
 
-  public void dump_contour() {
-    priority_println ( 150, "Contour ID:" + this );
+  public void dump_contour(String location) {
+    priority_println ( 150, "Contour at location: " + location );
+    priority_println ( 150, " Contour ID:" + this );
     priority_println ( 150, "  name: " + this.contour_name );
     priority_println ( 150, "  stroke_points: " + this.stroke_points );
     if (stroke_points != null) {
@@ -163,15 +164,17 @@ public class ContourClass {
 	    // stroke_handles is an ArrayList of double[4] where the values are h0x,h0y,h1x,h1y
       int n = stroke_handles.size();
 	    if (n > 0) {
+        System.out.println ( "Called init_bezier_and_close" );
+        // dump_contour("Before init_bezier_and_closed loop");
 	      this.handle_points = new ArrayList<double[][]>();
 		    for (int handle_index=0; handle_index<n; handle_index++) {
 		      double sh[] = stroke_handles.get(handle_index);
 		      double h0[] = { sh[0], sh[1] };
 		      double h1[] = { sh[2], sh[3] };
 		      double hpts[][] = { h0, h1 };
-          System.out.println ( "Called init_bezier_and_close" );
 			    this.handle_points.add ( hpts );
 		    }
+        // dump_contour("After init_bezier_and_closed loop");
 		  }
 		}
 	}
@@ -245,7 +248,7 @@ public class ContourClass {
 	public void init_bezier ( boolean bezier ) {
 		// Create the default Bezier handles for the current set of points
 
-		// System.out.println ( "Creating default Bezier handles" );
+		System.out.println ( "Creating default Bezier handles" );
 
 		this.is_bezier = bezier;
 
@@ -257,6 +260,7 @@ public class ContourClass {
 			double p0[] = null;
 			double p1[] = null;
 
+      // dump_contour("In init_bezier before adding handles");
 			p0 = stroke_points.get(0);
 			for (int stroke_point_index=1; stroke_point_index<n; stroke_point_index++) {
 				p1 = stroke_points.get(stroke_point_index);
@@ -268,6 +272,7 @@ public class ContourClass {
 				p1 = stroke_points.get(0);
 				handle_points.add ( default_handle_points ( p0, p1 ) );
 			}
+      // dump_contour("In init_bezier after adding handles");
 
 			// Smooth the handles on all of the curves
 			double factor = 0.2;
@@ -505,18 +510,21 @@ public class ContourClass {
 						for (int j=1; j<stroke_points.size(); j++) {
 							p1 = translate_to_screen ( stroke_points.get(j), r );
 
-              this.dump_contour();
+              // dump_contour("In drawing function before adding curves");
 
-							if (false && handle_points.size() > j) {
+							if (true && handle_points.size() > j) {
 							  // Attempt to draw from the handle_points array ... doesn't work yet
 							  double[][] hh = handle_points.get(j);
-							  hh[0] = translate_to_screen ( hh[0], r );
-							  hh[1] = translate_to_screen ( hh[1], r );
-                curves.add ( new CubicCurve2D.Double ( p0[0], p0[1], hh[0][0], hh[0][1], hh[1][0], hh[1][1], p1[0], p1[1] ) );
+							  double[][] hht = new double[2][2];
+							  hht[0] = translate_to_screen ( hh[0], r );
+							  hht[1] = translate_to_screen ( hh[1], r );
+                curves.add ( new CubicCurve2D.Double ( p0[0], p0[1], hht[0][0], hht[0][1], hht[1][0], hht[1][1], p1[0], p1[1] ) );
               } else {
                 // Draw with "default" handles constructed on the fly
 							  curves.add ( default_curve ( p0, p1 ) );
 							}
+
+              // dump_contour("In drawing function after adding curves");
 
 							p0 = p1;
 						}
