@@ -164,7 +164,6 @@ public class ContourClass {
 	    // stroke_handles is an ArrayList of double[4] where the values are h0x,h0y,h1x,h1y
       int n = stroke_handles.size();
 	    if (n > 0) {
-        System.out.println ( "Called init_bezier_and_close" );
         // dump_contour("Before init_bezier_and_closed loop");
 	      this.handle_points = new ArrayList<double[][]>();
 		    for (int handle_index=0; handle_index<n; handle_index++) {
@@ -236,7 +235,6 @@ public class ContourClass {
 	}
 
 	double[][] default_handle_points ( double p0[], double p1[] ) {
-	  System.out.println ( "Called default_handle_points" );
     double mid_x, mid_y;
 
     mid_x = p0[0] + ((p1[0]-p0[0])/3);
@@ -284,8 +282,6 @@ public class ContourClass {
 
 	public void init_bezier ( boolean bezier ) {
 		// Create the default Bezier handles for the current set of points
-
-		System.out.println ( "Creating default Bezier handles" );
 
 		this.is_bezier = bezier;
 
@@ -474,10 +470,11 @@ public class ContourClass {
 
 						if (r.show_points && (r.show_handles)) {
 						  // Draw the control handle lines
-						  for (int j=0; j<handle_points.size(); j++) {
+						  int num = handle_points.size();
+						  for (int j=0; j<num; j++) {
 							  int x, y, hx, hy;
 							  h = handle_points.get(j);
-							  p = stroke_points.get(j);
+							  p = stroke_points.get((j+num-1)%num);
 
 							  x = r.x_to_pxi(p[0]-dx);
 							  y = r.y_to_pyi(dy-p[1]);
@@ -485,6 +482,9 @@ public class ContourClass {
 							  hy = r.y_to_pyi(dy-h[0][1]);
 							  g.setColor ( new Color ( 100, 0, 0 ) );
 							  g.drawLine ( x, y, hx, hy );
+
+							  h = handle_points.get(j);
+							  p = stroke_points.get(j);
 
 							  x = r.x_to_pxi(p[0]-dx);
 							  y = r.y_to_pyi(dy-p[1]);
@@ -742,8 +742,6 @@ public class ContourClass {
 
   public void close() {
     closed = true;
-    // Rearrange the handle points ... it's not clear why!!
-    System.out.println ( "Rearrange handle points!!" );
   }
 
   public void add_point (	double[] point ) {
