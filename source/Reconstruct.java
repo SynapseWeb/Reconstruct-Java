@@ -98,7 +98,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
 	boolean show_points = true;
 	boolean show_arrows = false;
-	boolean show_handles = false;
+	boolean show_handles = true;
+	boolean show_coords = false;
 
 	boolean modify_mode = false;
 	boolean editing_mode = false;
@@ -502,6 +503,9 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
   public void mouseMoved ( MouseEvent e ) {
     super.mouseMoved ( e );
+    if (this.show_coords) {
+      System.out.println ( "  (" + e.getX() + "," + e.getY() + ") => (" + px_to_x(e.getX()) + "," + -py_to_y(e.getY()) + ")" );
+    }
   }
 
   // MouseWheelListener methods:
@@ -566,6 +570,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   JMenuItem show_points_menu_item = null;
   JMenuItem show_arrows_menu_item = null;
   JMenuItem show_handles_menu_item = null;
+  JMenuItem show_coords_menu_item = null;
 
   JMenuItem color_menu_red_item = null;
   JMenuItem color_menu_green_item = null;
@@ -941,6 +946,11 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 			// System.out.println ( "show_handles toggled." );
 		  JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
 		  show_handles = item.getState();
+		  repaint();
+		} else if ( action_source == show_coords_menu_item ) {
+			// System.out.println ( "show_coords toggled." );
+		  JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
+		  show_coords = item.getState();
 		  repaint();
 		} else if ( action_source == dump_menu_item ) {
       if (this.series != null) {
@@ -1431,6 +1441,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		          line_menu.add ( zp.show_arrows_menu_item = mi = new JCheckBoxMenuItem("Show Arrows", zp.show_arrows) );
 		          mi.addActionListener(zp);
 		          line_menu.add ( zp.show_handles_menu_item = mi = new JCheckBoxMenuItem("Show Handles", zp.show_handles) );
+		          mi.addActionListener(zp);
+		          line_menu.add ( zp.show_coords_menu_item = mi = new JCheckBoxMenuItem("Show Coords", zp.show_coords) );
 		          mi.addActionListener(zp);
             extras_menu.add ( line_menu );
 

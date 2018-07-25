@@ -521,6 +521,7 @@ public class SectionClass {
 
   public void clear_strokes() {
     // strokes = new ArrayList<ArrayList<double[]>>();
+    this.contours = new ArrayList<ContourClass>();  // Argument (if any) specifies initial capacity (default 10)
   }
 
   public BufferedImage get_image() throws OutOfMemoryError {

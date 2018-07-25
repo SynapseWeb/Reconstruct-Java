@@ -127,7 +127,27 @@ public class ContourClass {
 		this.init_bezier ( bezier );
   }
 
-
+  public void dump_contour() {
+    priority_println ( 150, "Contour ID:" + this );
+    priority_println ( 150, "  name: " + this.contour_name );
+    priority_println ( 150, "  stroke_points: " + this.stroke_points );
+    if (stroke_points != null) {
+      for (int j=0; j<stroke_points.size(); j++) {
+        double p[] = stroke_points.get(j);
+        priority_println ( 150, "   stroke_points[" + j + "] = [" + p[0] + "," + p[1] + "]" );
+      }
+    }
+    priority_println ( 150, "  handle_points: " + this.handle_points );
+    if (handle_points != null) {
+      for (int j=0; j<handle_points.size(); j++) {
+        double h[][] = handle_points.get(j);
+        for (int hi=0; hi<h.length; hi++) {
+          double p[] = h[hi];
+          priority_println ( 150, "   handle_points[" + j + "][" + hi + "] = [" + p[0] + "," + p[1] + "]" );
+        }
+      }
+    }
+  }
 
 	public void init_stroke_and_closed ( ArrayList<double[]> stroke, boolean closed ) {
 		this.stroke_points = stroke;
@@ -149,6 +169,7 @@ public class ContourClass {
 		      double h0[] = { sh[0], sh[1] };
 		      double h1[] = { sh[2], sh[3] };
 		      double hpts[][] = { h0, h1 };
+          System.out.println ( "Called init_bezier_and_close" );
 			    this.handle_points.add ( hpts );
 		    }
 		  }
@@ -205,6 +226,7 @@ public class ContourClass {
 	}
 
 	double[][] default_handle_points ( double p0[], double p1[] ) {
+	  System.out.println ( "Called default_handle_points" );
     double mid_x, mid_y;
 
     mid_x = p0[0] + ((p1[0]-p0[0])/3);
@@ -483,16 +505,18 @@ public class ContourClass {
 						for (int j=1; j<stroke_points.size(); j++) {
 							p1 = translate_to_screen ( stroke_points.get(j), r );
 
-							curves.add ( default_curve ( p0, p1 ) );
+              this.dump_contour();
 
-							/*
-
-							double[][] hh = handle_points.get(j);
-							hh[0] = translate_to_screen ( hh[0], r );
-							hh[1] = translate_to_screen ( hh[1], r );
-              curves.add ( new CubicCurve2D.Double ( p0[0], p0[1], hh[0][0], hh[0][1], hh[1][0], hh[1][1], p1[0], p1[1] ) );
-
-              */
+							if (false && handle_points.size() > j) {
+							  // Attempt to draw from the handle_points array ... doesn't work yet
+							  double[][] hh = handle_points.get(j);
+							  hh[0] = translate_to_screen ( hh[0], r );
+							  hh[1] = translate_to_screen ( hh[1], r );
+                curves.add ( new CubicCurve2D.Double ( p0[0], p0[1], hh[0][0], hh[0][1], hh[1][0], hh[1][1], p1[0], p1[1] ) );
+              } else {
+                // Draw with "default" handles constructed on the fly
+							  curves.add ( default_curve ( p0, p1 ) );
+							}
 
 							p0 = p1;
 						}
