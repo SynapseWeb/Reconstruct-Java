@@ -528,33 +528,47 @@ public class ContourClass {
 
 							p0 = p1;
 						}
+
 						if (closed) {
 							p1 = translate_to_screen ( stroke_points.get(0), r );
-							curves.add ( default_curve ( p0, p1 ) );
+
+							if (true) {
+							  // Attempt to draw from the handle_points array ... doesn't work yet
+							  double[][] hh = handle_points.get(0);
+							  double[][] hht = new double[2][2];
+							  hht[0] = translate_to_screen ( hh[0], r );
+							  hht[1] = translate_to_screen ( hh[1], r );
+                curves.add ( new CubicCurve2D.Double ( p0[0], p0[1], hht[0][0], hht[0][1], hht[1][0], hht[1][1], p1[0], p1[1] ) );
+              } else {
+                // Draw with "default" handles constructed on the fly
+							  curves.add ( default_curve ( p0, p1 ) );
+							}
 						}
 
-						// Smooth the handles on all of the curves
-						int n = curves.size();
-						for (int i=0; i<n; i++) {
-							CubicCurve2D.Double seg_to_adjust = curves.get(i);
-							// Adjust the h0 handle
-							if (closed || (i > 0)) {
-								// System.out.println ( " Adjusting h0 for segment " + i + ", with previous = " + ((n+i-1)%n) );
-								CubicCurve2D.Double prev_seg = curves.get((n+i-1)%n);
-								double cdx = seg_to_adjust.x2 - prev_seg.x1;
-								double cdy = seg_to_adjust.y2 - prev_seg.y1;
-								seg_to_adjust.ctrlx1 = seg_to_adjust.x1 + (factor * cdx);
-								seg_to_adjust.ctrly1 = seg_to_adjust.y1 + (factor * cdy);
-							}
-							// Adjust the h1 handle
-							if (closed || (i < n-1)) {
-								// System.out.println ( " Adjusting h1 for segment " + i + ", with next = " + ((n+i+1)%n) );
-								CubicCurve2D.Double next_seg = curves.get((n+i+1)%n);
-								double cdx = next_seg.x2 - seg_to_adjust.x1;
-								double cdy = next_seg.y2 - seg_to_adjust.y1;
-								seg_to_adjust.ctrlx2 = seg_to_adjust.x2 - (factor * cdx);
-								seg_to_adjust.ctrly2 = seg_to_adjust.y2 - (factor * cdy);
-							}
+						if (!closed) {
+						  // Smooth the handles on all of the curves
+						  int n = curves.size();
+						  for (int i=0; i<n; i++) {
+							  CubicCurve2D.Double seg_to_adjust = curves.get(i);
+							  // Adjust the h0 handle
+							  if (closed || (i > 0)) {
+								  // System.out.println ( " Adjusting h0 for segment " + i + ", with previous = " + ((n+i-1)%n) );
+								  CubicCurve2D.Double prev_seg = curves.get((n+i-1)%n);
+								  double cdx = seg_to_adjust.x2 - prev_seg.x1;
+								  double cdy = seg_to_adjust.y2 - prev_seg.y1;
+								  seg_to_adjust.ctrlx1 = seg_to_adjust.x1 + (factor * cdx);
+								  seg_to_adjust.ctrly1 = seg_to_adjust.y1 + (factor * cdy);
+							  }
+							  // Adjust the h1 handle
+							  if (closed || (i < n-1)) {
+								  // System.out.println ( " Adjusting h1 for segment " + i + ", with next = " + ((n+i+1)%n) );
+								  CubicCurve2D.Double next_seg = curves.get((n+i+1)%n);
+								  double cdx = next_seg.x2 - seg_to_adjust.x1;
+								  double cdy = next_seg.y2 - seg_to_adjust.y1;
+								  seg_to_adjust.ctrlx2 = seg_to_adjust.x2 - (factor * cdx);
+								  seg_to_adjust.ctrly2 = seg_to_adjust.y2 - (factor * cdy);
+							  }
+						  }
 						}
 
 						previous_stroke = g2.getStroke();
