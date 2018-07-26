@@ -449,7 +449,7 @@ public class ContourClass {
 				  double pfirst[] = stroke_points.get(0);
 			    int x = r.x_to_pxi(pfirst[0]-dx);
 			    int y = r.y_to_pyi(dy-pfirst[1]);
-          g.setColor ( new Color ( 255, 255, 255 ) );
+          g.setColor ( new Color ( 255, 255, 0 ) );
           int l=5;
 				  g.drawLine ( x-l, y-l, x+l, y-l );
 				  g.drawLine ( x-l, y-l, x-l, y+l );
@@ -505,12 +505,23 @@ public class ContourClass {
 							  int x, y;
 							  x = r.x_to_pxi(h[0][0]-dx);
 							  y = r.y_to_pyi(dy-h[0][1]);
-							  g.setColor ( new Color ( 150, 0, 0 ) );
-							  g.drawOval ( x-l, y-l, 2*l, 2*l );
+                if (r.active_point == h[0]) {
+                  g.setColor ( new Color ( 255, 255, 255 ) );
+                  g.fillOval ( x-l, y-l, 2*l, 2*l );
+                } else {
+                  g.setColor ( new Color ( 150, 0, 0 ) );
+                  g.drawOval ( x-l, y-l, 2*l, 2*l );
+                }
+
 							  x = r.x_to_pxi(h[1][0]-dx);
 							  y = r.y_to_pyi(dy-h[1][1]);
-							  g.setColor ( new Color ( 0, 150, 0 ) );
-							  g.drawOval ( x-l, y-l, 2*l, 2*l );
+							  if (r.active_point == h[1]) {
+                  g.setColor ( new Color ( 255, 255, 255 ) );
+                  g.fillOval ( x-l, y-l, 2*l, 2*l );
+                } else {
+                  g.setColor ( new Color ( 0, 150, 0 ) );
+                  g.drawOval ( x-l, y-l, 2*l, 2*l );
+							  }
 						  }
 					  }
 
@@ -520,7 +531,7 @@ public class ContourClass {
 						  // Draw the end points for the curves
 						  for (int j=0; j<stroke_points.size(); j++) {
 							  if (j == 0) {
-								  g.setColor ( new Color ( 255, 255, 255 ) );
+								  g.setColor ( new Color ( 255, 255, 0 ) );
 							  } else {
 								  g.setColor ( new Color ( (int)(255*this.r), (int)(255*this.g), (int)(255*this.b) ) );
 							  }
@@ -528,10 +539,17 @@ public class ContourClass {
 							  int l = 4;
 							  int x = r.x_to_pxi(p0[0]-dx);
 							  int y = r.y_to_pyi(dy-p0[1]);
-							  g.drawOval ( x-l, y-l, 2*l, 2*l );
+                if (r.active_point == p0) {
+                  // System.out.println ( "Found active point" );
+                  g.setColor ( new Color ( 255, 255, 255 ) );
+                  g.fillOval ( x-l, y-l, 2*l, 2*l );
+                } else {
+                  g.drawOval ( x-l, y-l, 2*l, 2*l );
+                }
 						  }
 						}
 
+						g.setColor ( new Color ( (int)(255*this.r), (int)(255*this.g), (int)(255*this.b) ) );
 
 						double factor = 0.2;
 
@@ -668,12 +686,12 @@ public class ContourClass {
 						  if (j > 0) {
 						    // Draw an arrow
                 int dxdydxdy[] = r.arrows.get ( x-last_x, y-last_y );
-                g.setColor ( new Color ( 255, 255, 255 ) );
+                g.setColor ( new Color ( 200, 200, 200 ) );
                 g.drawLine ( dxdydxdy[0]+(int)x, dxdydxdy[1]+(int)y, (int)x, (int)y );
                 g.drawLine ( dxdydxdy[2]+(int)x, dxdydxdy[3]+(int)y, (int)x, (int)y );
 							} else {
 							  // Draw a box
-                g.setColor ( new Color ( 255, 255, 255 ) );
+                g.setColor ( new Color ( 200, 200, 200 ) );
                 int l=8;
 							  g.drawLine ( x-l, y-l, x+l, y-l );
 							  g.drawLine ( x-l, y-l, x-l, y+l );

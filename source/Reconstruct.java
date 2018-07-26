@@ -131,7 +131,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   }
 
 	void draw_scaled_line ( Graphics g, int xoffset, int yoffset, double x0, double y0, double x1, double y1 ) {
-	  g.drawLine ( xoffset+this.x_to_pxi(x0),   yoffset+this.y_to_pyi(y0),  xoffset+this.x_to_pxi(x1),  yoffset+this.y_to_pyi(y1) );
+    g.drawLine ( xoffset+this.x_to_pxi(x0),   yoffset+this.y_to_pyi(y0),  xoffset+this.x_to_pxi(x1),  yoffset+this.y_to_pyi(y1) );
 	}
 
   public void paint_frame (Graphics g) {
@@ -382,7 +382,15 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
         } else {
           // System.out.println ( "Series found closest at " + closest[0] + ", " + closest[1] );
           // It would be good to have a limit radius here, but that can be done later
-          active_point = closest;
+          double closest_px = x_to_pxi(closest[0]);
+          double closest_py = y_to_pyi(closest[1]);
+          double rect_dist = Math.min ( Math.abs(e.getX()-closest_px), Math.abs(e.getY()-closest_py) );
+          if (rect_dist < 6) {
+            active_point = closest;
+          } else {
+            active_point = null;
+          }
+          repaint();
         }
       }
     } else {
