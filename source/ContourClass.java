@@ -743,6 +743,58 @@ public class ContourClass {
     return ( closest );
   }
 
+  public double[][] find_bezier_triplet ( double query_point[] ) {
+    // This function is passed a query point that should be either a contour point or a contour handle
+    // This function returns an array of 3 points: [ h0, p, h1 ] where one of those points matches the original query point
+    // System.out.println ( "Contour looking for bezier triplet for " + p[0] + ", " + p[1] );
+	  if (stroke_points != null) {
+	    for (int i=0; i<stroke_points.size(); i++) {
+	      double stroke_point[] = stroke_points.get(i);
+	      if (stroke_point == query_point) {
+	        // System.out.println ( "Query point matched contour point " + i  );
+	        double triplet[][] = new double[3][2];
+	        triplet[0] = null;
+	        triplet[1] = stroke_point;
+	        triplet[2] = null;
+          if (handle_points != null) {
+            double[][]prev_handles = handle_points.get(i);
+            double[][]next_handles = handle_points.get((i+1)%handle_points.size());
+            triplet[0] = prev_handles[1];
+            triplet[2] = next_handles[0];
+          }
+	        return ( triplet );
+	      }
+	    }
+    }
+	  if (handle_points != null) {
+	    for (int i=0; i<handle_points.size(); i++) {
+        double[][]handles = handle_points.get(i);
+        for (int h=0; h<2; h++) {
+          if (handles[h] == query_point) {
+            // System.out.println ( "Query point matched handle point " + i + "." + h );
+            double triplet[][] = new double[3][2];
+            triplet[0] = null;
+            triplet[1] = null;
+            triplet[2] = null;
+            if (h == 0) {
+              int prev_index = (i+handle_points.size()-1)%handle_points.size();
+              triplet[0] = handle_points.get(prev_index)[1];
+              triplet[1] = stroke_points.get(prev_index);
+              triplet[2] = handle_points.get(i)[0];
+            } else if (h == 1) {
+              int next_index = (i+1)%handle_points.size();
+              triplet[0] = handle_points.get(i)[1];
+              triplet[1] = stroke_points.get(i);
+              triplet[2] = handle_points.get(next_index)[0];
+            }
+            return ( triplet );
+          }
+        }
+	    }
+    }
+    return ( null );
+  }
+
 
   public void reverse_stroke() {
 		System.out.println ( "   Contour reversing stroke" );

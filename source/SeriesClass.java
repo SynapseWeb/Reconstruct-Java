@@ -257,12 +257,12 @@ public class SeriesClass {
     }
   }
 
-  public double[] find_closest( double p[] ) {
+  public double[] find_closest ( double p[] ) {
     double closest[] = null;
     double closest_dist_sq = Double.MAX_VALUE;
 	  if (sections != null) {
 	    for (int i=0; i<sections.length; i++) {
-        double closest_in_section[] = sections[i].find_closest( p );
+        double closest_in_section[] = sections[i].find_closest ( p );
         if (closest_in_section != null) {
           double dx = p[0]-closest_in_section[0];
           double dy = p[1]-closest_in_section[1];
@@ -275,6 +275,18 @@ public class SeriesClass {
 	    }
     }
     return ( closest );
+  }
+
+  public double[][] find_bezier_triplet ( double p[] ) {
+	  if (sections != null) {
+	    for (int i=0; i<sections.length; i++) {
+        double triplet[][] = sections[i].find_bezier_triplet ( p );
+        if (triplet != null) {
+          return ( triplet );
+        }
+	    }
+    }
+    return ( null );
   }
 
   public void clear_strokes() {

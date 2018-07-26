@@ -122,7 +122,11 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   String current_trace_name = null;
 
   double[] click_point = null;
+
   double[] active_point = null;
+  double[] active_h0 = null;
+  double[] active_cp = null;
+  double[] active_h1 = null;
 
   void dump_strokes() {
     if (series != null) {
@@ -377,6 +381,14 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       click_point[1] = -py_to_y(e.getY());
       if (series != null) {
         double closest[] = series.find_closest ( click_point );
+        double triplet[][] = series.find_bezier_triplet ( closest );
+        /*
+        if (triplet == null) {
+          System.out.println ( "Bezier Triplet is null" );
+        } else {
+          System.out.println ( "Bezier Triplet is not null" );
+        }
+        */
         if (closest == null) {
           // System.out.println ( "Series found no closest!" );
         } else {
@@ -387,14 +399,25 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
           double rect_dist = Math.min ( Math.abs(e.getX()-closest_px), Math.abs(e.getY()-closest_py) );
           if (rect_dist < 6) {
             active_point = closest;
+            if (triplet != null) {
+              active_h0 = triplet[0];
+              active_cp = triplet[1];
+              active_h1 = triplet[2];
+            }
           } else {
             active_point = null;
+            active_h0 = null;
+            active_cp = null;
+            active_h1 = null;
           }
           repaint();
         }
       }
     } else {
       active_point = null;
+      active_h0 = null;
+      active_cp = null;
+      active_h1 = null;
       if (e.getButton() == MouseEvent.BUTTON1) {
         if (modify_mode == true) {
 				  if (segment_draw) {
@@ -475,8 +498,33 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       // System.out.println ( "Mouse dragged in edit mode" );
       if (active_point != null) {
         double p[] = { px_to_x(e.getX()), -py_to_y(e.getY()) };
-        active_point[0] += p[0] - click_point[0];
-        active_point[1] += p[1] - click_point[1];
+        double dx = p[0] - click_point[0];
+        double dy = p[1] - click_point[1];
+        if (active_point == active_cp) {
+          // The center point was moved, so move all together
+          active_point[0] += dx;
+          active_point[1] += dy;
+          if (active_h0 != null) {
+            active_h0[0] += dx;
+            active_h0[1] += dy;
+          }
+          if (active_h1 != null) {
+            active_h1[0] += dx;
+            active_h1[1] += dy;
+          }
+        } else if (active_point == active_h0) {
+          // Handle 0 was moved
+          if (active_h0 != null) {
+            active_h0[0] += dx;
+            active_h0[1] += dy;
+          }
+        } else if (active_point == active_h1) {
+          // Handle 1 was moved
+          if (active_h1 != null) {
+            active_h1[0] += dx;
+            active_h1[1] += dy;
+          }
+        }
         click_point = p;
         repaint();
       }

@@ -406,7 +406,7 @@ public class SectionClass {
 	  if (contours != null) {
       for (int i=0; i<contours.size(); i++) {
         ContourClass contour = contours.get(i);
-        double closest_in_contour[] = contour.find_closest( p );
+        double closest_in_contour[] = contour.find_closest ( p );
         if (closest_in_contour != null) {
           double dx = p[0]-closest_in_contour[0];
           double dy = p[1]-closest_in_contour[1];
@@ -421,6 +421,18 @@ public class SectionClass {
     return ( closest );
   }
 
+  public double[][] find_bezier_triplet ( double p[] ) {
+	  if (contours != null) {
+      for (int i=0; i<contours.size(); i++) {
+        ContourClass contour = contours.get(i);
+        double triplet[][] = contour.find_bezier_triplet ( p );
+        if (triplet != null) {
+          return ( triplet );
+        }
+	    }
+    }
+    return ( null );
+  }
 
   public void dump_strokes() {
     System.out.println ( "Dumping Contours for a Section:" );
