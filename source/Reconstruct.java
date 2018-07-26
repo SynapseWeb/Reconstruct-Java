@@ -107,7 +107,10 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   boolean center_draw = false;
   boolean segment_draw = true;
   boolean bezier_draw = true;
+  boolean bezier_locked = true;
+
 	boolean stroke_started = false;
+
   String current_directory = "";
   MyFileChooser file_chooser = null;
 
@@ -490,6 +493,24 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   }
 
 
+  public void rotate_about ( double center[], double master[], double slave[] ) {
+    // Rotate the "slave" point about the "center" point to be aligned with (but opposite of) the "control" point
+    // Modify the slave point in place
+    double mx_rel = master[0] - center[0];
+    double my_rel = master[1] - center[1];
+    double sx_rel = slave[0] - center[0];
+    double sy_rel = slave[1] - center[1];
+    double dmaster = Math.sqrt ( (mx_rel * mx_rel) + (my_rel * my_rel) );
+    double dslave = Math.sqrt ( (sx_rel * sx_rel) + (sy_rel * sy_rel) );
+    if ( (dmaster > 0) && (dslave > 0) ) {
+      double mx_unit = mx_rel / dmaster;
+      double my_unit = my_rel / dmaster;
+      slave[0] = center[0] - ( mx_unit * dslave );
+      slave[1] = center[1] - ( my_unit * dslave );
+    }
+  }
+
+
   // MouseMotionListener methods:
 
   public void mouseDragged ( MouseEvent e ) {
@@ -517,12 +538,18 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
           if (active_h0 != null) {
             active_h0[0] += dx;
             active_h0[1] += dy;
+            if (bezier_locked) {
+              rotate_about ( active_cp, active_h0, active_h1 );
+            }
           }
         } else if (active_point == active_h1) {
           // Handle 1 was moved
           if (active_h1 != null) {
             active_h1[0] += dx;
             active_h1[1] += dy;
+            if (bezier_locked) {
+              rotate_about ( active_cp, active_h1, active_h0 );
+            }
           }
         }
         click_point = p;
@@ -607,6 +634,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   JMenuItem center_draw_menu_item = null;
   JCheckBoxMenuItem segment_draw_menu_item = null;
   JCheckBoxMenuItem bezier_draw_menu_item = null;
+  JCheckBoxMenuItem bezier_locked_menu_item = null;
 
 	JMenuItem new_series_menu_item=null;
 	JMenuItem open_series_menu_item=null;
@@ -883,6 +911,10 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		    segment_draw_menu_item.setState ( segment_draw );
         current_cursor = Cursor.getPredefinedCursor ( Cursor.HAND_CURSOR );
       }
+		  repaint();
+		} else if ( action_source == bezier_locked_menu_item ) {
+		  JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
+		  bezier_locked = item.getState();
 		  repaint();
 		} else if ( action_source == new_series_menu_item ) {
 		  file_chooser.setMultiSelectionEnabled(false);
@@ -1533,6 +1565,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		          zp.segment_draw_menu_item.addActionListener(zp);
 		          mode_menu.add ( zp.bezier_draw_menu_item = new JCheckBoxMenuItem("Bezier Drawing", zp.bezier_draw) );
 		          zp.bezier_draw_menu_item.addActionListener(zp);
+		          mode_menu.add ( zp.bezier_locked_menu_item = new JCheckBoxMenuItem("Beziers Aligned", zp.bezier_draw) );
+		          zp.bezier_locked_menu_item.addActionListener(zp);
 		          /*
               mode_menu.addSeparator();
 		          mode_menu.add ( zp.center_draw_menu_item = mi = new JCheckBoxMenuItem("Center Drawing", zp.center_draw) );
