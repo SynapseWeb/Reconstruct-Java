@@ -109,6 +109,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   boolean bezier_draw = true;
   boolean bezier_locked = true;
 
+  boolean export_handles = true;
+
 	boolean stroke_started = false;
 
   String current_directory = "";
@@ -659,6 +661,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   JMenuItem show_handles_menu_item = null;
   JMenuItem show_coords_menu_item = null;
 
+  JMenuItem export_handles_menu_item = null;
+
   JMenuItem color_menu_red_item = null;
   JMenuItem color_menu_green_item = null;
   JMenuItem color_menu_blue_item = null;
@@ -990,7 +994,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		    File series_file = file_chooser.getSelectedFile();
         System.out.println ( "You chose to save to this file: " /* + chooser.getCurrentDirectory() + " / " */ + series_file );
 				try {
-					this.series.write_as_xml ( series_file );
+					this.series.write_as_xml ( series_file, this );
 				} catch (Exception oe) {
 					// this.series.image_frame = null;
 					System.out.println ( "Error while saving a series file:\n" + oe );
@@ -1025,24 +1029,24 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 	    repaint();
 
 		} else if ( action_source == show_points_menu_item ) {
-			// System.out.println ( "show_points toggled." );
 		  JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
 		  show_points = item.getState();
 		  repaint();
 		} else if ( action_source == show_arrows_menu_item ) {
-			// System.out.println ( "show_arrows toggled." );
 		  JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
 		  show_arrows = item.getState();
 		  repaint();
 		} else if ( action_source == show_handles_menu_item ) {
-			// System.out.println ( "show_handles toggled." );
 		  JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
 		  show_handles = item.getState();
 		  repaint();
 		} else if ( action_source == show_coords_menu_item ) {
-			// System.out.println ( "show_coords toggled." );
 		  JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
 		  show_coords = item.getState();
+		  repaint();
+		} else if ( action_source == export_handles_menu_item ) {
+		  JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
+		  export_handles = item.getState();
 		  repaint();
 		} else if ( action_source == dump_menu_item ) {
       if (this.series != null) {
@@ -1132,6 +1136,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		  int returnVal = file_chooser.showDialog(this, "Import Images");
 		  if ( returnVal == JFileChooser.APPROVE_OPTION ) {
 		    File image_files[] = file_chooser.getSelectedFiles();
+		    // Should have sorting options to properly order names like: xyz8.jpg xyz9.jpg xyz10.jpg xyz11.jpg
         System.out.println ( "You chose to import these " + image_files.length + " images:" );
         for (int i=0; i<image_files.length; i++) {
 	        System.out.println ( "  " + image_files[i] );
@@ -1540,6 +1545,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 		          line_menu.add ( zp.show_arrows_menu_item = mi = new JCheckBoxMenuItem("Show Arrows", zp.show_arrows) );
 		          mi.addActionListener(zp);
 		          line_menu.add ( zp.show_handles_menu_item = mi = new JCheckBoxMenuItem("Show Handles", zp.show_handles) );
+		          mi.addActionListener(zp);
+		          line_menu.add ( zp.export_handles_menu_item = mi = new JCheckBoxMenuItem("Export Handles", zp.export_handles) );
 		          mi.addActionListener(zp);
 		          line_menu.add ( zp.show_coords_menu_item = mi = new JCheckBoxMenuItem("Show Coords", zp.show_coords) );
 		          mi.addActionListener(zp);

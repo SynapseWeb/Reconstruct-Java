@@ -109,7 +109,7 @@ public class SeriesClass {
 		return ( formatted );
 	}
 
-	public void write_as_xml ( File series_file ) {
+	public void write_as_xml ( File series_file, Reconstruct r ) {
 		// In order to guarantee repeatability, this version exports "by hand" rather than using XML library functions
 		System.out.println ( "Writing XML to file " + series_file.getName() );
 
@@ -163,7 +163,7 @@ public class SeriesClass {
 		  sf.close();
 		  if (this.sections != null) {
 			  for (int i=0; i<sections.length; i++) {
-		      this.sections[i].write_as_xml(series_file);
+		      this.sections[i].write_as_xml(series_file, r);
 		    }
 		  }
       String series_file_name = series_file.getName();

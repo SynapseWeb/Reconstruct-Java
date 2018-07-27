@@ -227,7 +227,7 @@ public class SectionClass {
     return ( formatted );
   }
 
-  public void write_as_xml ( File series_file ) {
+  public void write_as_xml ( File series_file, Reconstruct r ) {
     // Use the path and file name from the series file, but append the index (number) from the section file
     try {
       String new_path_name = series_file.getParentFile().getCanonicalPath();
@@ -311,12 +311,14 @@ public class SectionClass {
                             sf.print ( " " + contour_attr_names[ca] + "=\"" + format_comma_sep(matching_contour.stroke_points,"\t") + "\"" );
                           }
                         } else if (contour_attr_names[ca].equals("handles")) {
-                          String handles_str = contour_element.getAttribute(contour_attr_names[ca]);
-                          if (handles_str != null) {
-                            handles_str = handles_str.trim();
-                            if (handles_str.length() > 0) {
-                              // System.out.println ( "Writing a handles attribute = " + contour_element.getAttribute(contour_attr_names[ca]) );
-                              sf.print ( " " + contour_attr_names[ca] + "=\"" + format_comma_sep(contour_element.getAttribute(contour_attr_names[ca]),"\t") + "\"\n" );
+                          if (r.export_handles) {
+                            String handles_str = contour_element.getAttribute(contour_attr_names[ca]);
+                            if (handles_str != null) {
+                              handles_str = handles_str.trim();
+                              if (handles_str.length() > 0) {
+                                // System.out.println ( "Writing a handles attribute = " + contour_element.getAttribute(contour_attr_names[ca]) );
+                                sf.print ( " " + contour_attr_names[ca] + "=\"" + format_comma_sep(contour_element.getAttribute(contour_attr_names[ca]),"\t") + "\"\n" );
+                              }
                             }
                           }
                         } else if (contour_attr_names[ca].equals("type")) {
