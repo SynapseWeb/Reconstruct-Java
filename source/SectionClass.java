@@ -322,7 +322,11 @@ public class SectionClass {
                             }
                           }
                         } else if (contour_attr_names[ca].equals("type")) {
-                          sf.print ( " " + contour_attr_names[ca] + "=\"" + contour_element.getAttribute(contour_attr_names[ca]) + "\"" );
+                          if (r.export_handles) {
+                            sf.print ( " " + contour_attr_names[ca] + "=\"" + contour_element.getAttribute(contour_attr_names[ca]) + "\"" );
+                          } else {
+                            // Don't output the "type" attribute if not exporting handles (this makes the traces non-bezier)
+                          }
                         } else {
                           sf.print ( " " + contour_attr_names[ca] + "=\"" + contour_element.getAttribute(contour_attr_names[ca]) + "\"" );
                           if (contour_attr_names[ca].equals("mode")) {
