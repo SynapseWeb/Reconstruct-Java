@@ -94,7 +94,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   private static final long serialVersionUID = 1L;
 
 	JFrame parent_frame = null;
-	static int w=800, h=600;
+	static int w=1200, h=1000;
 
 	boolean show_points = true;
 	boolean show_arrows = false;
