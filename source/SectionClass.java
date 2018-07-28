@@ -639,6 +639,12 @@ public class SectionClass {
         mode_status += "Zoom and Pan View";
       }
       g.drawString ( mode_status, 10, y );     y+=20;
+
+      if (r.show_coords) {
+        String coords_string = "  (" + r.cur_mouse_xi + "," + r.cur_mouse_yi + ") => (" + r.cur_mouse_x + "," + r.cur_mouse_y + ")";
+        g.drawString ( coords_string, 10, y );     y+=20;
+      }
+
     }
   }
 

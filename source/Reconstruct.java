@@ -589,10 +589,21 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     }
   }
 
+  int cur_mouse_xi = 0;
+  int cur_mouse_yi = 0;
+
+  double cur_mouse_x = 0;
+  double cur_mouse_y = 0;
+
   public void mouseMoved ( MouseEvent e ) {
     super.mouseMoved ( e );
+    cur_mouse_xi = e.getX();
+    cur_mouse_yi = e.getY();
+    cur_mouse_x = px_to_x(cur_mouse_xi);
+    cur_mouse_y = -py_to_y(cur_mouse_yi);
     if (this.show_coords) {
-      System.out.println ( "  (" + e.getX() + "," + e.getY() + ") => (" + px_to_x(e.getX()) + "," + -py_to_y(e.getY()) + ")" );
+      System.out.println ( "  (" + cur_mouse_xi + "," + cur_mouse_yi + ") => (" + cur_mouse_x + "," + cur_mouse_y + ")" );
+      repaint();
     }
   }
 

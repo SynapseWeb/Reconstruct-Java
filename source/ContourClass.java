@@ -444,6 +444,9 @@ public class ContourClass {
 				double h[][] = null;
 				double p[] = null;
 
+				int line_padding = r.line_padding;
+				int point_radius = 4;
+
         // Put a box around the first point
 				if (r.show_points) {
 				  double pfirst[] = stroke_points.get(0);
@@ -456,8 +459,6 @@ public class ContourClass {
 				  g.drawLine ( x+l, y+l, x+l, y-l );
 				  g.drawLine ( x+l, y+l, x-l, y+l );
 				}
-
-				int line_padding = r.line_padding;
 
 				if (line_padding >= 0) {
 				  // Only draw lines when line_padding >= 0
@@ -482,6 +483,11 @@ public class ContourClass {
 							  hy = r.y_to_pyi(dy-h[0][1]);
 							  g.setColor ( new Color ( 100, 0, 0 ) );
 							  g.drawLine ( x, y, hx, hy );
+                if (r.show_coords) {
+                  String label = "handle=(" + (float)(h[0][0]) + "," + (float)(h[0][1]) + ")";
+								  g.setColor ( new Color ( 200, 200, 200 ) );
+                  g.drawString ( label, hx+point_radius, hy-point_radius );
+                }
 
 							  h = handle_points.get(j);
 							  p = stroke_points.get(j);
@@ -492,6 +498,11 @@ public class ContourClass {
 							  hy = r.y_to_pyi(dy-h[1][1]);
 							  g.setColor ( new Color ( 0, 100, 0 ) );
 							  g.drawLine ( x, y, hx, hy );
+                if (r.show_coords) {
+                  String label = "handle=(" + (float)(h[1][0]) + "," + (float)(h[1][1]) + ")";
+								  g.setColor ( new Color ( 200, 200, 200 ) );
+                  g.drawString ( label, hx+point_radius, hy-point_radius );
+                }
 						  }
 						}
 
@@ -501,26 +512,25 @@ public class ContourClass {
 						  // Draw the control handle points
 						  for (int j=0; j<handle_points.size(); j++) {
 							  h = handle_points.get(j);
-							  int l = 4;
 							  int x, y;
 							  x = r.x_to_pxi(h[0][0]-dx);
 							  y = r.y_to_pyi(dy-h[0][1]);
                 if (r.active_point == h[0]) {
                   g.setColor ( new Color ( 255, 255, 255 ) );
-                  g.fillOval ( x-l, y-l, 2*l, 2*l );
+                  g.fillOval ( x-point_radius, y-point_radius, 2*point_radius, 2*point_radius );
                 } else {
                   g.setColor ( new Color ( 150, 0, 0 ) );
-                  g.drawOval ( x-l, y-l, 2*l, 2*l );
+                  g.drawOval ( x-point_radius, y-point_radius, 2*point_radius, 2*point_radius );
                 }
 
 							  x = r.x_to_pxi(h[1][0]-dx);
 							  y = r.y_to_pyi(dy-h[1][1]);
 							  if (r.active_point == h[1]) {
                   g.setColor ( new Color ( 255, 255, 255 ) );
-                  g.fillOval ( x-l, y-l, 2*l, 2*l );
+                  g.fillOval ( x-point_radius, y-point_radius, 2*point_radius, 2*point_radius );
                 } else {
                   g.setColor ( new Color ( 0, 150, 0 ) );
-                  g.drawOval ( x-l, y-l, 2*l, 2*l );
+                  g.drawOval ( x-point_radius, y-point_radius, 2*point_radius, 2*point_radius );
 							  }
 						  }
 					  }
@@ -542,9 +552,14 @@ public class ContourClass {
                 if (r.active_point == p0) {
                   // System.out.println ( "Found active point" );
                   g.setColor ( new Color ( 255, 255, 255 ) );
-                  g.fillOval ( x-l, y-l, 2*l, 2*l );
+                  g.fillOval ( x-point_radius, y-point_radius, 2*point_radius, 2*point_radius );
                 } else {
-                  g.drawOval ( x-l, y-l, 2*l, 2*l );
+                  g.drawOval ( x-point_radius, y-point_radius, 2*point_radius, 2*point_radius );
+                }
+                if (r.show_coords) {
+                  String label = "point=(" + (float)(p0[0]) + "," + (float)(p0[1]) + ")";
+								  g.setColor ( new Color ( 200, 200, 200 ) );
+                  g.drawString ( label, x+point_radius, y-point_radius );
                 }
 						  }
 						}
@@ -668,7 +683,7 @@ public class ContourClass {
 								p0 = stroke_points.get(j);
 								x = r.x_to_pxi(p0[0]-dx);
 								y = r.y_to_pyi(dy-p0[1]);
-								g.fillOval ( x-l, y-l, 2*l, 2*l );
+								g.fillOval ( x-point_radius, y-point_radius, 2*point_radius, 2*point_radius );
 							}
 						}
 
@@ -692,7 +707,7 @@ public class ContourClass {
 							} else {
 							  // Draw a box
                 g.setColor ( new Color ( 200, 200, 200 ) );
-                int l=8;
+                int l=point_radius + 4;
 							  g.drawLine ( x-l, y-l, x+l, y-l );
 							  g.drawLine ( x-l, y-l, x-l, y+l );
 							  g.drawLine ( x+l, y+l, x+l, y-l );
