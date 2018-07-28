@@ -189,7 +189,9 @@ public class SeriesClass {
 		      w = section_image.getWidth()-1;  // Reconstruct uses w-1 in its Section Files
 		      h = section_image.getHeight()-1; // Reconstruct uses h-1 in its Section Files
 				  DataOutputStream f = new DataOutputStream ( new FileOutputStream ( series_prefix + (i+1) ) );
-				  f.writeBytes ( ReconstructDefaults.convert_newlines ( ReconstructDefaults.default_section_file_string_1 ) );
+				  f.writeBytes ( ReconstructDefaults.convert_newlines ( ReconstructDefaults.default_section_file_string_1a ) );
+				  f.writeBytes ( ReconstructDefaults.convert_newlines ( ""+(i+1) ) );
+				  f.writeBytes ( ReconstructDefaults.convert_newlines ( ReconstructDefaults.default_section_file_string_1b ) );
 				  f.writeBytes ( ReconstructDefaults.convert_newlines ( image_files[i].getName() ) );
 				  f.writeBytes ( ReconstructDefaults.convert_newlines ( ReconstructDefaults.default_section_file_string_2 ) );
 				  f.writeBytes ( ReconstructDefaults.convert_newlines ( "0 0,\n" ) );

@@ -362,11 +362,14 @@ class ReconstructDefaults {
 
 
 
-	public static String default_section_file_string_1 =
+	public static String default_section_file_string_1a =
 		"<?xml version=\"1.0\"?>\n" +
 		"<!DOCTYPE Section SYSTEM \"section.dtd\">\n" +
 		"\n" +
-		"<Section index=\"1\" thickness=\"0.05\" alignLocked=\"false\">\n" +
+		"<Section index=\"";
+
+	public static String default_section_file_string_1b =
+		"\" thickness=\"0.05\" alignLocked=\"false\">\n" +
 		"<Transform dim=\"0\"\n" +
 		"  xcoef=\" 0 1 0 0 0 0\"\n" +
 		"  ycoef=\" 0 0 1 0 0 0\">\n" +
