@@ -1,0 +1,12 @@
+*.class
+*.ser
+*.1
+*.2
+*.3
+*.jpg
+*.gif
+*.jpeg
+*.png
+source/data
+source/ZoomPanDraw.jar
+
