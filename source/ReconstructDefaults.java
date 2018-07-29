@@ -1,3 +1,5 @@
+/* NOTE: This file uses tabs because that's what should be in the strings inside the XML files */
+
 class ReconstructDefaults {
 
   public static String current_newline_string = "\n";  // For Windows this may be set to: "\r\n"

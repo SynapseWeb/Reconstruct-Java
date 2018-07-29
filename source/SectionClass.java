@@ -205,23 +205,36 @@ public class SectionClass {
     "name", "type", "hidden", "closed", "simplified", "border", "fill", "mode", "handles", "points"
   };
 
-  public String format_comma_sep ( String comma_sep_string, String indent_with ) {
+  public String format_comma_sep ( String comma_sep_string, String indent_with, boolean reversed ) {
     String formatted = "";
     String comma_sep_terms[] = comma_sep_string.trim().split(",");
-    for (int i=0; i<comma_sep_terms.length; i++) {
-      formatted += comma_sep_terms[i].trim() + ",\n" + indent_with;
+    if (reversed) {
+      for (int i=comma_sep_terms.length-1; i>=0; i--) {
+        formatted += comma_sep_terms[i].trim() + ",\n" + indent_with;
+      }
+    } else {
+      for (int i=0; i<comma_sep_terms.length; i++) {
+        formatted += comma_sep_terms[i].trim() + ",\n" + indent_with;
+      }
     }
     return ( formatted );
   }
 
-  public String format_comma_sep ( ArrayList<double[]> stroke_points, String indent_with ) {
+  public String format_comma_sep ( ArrayList<double[]> stroke_points, String indent_with, boolean reversed ) {
     String formatted = "";
     if (stroke_points != null) {
       double p[] = null;
-			int n = stroke_points.size();
-      for (int i=0; i<n; i++) {
-			  p = stroke_points.get(i);
-        formatted += "" + p[0] + " " + p[1] + ",\n" + indent_with;
+      int n = stroke_points.size();
+      if (reversed) {
+        for (int i=n-1; i>=0; i--) {
+          p = stroke_points.get(i);
+          formatted += "" + p[0] + " " + p[1] + ",\n" + indent_with;
+        }
+      } else {
+        for (int i=0; i<n; i++) {
+          p = stroke_points.get(i);
+          formatted += "" + p[0] + " " + p[1] + ",\n" + indent_with;
+        }
       }
     }
     return ( formatted );
@@ -294,7 +307,7 @@ public class SectionClass {
                         // System.out.println ( "Writing " + contour_attr_names[ca] );
                         if (contour_attr_names[ca].equals("points")) {
                           // Check to see if this contour element has been modified
-                          boolean modified = false;
+                          boolean modified = false; // This isn't being used, but should be!!
                           ContourClass matching_contour = null;
                           for (int cci=0; cci<contours.size(); cci++) {
                             ContourClass contour = contours.get(cci);
@@ -305,10 +318,10 @@ public class SectionClass {
                           }
                           if (matching_contour == null) {
                             // Write out the data from the original XML
-                            sf.print ( " " + contour_attr_names[ca] + "=\"" + format_comma_sep(contour_element.getAttribute(contour_attr_names[ca]),"\t") + "\"" );
+                            sf.print ( " " + contour_attr_names[ca] + "=\"" + format_comma_sep(contour_element.getAttribute(contour_attr_names[ca]),"\t", true) + "\"" );
                           } else {
                             // Write out the data from the stroke points
-                            sf.print ( " " + contour_attr_names[ca] + "=\"" + format_comma_sep(matching_contour.stroke_points,"\t") + "\"" );
+                            sf.print ( " " + contour_attr_names[ca] + "=\"" + format_comma_sep(matching_contour.stroke_points,"\t", true) + "\"" );
                           }
                         } else if (contour_attr_names[ca].equals("handles")) {
                           if (r.export_handles) {
@@ -317,7 +330,7 @@ public class SectionClass {
                               handles_str = handles_str.trim();
                               if (handles_str.length() > 0) {
                                 // System.out.println ( "Writing a handles attribute = " + contour_element.getAttribute(contour_attr_names[ca]) );
-                                sf.print ( " " + contour_attr_names[ca] + "=\"" + format_comma_sep(contour_element.getAttribute(contour_attr_names[ca]),"\t") + "\"\n" );
+                                sf.print ( " " + contour_attr_names[ca] + "=\"" + format_comma_sep(contour_element.getAttribute(contour_attr_names[ca]),"\t", false) + "\"\n" );
                               }
                             }
                           }
@@ -348,7 +361,7 @@ public class SectionClass {
           for (int i=0; i<contours.size(); i++) {
             ContourClass contour = contours.get(i);
             ArrayList<double[]> s = contour.stroke_points;
-          	ArrayList<double[][]> h = contour.handle_points;
+            ArrayList<double[][]> h = contour.handle_points;
             if (s.size() > 0) {
               if (contour.modified) {
                 if (contour.contour_name == null) {
@@ -372,11 +385,14 @@ public class SectionClass {
                 if (contour.is_bezier) {
                   if (h.size() > 0) {
                     sf.print ( " handles=\"" );
+                    System.out.println ( "Saving handles inside Section.write_as_xml" );
                     for (int j=h.size()-1; j>=0; j+=-1) {
+                    // for (int j=0; j<h.size(); j++) {
                       double p[][] = h.get(j);
-                      if (j != h.size()-1) {
+                      if (j != 0) {
                         sf.print ( "  " );
                       }
+                      System.out.println ( "     " + p[0][0] + " " + p[0][1] + " " + p[1][0] + " " + p[1][1] );
                       sf.print ( p[0][0] + " " + p[0][1] + " " + p[1][0] + " " + p[1][1] + ",\n" );
                     }
                     sf.print ( "  \"\n" );
@@ -409,7 +425,7 @@ public class SectionClass {
   public double[] find_closest( double p[] ) {
     double closest[] = null;
     double closest_dist_sq = Double.MAX_VALUE;
-	  if (contours != null) {
+    if (contours != null) {
       for (int i=0; i<contours.size(); i++) {
         ContourClass contour = contours.get(i);
         double closest_in_contour[] = contour.find_closest ( p );
@@ -422,20 +438,20 @@ public class SectionClass {
             closest_dist_sq = dist_sq;
           }
         }
-	    }
+      }
     }
     return ( closest );
   }
 
   public double[][] find_bezier_triplet ( double p[] ) {
-	  if (contours != null) {
+    if (contours != null) {
       for (int i=0; i<contours.size(); i++) {
         ContourClass contour = contours.get(i);
         double triplet[][] = contour.find_bezier_triplet ( p );
         if (triplet != null) {
           return ( triplet );
         }
-	    }
+      }
     }
     return ( null );
   }
