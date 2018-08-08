@@ -355,9 +355,11 @@ public class SeriesClass {
         boolean section_painted = false;
         int fartherest_section_index = ( section_index + (sections.length/2) ) % sections.length;
         int delta = 0;
-        int purge_1 = (fartherest_section_index+delta) % sections.length;
-        int purge_2 = (fartherest_section_index-delta) % sections.length;
+        int purge_1 = 0;
+        int purge_2 = 0;
         do {
+          purge_1 = (fartherest_section_index+delta) % sections.length;
+          purge_2 = (fartherest_section_index-delta) % sections.length;
           try {
             sections[section_index].paint_section ( g, r, this );
             section_painted = true;

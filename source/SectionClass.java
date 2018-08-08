@@ -568,12 +568,12 @@ public class SectionClass {
   public BufferedImage get_image() throws OutOfMemoryError {
     if (section_image == null) {
       try {
-        priority_println ( 50, " SectionClass: Opening ... " + this.image_file_names[0] );
+        priority_println ( 50, " SectionClass.get_image: Opening ... " + this.image_file_names[0] );
         File image_file = new File ( this.image_file_names[0] );
         this.section_image = ImageIO.read(image_file);
       } catch (OutOfMemoryError mem_err) {
         // this.series.image_frame = null;
-        priority_println ( 100, "SectionClass: **** Out of Memory Error while opening an image file:\n   " + this.image_file_names[0] );
+        priority_println ( 100, "SectionClass.get_image: **** Out of Memory Error while opening an image file:\n   " + this.image_file_names[0] );
         throw ( mem_err );
       } catch (Exception oe) {
         // this.series.image_frame = null;
@@ -587,7 +587,7 @@ public class SectionClass {
         }
         if (!found) {
           // Notify of missing file and put in list to be ignored in the future
-          priority_println ( 100, "SectionClass: Error while opening an image file:\n   " + this.image_file_names[0] );
+          priority_println ( 100, "SectionClass.get_image: Error while opening an image file:\n   " + this.image_file_names[0] );
           JOptionPane.showMessageDialog(null, "Cannot open " + this.image_file_names[0], "SectionClass: File Error", JOptionPane.WARNING_MESSAGE);
           bad_image_file_names.add ( this.image_file_names[0] );
         }
