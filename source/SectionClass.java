@@ -652,7 +652,11 @@ public class SectionClass {
           mode_status += " Free Hand";
         }
       } else {
-        mode_status += "Zoom and Pan View";
+        if (r.editing_mode) {
+          mode_status += "Zoom and Pan View (or edit)";
+        } else {
+          mode_status += "Zoom and Pan View (or draw)";
+        }
       }
       g.drawString ( mode_status, 10, y );     y+=20;
 

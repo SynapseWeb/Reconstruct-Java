@@ -381,83 +381,85 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   public void mousePressed ( MouseEvent e ) {
     // System.out.println ( "Mouse pressed with modify_mode = " + modify_mode );
     super.mousePressed(e);
-    if (editing_mode && modify_mode) {
-      // System.out.println ( "Mouse pressed in edit mode at " + e.getX() + ", " + e.getY() );
-      if (click_point == null) {
-        click_point = new double[2];
-      }
-      click_point[0] = px_to_x(e.getX());
-      click_point[1] = -py_to_y(e.getY());
-      if (series != null) {
-        double closest[] = series.find_closest ( click_point );
-        double triplet[][] = series.find_bezier_triplet ( closest );
-        /*
-        if (triplet == null) {
-          System.out.println ( "Bezier Triplet is null" );
-        } else {
-          System.out.println ( "Bezier Triplet is not null" );
+    if (e.getButton() != MouseEvent.BUTTON3) {
+      if (editing_mode && modify_mode) {
+        // System.out.println ( "Mouse pressed in edit mode at " + e.getX() + ", " + e.getY() );
+        if (click_point == null) {
+          click_point = new double[2];
         }
-        */
-        if (closest == null) {
-          // System.out.println ( "Series found no closest!" );
-        } else {
-          // System.out.println ( "Series found closest at " + closest[0] + ", " + closest[1] );
-          // It would be good to have a limit radius here, but that can be done later
-          double closest_px = x_to_pxi(closest[0]);
-          double closest_py = y_to_pyi(closest[1]);
-          double rect_dist = Math.min ( Math.abs(e.getX()-closest_px), Math.abs(e.getY()-closest_py) );
-          if (rect_dist < 6) {
-            active_point = closest;
-            if (triplet != null) {
-              active_h0 = triplet[0];
-              active_cp = triplet[1];
-              active_h1 = triplet[2];
-            }
+        click_point[0] = px_to_x(e.getX());
+        click_point[1] = -py_to_y(e.getY());
+        if (series != null) {
+          double closest[] = series.find_closest ( click_point );
+          double triplet[][] = series.find_bezier_triplet ( closest );
+          /*
+          if (triplet == null) {
+            System.out.println ( "Bezier Triplet is null" );
           } else {
-            active_point = null;
-            active_h0 = null;
-            active_cp = null;
-            active_h1 = null;
+            System.out.println ( "Bezier Triplet is not null" );
           }
-          repaint();
-        }
-      }
-    } else {
-      active_point = null;
-      active_h0 = null;
-      active_cp = null;
-      active_h1 = null;
-      if (e.getButton() == MouseEvent.BUTTON1) {
-        if (modify_mode == true) {
-          if (segment_draw) {
-          } else if (bezier_draw) {
+          */
+          if (closest == null) {
+            // System.out.println ( "Series found no closest!" );
           } else {
-            if (active_contour != null) {
-              // System.out.println ( "Saving previous stroke" );
-              if (series != null) {
-                active_contour.close();
-                active_contour.init_bezier ( active_contour.is_bezier );  // Recompute beziers after closing
-                active_contour.fix_handles();
-                series.add_contour ( active_contour );
+            // System.out.println ( "Series found closest at " + closest[0] + ", " + closest[1] );
+            // It would be good to have a limit radius here, but that can be done later
+            double closest_px = x_to_pxi(closest[0]);
+            double closest_py = y_to_pyi(closest[1]);
+            double rect_dist = Math.min ( Math.abs(e.getX()-closest_px), Math.abs(e.getY()-closest_py) );
+            if (rect_dist < 6) {
+              active_point = closest;
+              if (triplet != null) {
+                active_h0 = triplet[0];
+                active_cp = triplet[1];
+                active_h1 = triplet[2];
+              }
+            } else {
+              active_point = null;
+              active_h0 = null;
+              active_cp = null;
+              active_h1 = null;
+            }
+            repaint();
+          }
+        }
+      } else {
+        active_point = null;
+        active_h0 = null;
+        active_cp = null;
+        active_h1 = null;
+        if (e.getButton() == MouseEvent.BUTTON1) {
+          if (modify_mode == true) {
+            if (segment_draw) {
+            } else if (bezier_draw) {
+            } else {
+              if (active_contour != null) {
+                // System.out.println ( "Saving previous stroke" );
+                if (series != null) {
+                  active_contour.close();
+                  active_contour.init_bezier ( active_contour.is_bezier );  // Recompute beziers after closing
+                  active_contour.fix_handles();
+                  series.add_contour ( active_contour );
+                }
               }
             }
+            if (active_contour == null) {
+              // System.out.println ( "Making new stroke" );
+              active_contour = new ContourClass ( new ArrayList<double[]>(100), new_trace_color, false, bezier_draw );
+              active_contour.contour_name = current_trace_name;
+              active_contour.is_bezier = bezier_draw;
+            }
+            double p[] = { px_to_x(e.getX()), py_to_y(e.getY()) };
+            if (center_draw) {
+            p[0] = px_to_x(getSize().width / 2);
+            p[1] = py_to_y(getSize().height / 2);
+            }
+            // System.out.println ( "Adding point " + p[0] + "," + p[1] );
+            double contour_point[] = { p[0], -p[1] };
+            active_contour.add_point ( contour_point );
+            active_contour.init_bezier ( active_contour.is_bezier );
+            repaint();
           }
-          if (active_contour == null) {
-            // System.out.println ( "Making new stroke" );
-            active_contour = new ContourClass ( new ArrayList<double[]>(100), new_trace_color, false, bezier_draw );
-            active_contour.contour_name = current_trace_name;
-            active_contour.is_bezier = bezier_draw;
-          }
-          double p[] = { px_to_x(e.getX()), py_to_y(e.getY()) };
-          if (center_draw) {
-          p[0] = px_to_x(getSize().width / 2);
-          p[1] = py_to_y(getSize().height / 2);
-          }
-          // System.out.println ( "Adding point " + p[0] + "," + p[1] );
-          double contour_point[] = { p[0], -p[1] };
-          active_contour.add_point ( contour_point );
-          active_contour.init_bezier ( active_contour.is_bezier );
-          repaint();
         }
       }
     }
