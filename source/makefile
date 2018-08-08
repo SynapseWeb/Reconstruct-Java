@@ -1,5 +1,8 @@
 all: ZoomPanLib.class Reconstruct.jar BezierTracing.jar ZoomPanDraw.jar sha1sum.txt
 
+AlignSWiFT.class: AlignSWiFT.java makefile
+	javac -nowarn -source 1.6 AlignSWiFT.java
+
 ZoomPanLib.class: ZoomPanLib.java makefile
 	javac -nowarn -source 1.6 ZoomPanLib.java
 
@@ -21,7 +24,7 @@ ContourClass.class: ContourClass.java makefile
 ReconstructDefaults.class: ReconstructDefaults.java makefile
 	javac -nowarn -source 1.6 ReconstructDefaults.java
 
-Reconstruct.jar: Reconstruct.java ZoomPanLib.class XML_Parser.class TransformClass.class SeriesClass.class SectionClass.class ContourClass.class ReconstructDefaults.class makefile
+Reconstruct.jar: Reconstruct.java ZoomPanLib.class XML_Parser.class TransformClass.class SeriesClass.class SectionClass.class ContourClass.class ReconstructDefaults.class AlignSWiFT.class makefile
 	javac Reconstruct.java
 	jar -cfe Reconstruct.jar Reconstruct *.class
 

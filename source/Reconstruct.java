@@ -773,6 +773,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
   String new_series_file_name = null;
 
+  AlignSWiFT swift = new AlignSWiFT();
+
   // ActionPerformed methods (mostly menu responses):
 
   public void actionPerformed(ActionEvent e) {
@@ -786,8 +788,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       String s =
                 "Reconstruct Java\n" +
                 "\n" +
-                "  Version 0.51\n" +
-                "  July 20th, 2018\n" +
+                "  Version 0.60\n" +
+                "  August 7th, 2018\n" +
                 "\n";
       JOptionPane.showMessageDialog(null, s, "Reconstruct Java Version", JOptionPane.INFORMATION_MESSAGE);
     } else if ( action_source == about_menu_item ) {
@@ -1167,6 +1169,12 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       System.out.println ( "Sections: ..." );
     } else if ( action_source == exit_menu_item ) {
       System.exit ( 0 );
+    } else if (cmd.startsWith ( "Align" ) ) {
+      System.out.println ( "Alignment command: " + cmd );
+      String actual_cmd = swift.get_command ( cmd );
+      System.out.println ( "Running actual command: \"" + actual_cmd + "\"" );
+      swift.run_command ( actual_cmd );
+      System.out.println ( "Done running actual command: \"" + actual_cmd + "\"" );
     } else {
       JOptionPane.showMessageDialog(null, "Option Not Implemented", "Option Not Implemented", JOptionPane.WARNING_MESSAGE);
     }
@@ -1502,6 +1510,19 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
         object_menu.add ( mi = new JMenuItem("Distances...") );
         mi.addActionListener(zp);
         menu_bar.add ( object_menu );
+
+        JMenu align_menu = new JMenu("Align");
+        for (int i=0; i<zp.swift.num_commands(); i++) {
+          String command_name = zp.swift.get_name(i);
+          if (command_name.length() > 0) {
+            if ( ! command_name.startsWith ( "Align" ) ) {
+              System.out.println ( "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n Warning: Align command doesn't start with \"Align\"\n!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" );
+            }
+            align_menu.add ( mi = new JMenuItem(command_name) );
+            mi.addActionListener(zp);
+          }
+        }
+        menu_bar.add ( align_menu );
 
         JMenu extras_menu = new JMenu("Extras");
 

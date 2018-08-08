@@ -23,6 +23,8 @@ public class AlignSWiFT {
   public static String current_newline_string = "\n";
 
   static String[] run_commands = {
+    "Align: swim Help", "swim --help",
+    "Align: iavg Help", "iavg",
     "Align", "ArtAlign",
     "Align 1", "ArtAlign 1",
     "Align 1 2", "ArtAlign 1 2",
@@ -43,6 +45,19 @@ public class AlignSWiFT {
     return ( run_commands[(2*i)+1] );
   }
 
+  static String get_command ( String name ) {
+    int i=0;
+    String command = null;
+    while (i < run_commands.length/2 ) {
+      if (name.equals(run_commands[2*i])) {
+        command = run_commands[(2*i)+1];
+        break;
+      }
+      i++;
+    }
+    return ( command );
+  }
+
   static void run_command ( int i ) {
     run_command ( run_commands[(2*i)+1] );
   }
@@ -57,25 +72,22 @@ public class AlignSWiFT {
       System.out.println ( "=================================================================================" );
 
       // Run the command from this directory with any parameters
-      rt.exec ( System.getenv("PWD") + File.separator + command );
+      Process cmd_proc = rt.exec ( System.getenv("PWD") + File.separator + command );
 
-      // Read and echo the output found in file ArtAlign.out
-      File f = new File ( System.getenv("PWD") + File.separator + "ArtAlign.out" );
-      BufferedReader br = new BufferedReader ( new FileReader ( f ) );
-      boolean ended = false;
-      do {
-        try {
-          String s = br.readLine();
-          if (s == null) {
-            ended = true;
-          } else {
-            System.out.println ( s );
-          }
-        } catch (IOException e) {
-          ended = true;
-        }
-      } while (!ended);
-      br.close();
+      BufferedInputStream proc_out = new BufferedInputStream ( cmd_proc.getInputStream() );
+      BufferedInputStream proc_err = new BufferedInputStream ( cmd_proc.getErrorStream() );
+
+      cmd_proc.waitFor();
+
+      System.out.println ( "Command Finished with " + proc_out.available() + " bytes in stream" );
+
+      int num_left = 0;
+      while ( ( num_left = proc_out.available() ) > 0 ) {
+        byte b[] = new byte[num_left];
+        proc_out.read ( b );
+        System.out.println ( "Read: " + new String(b) );
+      }
+
       System.out.println ( "=================================================================================" );
     } catch ( Exception exec_except ) {
       System.out.println ( "Error running: " + exec_except );
