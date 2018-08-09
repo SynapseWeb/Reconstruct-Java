@@ -352,6 +352,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   public void mouseClicked ( MouseEvent e ) {
     // System.out.println ( "Mouse clicked: " + e );
     if (e.getButton() == MouseEvent.BUTTON3) {
+      // new Mouse
+      System.out.println ( "Right Mouse: " + e.getSource() + " " + e.getID() + " "  + e.getWhen() + " "  + e.getModifiers() + " "  + e.getX() + " "  + e.getY() + " "  + e.getClickCount() + " "  + e.isPopupTrigger() + " "  + e.getButton() );
       // This is a mode change of some sort
       if (e.isShiftDown()) {
         // This is changing between drawing and editing
@@ -712,27 +714,66 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     if (Character.toUpperCase(e.getKeyChar()) == ' ') {
       // Space bar toggles between drawing mode and move mode
       if (!editing_mode) {
-      modify_mode = !modify_mode;
-      if (modify_mode) {
-        current_cursor = Cursor.getPredefinedCursor ( Cursor.CROSSHAIR_CURSOR );
-        if (center_draw) {
-          current_cursor = Cursor.getPredefinedCursor ( Cursor.HAND_CURSOR );
+        modify_mode = !modify_mode;
+        if (modify_mode) {
+          current_cursor = Cursor.getPredefinedCursor ( Cursor.CROSSHAIR_CURSOR );
+          if (center_draw) {
+            current_cursor = Cursor.getPredefinedCursor ( Cursor.HAND_CURSOR );
+          }
+          setCursor ( current_cursor );
+          stroke_started = false;
+          if (draw_menu_item != null) {
+            draw_menu_item.setSelected(true);
+          }
+        } else {
+          current_cursor = b_cursor;
+          setCursor ( current_cursor );
+          stroke_started = false;
+          if (move_menu_item != null) {
+            move_menu_item.setSelected(true);
+          }
         }
-        setCursor ( current_cursor );
-        stroke_started = false;
-        if (draw_menu_item != null) {
-          draw_menu_item.setSelected(true);
-        }
-      } else {
-        current_cursor = b_cursor;
-        setCursor ( current_cursor );
-        stroke_started = false;
-        if (move_menu_item != null) {
-          move_menu_item.setSelected(true);
-        }
-      }
       }
     } else if (Character.toUpperCase(e.getKeyChar()) == 'P') {
+    } else if (Character.toUpperCase(e.getKeyChar()) == 'A') {
+      System.out.println ( "Add a point between two nearest points" );
+    } else if (Character.toUpperCase(e.getKeyChar()) == 'D') {
+      System.out.println ( "Delete the nearest point" );
+    } else if (Character.toUpperCase(e.getKeyChar()) == 'N') {
+      System.out.println ( "Begin drawing a new trace" );
+      // New trace mode is modify_mode but not editing_mode
+      if (editing_mode) {
+        // Send the right mouse click with shift enabled (5) to leave editing mode
+        this.mouseClicked ( new MouseEvent(this, 500, 0, 5, 100, 100, 1, false, 3) ); // Right mouse with shift enabled
+      }
+      if (!modify_mode) {
+        // Send the right mouse click without shift enabled (4) to enter modify mode
+        this.mouseClicked ( new MouseEvent(this, 500, 0, 4, 100, 100, 1, false, 3) ); // Right mouse without shift enabled
+      }
+    } else if (Character.toUpperCase(e.getKeyChar()) == 'E') {
+      System.out.println ( "Begin editing existing traces" );
+      // Call the mouseClicked function with a faked MouseEvent
+      /* public MouseEvent(
+            Component source, // use this
+            int id,           // use 300
+            long when,        // use 0
+            int modifiers,    // use 4 (unshifted) or use 5 (shifted)
+            int x,
+            int y,
+            int clickCount,
+            boolean popupTrigger,
+            int button)
+      */
+      // Editing mode is both editing_mode and modify_mode set to true
+      // Set them both to false, and send mouse clicks to enable them both
+      if (!editing_mode) {
+        // Send the right mouse click with shift enabled (5) to enter editing mode
+        this.mouseClicked ( new MouseEvent(this, 500, 0, 5, 100, 100, 1, false, 3) ); // Right mouse with shift enabled
+      }
+      if (!modify_mode) {
+        // Send the right mouse click without shift enabled (4) to enter modify mode
+        this.mouseClicked ( new MouseEvent(this, 500, 0, 4, 100, 100, 1, false, 3) ); // Right mouse without shift enabled
+      }
     } else {
       // System.out.println ( "KeyEvent = " + e );
     }
@@ -771,6 +812,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     // System.out.println ( "Key Released" );
     //super.keyReleased ( e );
   }
+
+
 
 
   String new_series_file_name = null;
