@@ -352,8 +352,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   public void mouseClicked ( MouseEvent e ) {
     // System.out.println ( "Mouse clicked: " + e );
     if (e.getButton() == MouseEvent.BUTTON3) {
-      // new Mouse
-      System.out.println ( "Right Mouse: " + e.getSource() + " " + e.getID() + " "  + e.getWhen() + " "  + e.getModifiers() + " "  + e.getX() + " "  + e.getY() + " "  + e.getClickCount() + " "  + e.isPopupTrigger() + " "  + e.getButton() );
+      // System.out.println ( "Right Mouse: " + e.getSource() + " " + e.getID() + " "  + e.getWhen() + " "  + e.getModifiers() + " "  + e.getX() + " "  + e.getY() + " "  + e.getClickCount() + " "  + e.isPopupTrigger() + " "  + e.getButton() );
       // This is a mode change of some sort
       if (e.isShiftDown()) {
         // This is changing between drawing and editing
@@ -765,14 +764,21 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
             int button)
       */
       // Editing mode is both editing_mode and modify_mode set to true
-      // Set them both to false, and send mouse clicks to enable them both
-      if (!editing_mode) {
-        // Send the right mouse click with shift enabled (5) to enter editing mode
-        this.mouseClicked ( new MouseEvent(this, 500, 0, 5, 100, 100, 1, false, 3) ); // Right mouse with shift enabled
-      }
-      if (!modify_mode) {
-        // Send the right mouse click without shift enabled (4) to enter modify mode
+      if ( (editing_mode) && (modify_mode) ) {
+        // Already editing, so switch to move mode (more natural option)
+        // Send the right mouse click without shift enabled (4) to leave modify mode
         this.mouseClicked ( new MouseEvent(this, 500, 0, 4, 100, 100, 1, false, 3) ); // Right mouse without shift enabled
+      } else {
+        // Not in editing mode, so enter as needed
+        // Set them both to false, and send mouse clicks to enable them both
+        if (!editing_mode) {
+          // Send the right mouse click with shift enabled (5) to enter editing mode
+          this.mouseClicked ( new MouseEvent(this, 500, 0, 5, 100, 100, 1, false, 3) ); // Right mouse with shift enabled
+        }
+        if (!modify_mode) {
+          // Send the right mouse click without shift enabled (4) to enter modify mode
+          this.mouseClicked ( new MouseEvent(this, 500, 0, 4, 100, 100, 1, false, 3) ); // Right mouse without shift enabled
+        }
       }
     } else {
       // System.out.println ( "KeyEvent = " + e );
