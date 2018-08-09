@@ -365,7 +365,9 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
           active_contour.close();
           active_contour.init_bezier ( active_contour.is_bezier );  // Recompute beziers after closing
           active_contour.fix_handles();
-          series.add_contour ( active_contour );
+          if (series != null) {
+            series.add_contour ( active_contour );
+          }
         }
         active_contour = null;
         // segment_draw = false;
