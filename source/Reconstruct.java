@@ -647,6 +647,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   JMenuItem about_menu_item = null;
   JMenuItem menu_overview_menu_item = null;
   JMenuItem mouse_clicks_menu_item = null;
+  JMenuItem hot_keys_menu_item = null;
 
   JMenuItem version_menu_item = null;
 
@@ -839,8 +840,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       String s =
                 "Reconstruct Java\n" +
                 "\n" +
-                "  Version 0.60\n" +
-                "  August 7th, 2018\n" +
+                "  Version 0.61\n" +
+                "  August 8th, 2018\n" +
                 "\n";
       JOptionPane.showMessageDialog(null, s, "Reconstruct Java Version", JOptionPane.INFORMATION_MESSAGE);
     } else if ( action_source == about_menu_item ) {
@@ -928,6 +929,19 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
                 "    Right Click returns to Move Mode.\n" +
                 "\n";
       JOptionPane.showMessageDialog(null, s, "Reconstruct Java Mouse Operation", JOptionPane.INFORMATION_MESSAGE);
+    } else if ( action_source == hot_keys_menu_item ) {
+      String s =
+                "Hot Keys:\n" +
+                "\n" +
+                "  A = Add a new point between closest point and its closest neighbor\n" +
+                "\n" +
+                "  D = Delete closest point\n" +
+                "\n" +
+                "  E = Edit Mode\n" +
+                "\n" +
+                "  N = New Trace Mode\n" +
+                "\n";
+      JOptionPane.showMessageDialog(null, s, "Reconstruct Java Hot Keys", JOptionPane.INFORMATION_MESSAGE);
     } else if ( action_source == edit_menu_item ) {
       current_cursor = Cursor.getPredefinedCursor ( Cursor.DEFAULT_CURSOR );
       setCursor ( current_cursor );
@@ -1694,6 +1708,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
         help_menu.add ( mi = new JMenuItem("Key commands...") );
         mi.addActionListener(zp);
         help_menu.add ( zp.mouse_clicks_menu_item = mi = new JMenuItem("Mouse clicks...") );
+        mi.addActionListener(zp);
+        help_menu.add ( zp.hot_keys_menu_item = mi = new JMenuItem("Hot Keys...") );
         mi.addActionListener(zp);
         help_menu.addSeparator();
         help_menu.add ( mi = new JMenuItem("License...") );
