@@ -531,20 +531,24 @@ public class ContourClass {
                 y = r.y_to_pyi(dy-h[0][1]);
                 if (r.active_point == h[0]) {
                   g.setColor ( new Color ( 255, 255, 255 ) );
-                  g.fillOval ( x-point_radius, y-point_radius, 2*point_radius, 2*point_radius );
+                  //g.fillOval ( x-point_radius, y-point_radius, 2*point_radius, 2*point_radius );
+                  g.fillOval ( x-(point_radius+1), y-(point_radius+1), 2*(point_radius+1), 2*(point_radius+1) );
                 } else {
                   g.setColor ( new Color ( 150, 0, 0 ) );
                   g.drawOval ( x-point_radius, y-point_radius, 2*point_radius, 2*point_radius );
+                  g.drawOval ( x-(point_radius+1), y-(point_radius+1), 2*(point_radius+1), 2*(point_radius+1) );
                 }
 
                 x = r.x_to_pxi(h[1][0]-dx);
                 y = r.y_to_pyi(dy-h[1][1]);
                 if (r.active_point == h[1]) {
                   g.setColor ( new Color ( 255, 255, 255 ) );
-                  g.fillOval ( x-point_radius, y-point_radius, 2*point_radius, 2*point_radius );
+                  //g.fillOval ( x-point_radius, y-point_radius, 2*point_radius, 2*point_radius );
+                  g.fillOval ( x-(point_radius+1), y-(point_radius+1), 2*(point_radius+1), 2*(point_radius+1) );
                 } else {
                   g.setColor ( new Color ( 0, 150, 0 ) );
                   g.drawOval ( x-point_radius, y-point_radius, 2*point_radius, 2*point_radius );
+                  g.drawOval ( x-(point_radius+1), y-(point_radius+1), 2*(point_radius+1), 2*(point_radius+1) );
                 }
               }
             }
@@ -566,9 +570,11 @@ public class ContourClass {
                 if (r.active_point == p0) {
                   // System.out.println ( "Found active point" );
                   g.setColor ( new Color ( 255, 255, 255 ) );
-                  g.fillOval ( x-point_radius, y-point_radius, 2*point_radius, 2*point_radius );
+                  //g.fillOval ( x-point_radius, y-point_radius, 2*point_radius, 2*point_radius );
+                  g.fillOval ( x-(point_radius+1), y-(point_radius+1), 2*(point_radius+1), 2*(point_radius+1) );
                 } else {
                   g.drawOval ( x-point_radius, y-point_radius, 2*point_radius, 2*point_radius );
+                  g.drawOval ( x-(point_radius+1), y-(point_radius+1), 2*(point_radius+1), 2*(point_radius+1) );
                 }
                 if (r.show_coords) {
                   String label = "point=(" + (float)(p0[0]) + "," + (float)(p0[1]) + ")";
