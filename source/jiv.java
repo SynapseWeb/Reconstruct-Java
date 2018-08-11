@@ -1,6 +1,7 @@
 /* This is a java substitute for some qiv functions. */
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.awt.*;
 import java.awt.event.*;
 import java.util.*;
@@ -321,6 +322,8 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 		  // file_chooser.setFileFilter(filter);
 		  // data_set_chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		  file_chooser.setMultiSelectionEnabled(true);
+      FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "gif", "png", "tiff");
+      file_chooser.setFileFilter(filter);
 		  int returnVal = file_chooser.showDialog(this, "Image Files to Add");
 		  if ( returnVal == JFileChooser.APPROVE_OPTION ) {
 		    File selected_files[] = file_chooser.getSelectedFiles();
