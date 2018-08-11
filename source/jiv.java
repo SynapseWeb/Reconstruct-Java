@@ -24,21 +24,46 @@ class MyFileChooser extends JFileChooser {
   }
 }
 
+class jiv_frame {
+  public File f=null;
+  public boolean valid=false;
+  public BufferedImage image=null;
+
+  jiv_frame ( File f, boolean load ) {
+    this.f = f;
+    this.valid = false;
+    if ( load && (f != null) ) {
+      try {
+        this.image = ImageIO.read(f);
+        this.valid = true;
+      } catch (Exception oe) {
+        this.image = null;
+        this.valid = false;
+        JOptionPane.showMessageDialog(null, "File error for: " + this.f, "File Path Error", JOptionPane.WARNING_MESSAGE);
+      }
+    }
+  }
+
+  public String toString() {
+    return ( "" + this.f );
+  }
+}
+
 
 public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListener, MouseListener, KeyListener {
 
   JFrame parent_frame = null;
 
 	static int w=800, h=600;
-	
-	boolean drawing_mode = false;
+
   boolean center_draw = false;
 	boolean stroke_started = false;
-  BufferedImage image_frame = null;
-  BufferedImage image_frames[] = null;
-  int frame_index = -1;
+
   String current_directory = "";
   MyFileChooser file_chooser = null;
+
+	ArrayList<jiv_frame> images = new ArrayList<jiv_frame>();  // Argument (if any) specifies initial capacity (default 10)
+  int frame_index = -1;
 
 	ArrayList strokes = new ArrayList();  // Argument (if any) specifies initial capacity (default 10)
 	ArrayList stroke  = null;
@@ -51,6 +76,17 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
       set_scale_to_fit ( -100, 100, -100, 100, win_w, win_h );
 	    recalculate = false;
 	  }
+
+    BufferedImage image_frame = null;
+
+    if (images != null) {
+      if (images.size() > 0) {
+        if (frame_index < 0) frame_index = 0;
+        if (frame_index >= images.size()) frame_index = images.size()-1;
+        image_frame = images.get(frame_index).image;
+      }
+    }
+
 		if (image_frame == null) {
 		  System.out.println ( "Image is null" );
 		} else {
@@ -79,13 +115,11 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
   
 
 	Cursor current_cursor = null;
-	Cursor h_cursor = null;
-	Cursor v_cursor = null;
 	Cursor b_cursor = null;
 	int cursor_size = 33;
 
   public void mouseEntered ( MouseEvent e ) {
-    if ( (h_cursor == null) || (v_cursor == null) || (b_cursor == null) ) {
+    if ( b_cursor == null ) {
       Toolkit tk = Toolkit.getDefaultToolkit();
       Graphics2D cg = null;
       BufferedImage cursor_image = null;
@@ -205,16 +239,19 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
     if (e.isAltDown()) System.out.println ( "Wheel Event with Alt" );
     if (e.isMetaDown()) System.out.println ( "Wheel Event with Meta" );
     */
-    if (this.image_frames.length <= 0) {
+    if (images == null) {
       super.mouseWheelMoved ( e );
     } else {
       //if (modify_mode == true) {
       if (e.isShiftDown()) {
-        // scroll_wheel_position += e.getWheelRotation();
-        int scroll_wheel_delta = -e.getWheelRotation();
-        frame_index += scroll_wheel_delta;
-        if (this.parent_frame != null) {
-          this.parent_frame.setTitle ( "Section: " + (frame_index+1) );
+        if (images != null) {
+          int scroll_wheel_delta = -e.getWheelRotation();
+          frame_index += scroll_wheel_delta;
+          if (frame_index < 0) frame_index = 0;
+          if (frame_index >= images.size()) frame_index = images.size()-1;
+          if (this.parent_frame != null) {
+            this.parent_frame.setTitle ( "Section: " + (frame_index+1) );
+          }
         }
       } else {
         super.mouseWheelMoved ( e );
@@ -244,27 +281,20 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
     // System.out.println ( "Key Pressed, e = " + e );
     if ( (e.getKeyCode() == 33) || (e.getKeyCode() == 34) ) {
       // Figure out if there's anything to do
-      if (this.image_frames.length > 1) {
-        // Find the current index
-        int current_index = -1;
-        for (int i=0; i<this.image_frames.length; i++) {
-          if (this.image_frame == this.image_frames[i]) {
-            current_index = i;
-            break;
+      if (images != null) {
+        if (images.size() > 0) {
+          int delta = 0;
+          if (e.getKeyCode() == 33) {
+            System.out.println ( "Page Up with " + images.size() + " frames" );
+            delta = 1;
+          } else if (e.getKeyCode() == 34) {
+            System.out.println ( "Page Down with " + images.size() + " frames" );
+            delta = -1;
           }
-        }
-        // System.out.println ( "Current image is " + current_index );
-        int delta = 0;
-        if (e.getKeyCode() == 33) {
-          // System.out.println ( "Page Up with " + this.image_frames.length + " frames" );
-          delta = 1;
-        } else if (e.getKeyCode() == 34) {
-          // System.out.println ( "Page Down with " + this.image_frames.length + " frames" );
-          delta = -1;
-        }
-        if ((current_index+delta >= 0) && (current_index+delta < this.image_frames.length)) {
-          this.image_frame = this.image_frames[current_index+delta];
-          repaint();
+          if ((frame_index+delta >= 0) && (frame_index+delta < images.size())) {
+            frame_index += delta;
+            repaint();
+          }
         }
       }
     }
@@ -286,15 +316,7 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 		
 		if (cmd.equalsIgnoreCase("Move")) {
       current_cursor = b_cursor;
-      /*
-        Alternative predefined cursors from java.awt.Cursor:
-        current_cursor = Cursor.getPredefinedCursor ( Cursor.CROSSHAIR_CURSOR );
-        current_cursor = Cursor.getPredefinedCursor ( Cursor.HAND_CURSOR );
-        current_cursor = Cursor.getPredefinedCursor ( Cursor.MOVE_CURSOR );
-      */
       setCursor ( current_cursor );
-		  //center_draw = false;
-		  drawing_mode = false;
 		  stroke_started = false;
 		  repaint();
 		} else if (cmd.equalsIgnoreCase("Draw")) {
@@ -303,24 +325,18 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
         current_cursor = Cursor.getPredefinedCursor ( Cursor.HAND_CURSOR );
       }
       setCursor ( current_cursor );
-		  // center_draw = false;
-		  drawing_mode = true;
 		  stroke_started = false;
 		  repaint();
 		} else if (cmd.equalsIgnoreCase("Clear")) {
 	    strokes = new ArrayList();
 	    stroke  = null;
 	    repaint();
+		} else if (cmd.equalsIgnoreCase("Print")) {
+		  System.out.println ( "Images:" );
+	    for (int i=0; i<this.images.size(); i++) {
+        System.out.println ( "  " + this.images.get(i) );
+      }
     } else if ( action_source == import_images_menu_item ) {
-
-			System.out.println ( "Opening new file ..." );
-			// String old_path = current_base_path;
-
-		  // MyFileChooser file_chooser = new MyFileChooser ( this.current_directory );
-		  //FileNameExtensionFilter filter = new FileNameExtensionFilter("Text Files", "txt");
-		  // FileNameExtensionFilter filter = new FileNameExtensionFilter("JPG & GIF Images", "jpg", "gif");
-		  // file_chooser.setFileFilter(filter);
-		  // data_set_chooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 		  file_chooser.setMultiSelectionEnabled(true);
       FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "gif", "png", "tiff");
       file_chooser.setFileFilter(filter);
@@ -330,33 +346,13 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 		    if (selected_files.length > 0) {
 		      for (int i=0; i<selected_files.length; i++) {
             System.out.println ( "You chose this file: " + selected_files[i] );
+            this.images.add ( new jiv_frame ( selected_files[i], true ) );
 		      }
-		    }
-        System.out.println ( "You chose to open this file: " /* + chooser.getCurrentDirectory() + " / " */ + file_chooser.getSelectedFile() );
-        String file_path_and_name = "?Unknown?";
-        try {
-          file_path_and_name = "" + file_chooser.getSelectedFile();
-          File image_file = new File ( file_path_and_name );
-          BufferedImage new_image;
-          new_image = ImageIO.read(image_file);
-          this.image_frame = new_image;
-
-          if (this.image_frames == null) {
-            this.image_frames = new BufferedImage[1];
-          } else {
-            BufferedImage temp[] = new BufferedImage[this.image_frames.length+1];
-            for (int i=0; i<this.image_frames.length; i++) {
-              temp[i] = this.image_frames[i];
-            }
-            this.image_frames = temp;
-          }
-          this.image_frames[this.image_frames.length-1] = this.image_frame;
-          repaint();
-        } catch (Exception oe) {
-	        // this.image_frame = null;
-	        JOptionPane.showMessageDialog(null, "File error for: " + file_path_and_name, "File Path Error", JOptionPane.WARNING_MESSAGE);
+		      if (frame_index < 0) {
+		        frame_index = 0;
+		      }
 	        repaint();
-        }
+		    }
 		  }
 		} else if (cmd.equalsIgnoreCase("List Sections...")) {
 		  System.out.println ( "Sections: ..." );
@@ -390,9 +386,6 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 
 				JMenuBar menu_bar = new JMenuBar();
           JMenuItem mi;
-          ButtonGroup bg;
-
-          JMenu program_menu = new JMenu("Program");
 
           JMenu series_menu = new JMenu("File");
 
@@ -400,6 +393,9 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
               import_menu.add ( mi = zp.import_images_menu_item = new JMenuItem("Images...") );
               mi.addActionListener(zp);
             series_menu.add ( import_menu );
+
+            series_menu.add ( mi = new JMenuItem("Print") );
+            mi.addActionListener(zp);
 
             series_menu.addSeparator();
 
@@ -425,17 +421,6 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 
 
           JMenu mode_menu = new JMenu("Mode");
-            bg = new ButtonGroup();
-            System.out.println ( "Initializing Drawing Mode with drawing_mode: "  + zp.drawing_mode );
-            mode_menu.add ( zp.move_menu_item = mi = new JRadioButtonMenuItem("Move", !zp.drawing_mode) );
-            mi.addActionListener(zp);
-            bg.add ( mi );
-            mode_menu.add ( zp.draw_menu_item = mi = new JRadioButtonMenuItem("Draw", zp.drawing_mode) );
-            mi.addActionListener(zp);
-            bg.add ( mi );
-            System.out.println ( "Initializing Center Drawing check box with: "  + zp.center_draw );
-            mode_menu.add ( zp.center_draw_menu_item = mi = new JCheckBoxMenuItem("Center Drawing", zp.center_draw) );
-            mi.addActionListener(zp);
             mode_menu.add ( mi = new JMenuItem("Dump") );
             mi.addActionListener(zp);
             mode_menu.add ( mi = new JMenuItem("Clear") );
@@ -446,13 +431,6 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 				
 				zp.setBackground ( new Color (0,0,0) );
 		    zp.file_chooser = new MyFileChooser ( zp.current_directory );
-
-        try {
-			    zp.image_frame = ImageIO.read(new File("test.png"));
-			    // int type = zp.image_frame.getType() == 0 ? BufferedImage.TYPE_INT_ARGB : zp.image_frame.getType();
-		    } catch (IOException e) {
-			    System.out.println( "\n\nCannot open default \"test.png\" file:\n" + e + "\n" );
-		    }
 
 				f.add ( zp );
         zp.addKeyListener ( zp );
