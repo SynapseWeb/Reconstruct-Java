@@ -336,8 +336,10 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
       }
     } else if ( action_source == import_images_menu_item ) {
 		  file_chooser.setMultiSelectionEnabled(true);
-      FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "gif", "png", "tiff");
+		  file_chooser.resetChoosableFileFilters();
+      FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "jpeg", "gif", "png", "tif", "tiff");
       file_chooser.setFileFilter(filter);
+      file_chooser.setSelectedFiles(new File[0]); // This is a failed attempt to clear the files in the text line list
 		  int returnVal = file_chooser.showDialog(this, "Import Selected Images");
 		  if ( returnVal == JFileChooser.APPROVE_OPTION ) {
 		    File selected_files[] = file_chooser.getSelectedFiles();
