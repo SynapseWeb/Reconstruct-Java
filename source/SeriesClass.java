@@ -206,6 +206,7 @@ public class SeriesClass {
           f.close();
         } catch (Exception e) {
           System.out.println ( "Error writing to file " + image_files[i] + " into " + series_prefix + (i+1) );
+          System.out.println ( "  Exception: " + e );
         }
       }
       this.load_from_xml ( series_file );
@@ -352,33 +353,35 @@ public class SeriesClass {
   public void paint_section (Graphics g, Reconstruct r) {
     // BufferedImage image_frame = null;
     if (sections != null) {
-      if (section_index < sections.length) {
-        OutOfMemoryError last_mem_err = null;
-        boolean section_painted = false;
-        int fartherest_section_index = ( section_index + (sections.length/2) ) % sections.length;
-        int delta = 0;
-        int purge_1 = 0;
-        int purge_2 = 0;
-        do {
-          purge_1 = (fartherest_section_index+delta) % sections.length;
-          purge_2 = (fartherest_section_index-delta) % sections.length;
-          try {
-            sections[section_index].paint_section ( g, r, this );
-            section_painted = true;
-          } catch (OutOfMemoryError mem_err) {
-            // Attempt to remove images fartherest away from this (assuming circular indexing)
-            System.out.println ( "         SeriesClass.paint_section: **** Out of Memory Error, try purging images on sections " + purge_1 + " and " + purge_2 );
-            sections[purge_1].purge_images();
-            sections[purge_2].purge_images();
-            if ( (purge_1 != section_index) && (purge_2 != section_index) ) {
-              delta += 1;
+      if (sections.length > 0) {
+        if (section_index < sections.length) {
+          OutOfMemoryError last_mem_err = null;
+          boolean section_painted = false;
+          int fartherest_section_index = ( section_index + (sections.length/2) ) % sections.length;
+          int delta = 0;
+          int purge_1 = 0;
+          int purge_2 = 0;
+          do {
+            purge_1 = (fartherest_section_index+delta) % sections.length;
+            purge_2 = (fartherest_section_index-delta) % sections.length;
+            try {
+              sections[section_index].paint_section ( g, r, this );
+              section_painted = true;
+            } catch (OutOfMemoryError mem_err) {
+              // Attempt to remove images fartherest away from this (assuming circular indexing)
+              System.out.println ( "         SeriesClass.paint_section: **** Out of Memory Error, try purging images on sections " + purge_1 + " and " + purge_2 );
+              sections[purge_1].purge_images();
+              sections[purge_2].purge_images();
+              if ( (purge_1 != section_index) && (purge_2 != section_index) ) {
+                delta += 1;
+              }
+              last_mem_err = mem_err;
             }
-            last_mem_err = mem_err;
+          } while ( (section_painted == false) && (purge_1 != section_index) && (purge_2 != section_index) );
+          if (section_painted == false) {
+            System.out.println ( "SeriesClass.paint_section: **** Out of Memory Error" );
+            throw ( last_mem_err );
           }
-        } while ( (section_painted == false) && (purge_1 != section_index) && (purge_2 != section_index) );
-        if (section_painted == false) {
-          System.out.println ( "SeriesClass.paint_section: **** Out of Memory Error" );
-          throw ( last_mem_err );
         }
       }
     }
