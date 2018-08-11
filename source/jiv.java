@@ -42,36 +42,6 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 	ArrayList strokes = new ArrayList();  // Argument (if any) specifies initial capacity (default 10)
 	ArrayList stroke  = null;
 
-  void dump_strokes() {
-    for (int i=0; i<strokes.size(); i++) {
-      System.out.println ( " Stroke " + i );
-      ArrayList s = (ArrayList)(strokes.get(i));
-	    for (int j=0; j<s.size(); j++) {
-	      double p[] = (double[])(s.get(j));
-	      System.out.println ( "   Point " + j + " = [" + p[0] + "," + p[1] + "]" );
-	    }
-    }
-  }
-
-  void draw_stroke ( Graphics g, ArrayList s ) {
-    if (s.size() > 0) {
-      int line_padding = 1;
-      for (int xoffset=-line_padding; xoffset<=line_padding; xoffset++) {
-        for (int yoffset=-line_padding; yoffset<=line_padding; yoffset++) {
-          double p0[] = (double[])(s.get(0));
-          for (int j=1; j<s.size(); j++) {
-            double p1[] = (double[])(s.get(j));
-      		  g.drawLine (  xoffset+x_to_pxi(p0[0]),   yoffset+y_to_pyi(p0[1]),  xoffset+x_to_pxi(p1[0]),  yoffset+y_to_pyi(p1[1]) );
-            // System.out.println ( "   Line " + j + " = [" + p0[0] + "," + p0[1] + "] to [" + p1[0] + "," + p1[1] + "]" );
-      		  p0 = new double[2];
-      		  p0[0] = p1[0];
-      		  p0[1] = p1[1];
-          }
-        }
-      }
-    }
-  }
-
 	public void paint_frame (Graphics g) {
 	  Dimension win_s = getSize();
 	  int win_w = win_s.width;
@@ -101,24 +71,6 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 		  int draw_h = y_to_pyi(img_hf/2.0) - draw_y;
   		g.drawImage ( image_frame, draw_x, draw_y, draw_w, draw_h, this );
   		//g.drawImage ( image_frame, (win_w-img_w)/2, (win_h-img_h)/2, img_w, img_h, this );
-    }
-
-    g.setColor ( new Color ( 200, 0, 0 ) );
-    for (int i=0; i<strokes.size(); i++) {
-      // System.out.println ( " Stroke " + i );
-      ArrayList s = (ArrayList)(strokes.get(i));
-      draw_stroke ( g, s );
-    }
-    if (stroke != null) {
-      g.setColor ( new Color ( 255, 0, 0 ) );
-      draw_stroke ( g, stroke );
-    }
-    if (center_draw) {
-      g.setColor ( new Color ( 255, 255, 255 ) );
-      int cx = getSize().width / 2;
-      int cy = getSize().height / 2;
-      g.drawLine ( cx-10, cy, cx+10, cy );
-      g.drawLine ( cx, cy-10, cx, cy+10 );
     }
 	}
 
@@ -270,83 +222,18 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
   public void mousePressed ( MouseEvent e ) {
     // System.out.println ( "Mouse pressed" );
     super.mousePressed(e);
-    if (drawing_mode == true) {
-      if (stroke != null) {
-        // System.out.println ( "Saving previous stroke" );
-        strokes.add ( stroke );
-      }
-      // System.out.println ( "Making new stroke" );
-      stroke  = new ArrayList(100);
-      double p[] = { px_to_x(e.getX()), py_to_y(e.getY()) };
-      if (center_draw) {
-        p[0] = px_to_x(getSize().width / 2);
-        p[1] = py_to_y(getSize().height / 2);
-      }
-      // System.out.println ( "Adding point " + p[0] + "," + p[1] );
-      stroke.add ( p );
-      repaint();
-    }
   }
 
   public void mouseReleased ( MouseEvent e ) {
     // System.out.println ( "Mouse released" );
-    if (drawing_mode == false) {
-      super.mouseReleased(e);
-    } else {
-      if (stroke != null) {
-        double p[] = { px_to_x(e.getX()), py_to_y(e.getY()) };
-        if (center_draw) {
-          p[0] = px_to_x(getSize().width / 2);
-          p[1] = py_to_y(getSize().height / 2);
-        }
-        // System.out.println ( "Adding point " + p[0] + "," + p[1] );
-        stroke.add ( p );
-        // System.out.println ( "Adding active stroke to strokes list" );
-        strokes.add ( stroke );
-        // System.out.println ( "Setting stroke to null" );
-        stroke = null;
-        repaint();
-      }
-    }
+    super.mouseReleased(e);
   }
 
 
   // MouseMotionListener methods:
 
   public void mouseDragged ( MouseEvent e ) {
-    // System.out.println ( "Mouse dragged" );
-    if (drawing_mode == false) {
-      super.mouseDragged(e);
-    } else {
-      if (center_draw) {
-        super.mouseDragged(e);
-      }
-      if (stroke == null) {
-        // System.out.println ( "stroke was null, making new array" );
-        stroke  = new ArrayList(100);
-      }
-      if (stroke != null) {
-        double p[] = { px_to_x(e.getX()), py_to_y(e.getY()) };
-        if (center_draw) {
-          p[0] = px_to_x(getSize().width / 2);
-          p[1] = py_to_y(getSize().height / 2);
-        }
-        // System.out.println ( "Adding point " + p[0] + "," + p[1] );
-        stroke.add ( p );
-        repaint();
-      }
-    }
-    /*
-    return;
-    // System.out.println ( "Mouse dragged by " + e.getX() + "," + e.getY() );
-    if (!x_locked) {
-      mouse_dragging_offset_x = e.getX() - mouse_down_x;
-    }
-    if (!y_locked) {
-      mouse_dragging_offset_y = e.getY() - mouse_down_y;
-    }
-    repaint();
-    */
+    super.mouseDragged(e);
   }
 
   public void mouseMoved ( MouseEvent e ) {
@@ -391,25 +278,6 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
     // System.out.println ( "Key: " + e );
     if (Character.toUpperCase(e.getKeyChar()) == ' ') {
       // Space bar toggles between drawing mode and move mode
-      drawing_mode = !drawing_mode;
-      if (drawing_mode) {
-        current_cursor = Cursor.getPredefinedCursor ( Cursor.CROSSHAIR_CURSOR );
-        if (center_draw) {
-          current_cursor = Cursor.getPredefinedCursor ( Cursor.HAND_CURSOR );
-        }
-        setCursor ( current_cursor );
-        stroke_started = false;
-        if (draw_menu_item != null) {
-          draw_menu_item.setSelected(true);
-        }
-      } else {
-        current_cursor = b_cursor;
-        setCursor ( current_cursor );
-        stroke_started = false;
-        if (move_menu_item != null) {
-          move_menu_item.setSelected(true);
-        }
-      }
     } else if (Character.toUpperCase(e.getKeyChar()) == 'P') {
     } else {
       // System.out.println ( "KeyEvent = " + e );
@@ -483,15 +351,6 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 		  drawing_mode = true;
 		  stroke_started = false;
 		  repaint();
-		} else if (cmd.equalsIgnoreCase("Center Drawing")) {
-		  JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
-		  center_draw = item.getState();
-		  if (drawing_mode) {
-        current_cursor = Cursor.getPredefinedCursor ( Cursor.HAND_CURSOR );
-      }
-		  repaint();
-		} else if (cmd.equalsIgnoreCase("Dump")) {
-		  dump_strokes();
 		} else if (cmd.equalsIgnoreCase("Clear")) {
 	    strokes = new ArrayList();
 	    stroke  = null;
