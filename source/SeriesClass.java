@@ -209,6 +209,8 @@ public class SeriesClass {
         }
       }
       this.load_from_xml ( series_file );
+    } else {
+      JOptionPane.showMessageDialog(null, "Create a Series before importing images", "Cannot Import Images", JOptionPane.INFORMATION_MESSAGE);
     }
   }
 
