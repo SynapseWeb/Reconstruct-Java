@@ -1,4 +1,4 @@
-all: ZoomPanLib.class Reconstruct.jar BezierTracing.jar ZoomPanDraw.jar sha1sum.txt
+all: ZoomPanLib.class Reconstruct.jar BezierTracing.jar ZoomPanDraw.jar jiv.jar sha1sum.txt
 
 AlignSWiFT.class: AlignSWiFT.java makefile
 	javac -nowarn -source 1.6 AlignSWiFT.java
@@ -31,6 +31,10 @@ Reconstruct.jar: Reconstruct.java ZoomPanLib.class XML_Parser.class TransformCla
 ZoomPanDraw.jar: ZoomPanDraw.java ZoomPanLib.java makefile
 	javac -nowarn -source 1.6 ZoomPanDraw.java
 	jar -cfe ZoomPanDraw.jar ZoomPanDraw *.class
+
+jiv.jar: jiv.java ZoomPanLib.java makefile
+	javac -nowarn -source 1.6 jiv.java
+	jar -cfe jiv.jar jiv *.class
 
 BezierTracing.jar: BezierTracing.java makefile
 	rm -f *.class
