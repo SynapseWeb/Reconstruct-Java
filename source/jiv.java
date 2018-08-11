@@ -72,36 +72,55 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 	    recalculate = false;
 	  }
 
-    BufferedImage image_frame = null;
+    BufferedImage frame_image = null;
 
     if (frames != null) {
       if (frames.size() > 0) {
         if (frame_index < 0) frame_index = 0;
         if (frame_index >= frames.size()) frame_index = frames.size()-1;
-        image_frame = frames.get(frame_index).image;
+        frame_image = frames.get(frame_index).image;
       }
     }
 
-		if (image_frame == null) {
+		if (frame_image == null) {
 		  System.out.println ( "Image is null" );
 		} else {
-		  // System.out.println ( "Image is NOT null" );
-		  int img_w = image_frame.getWidth();
-		  int img_h = image_frame.getHeight();
-		  double img_wf = 200;
-		  double img_hf = 200;
-		  if (img_w >= img_h) {
-		    // Make the image wider to fit
-		    img_wf = img_w * img_wf / img_h;
-		  } else {
-		    // Make the height shorter to fit
-		    img_hf = img_h * img_hf / img_w;
-		  }
-		  int draw_x = x_to_pxi(-img_wf/2.0);
-		  int draw_y = y_to_pyi(-img_hf/2.0);
-		  int draw_w = x_to_pxi(img_wf/2.0) - draw_x;
-		  int draw_h = y_to_pyi(img_hf/2.0) - draw_y;
-  		g.drawImage ( image_frame, draw_x, draw_y, draw_w, draw_h, this );
+      /*
+      // System.out.println ( "Image is NOT null" );
+      int img_w = frame_image.getWidth();
+      int img_h = frame_image.getHeight();
+      double img_wf = 200;
+      double img_hf = 200;
+      if (img_w >= img_h) {
+        // Make the image wider to fit
+        img_wf = img_w * img_wf / img_h;
+      } else {
+        // Make the height shorter to fit
+        img_hf = img_h * img_hf / img_w;
+      }
+      int draw_x = x_to_pxi(-img_wf/2.0);
+      int draw_y = y_to_pyi(-img_hf/2.0);
+      int draw_w = x_to_pxi(img_wf/2.0) - draw_x;
+      int draw_h = y_to_pyi(img_hf/2.0) - draw_y;
+      g.drawImage ( frame_image, draw_x, draw_y, draw_w, draw_h, this );
+      */
+
+
+      // priority_println ( 50, "Image is NOT null" );
+		  int img_w = frame_image.getWidth();
+		  int img_h = frame_image.getHeight();
+
+      double img_wf = img_w;
+      double img_hf = img_h;
+
+      int draw_x = x_to_pxi(0);
+      int draw_y = y_to_pyi(0);
+      int draw_w = x_to_pxi(img_wf) - draw_x;
+      int draw_h = y_to_pyi(img_hf) - draw_y;
+
+      g.drawImage ( frame_image, draw_x, draw_y-draw_h, draw_w, draw_h, this );
+      //g.drawImage ( frame_image, (win_w-img_w)/2, (win_h-img_h)/2, img_w, img_h, this );
+
     }
 	}
 
@@ -298,6 +317,8 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 
 
   JMenuItem import_images_menu_item=null;
+  JMenuItem clear_images_menu_item=null;
+  JMenuItem clear_all_images_menu_item=null;
 
 
   // ActionPerformed methods (mostly menu responses):
@@ -317,7 +338,7 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 		  file_chooser.setMultiSelectionEnabled(true);
       FileNameExtensionFilter filter = new FileNameExtensionFilter("Image Files", "jpg", "gif", "png", "tiff");
       file_chooser.setFileFilter(filter);
-		  int returnVal = file_chooser.showDialog(this, "Add Selected Images");
+		  int returnVal = file_chooser.showDialog(this, "Import Selected Images");
 		  if ( returnVal == JFileChooser.APPROVE_OPTION ) {
 		    File selected_files[] = file_chooser.getSelectedFiles();
 		    if (selected_files.length > 0) {
@@ -331,6 +352,10 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 	        repaint();
 		    }
 		  }
+    } else if ( action_source == clear_all_images_menu_item ) {
+      this.frames = new ArrayList<jiv_frame>();
+      this.frame_index = -1;
+      repaint();
 		} else if (cmd.equalsIgnoreCase("Exit")) {
 			System.exit ( 0 );
 		}
@@ -359,6 +384,13 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
               import_menu.add ( mi = zp.import_images_menu_item = new JMenuItem("Images...") );
               mi.addActionListener(zp);
             series_menu.add ( import_menu );
+
+            JMenu clear_menu = new JMenu("Clear");
+              // clear_menu.add ( mi = zp.clear_images_menu_item = new JMenuItem("Image...") );
+              // mi.addActionListener(zp);
+              clear_menu.add ( mi = zp.clear_all_images_menu_item = new JMenuItem("All Images") );
+              mi.addActionListener(zp);
+            series_menu.add ( clear_menu );
 
             series_menu.add ( mi = new JMenuItem("Print") );
             mi.addActionListener(zp);
