@@ -70,7 +70,6 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 		  int draw_w = x_to_pxi(img_wf/2.0) - draw_x;
 		  int draw_h = y_to_pyi(img_hf/2.0) - draw_y;
   		g.drawImage ( image_frame, draw_x, draw_y, draw_w, draw_h, this );
-  		//g.drawImage ( image_frame, (win_w-img_w)/2, (win_h-img_h)/2, img_w, img_h, this );
     }
 	}
 
@@ -93,51 +92,7 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
       int h = cursor_size;
       int w = cursor_size;
 
-      // Create the horizontal cursor
-      p = new Polygon();
-      p.addPoint ( 0, h/2 );
-      p.addPoint ( w/4, (h/2)-(h/4) );
-      p.addPoint ( w/4, (h/2)-(h/8) );
-      p.addPoint ( 3*w/4, (h/2)-(h/8) );
-      p.addPoint ( 3*w/4, (h/2)-(h/4) );
-      p.addPoint ( w-1, h/2 );
-      p.addPoint ( 3*w/4, (h/2)+(h/4) );
-      p.addPoint ( 3*w/4, (h/2)+(h/8) );
-      p.addPoint ( w/4, (h/2)+(h/8) );
-      p.addPoint ( w/4, (h/2)+(h/4) );
-
-      cursor_image = new BufferedImage(cursor_size,cursor_size,BufferedImage.TYPE_4BYTE_ABGR);
-      cg = cursor_image.createGraphics();
-      cg.setColor ( new Color(255,255,255) );
-      cg.fillPolygon ( p );
-      cg.setColor ( new Color(0,0,0) );
-      cg.drawPolygon ( p );
-
-      h_cursor = tk.createCustomCursor ( cursor_image, new Point(cursor_size/2,cursor_size/2), "Horizontal" );
-
-      // Create the vertical cursor
-      p = new Polygon();
-      p.addPoint ( w/2, 0 );
-      p.addPoint ( (w/2)+(w/4), h/4 );
-      p.addPoint ( (w/2)+(w/8), h/4 );
-      p.addPoint ( (w/2)+(w/8), 3*h/4 );
-      p.addPoint ( (w/2)+(w/4), 3*h/4 );
-      p.addPoint ( w/2, h-1 );
-      p.addPoint ( (w/2)-(w/4), 3*h/4 );
-      p.addPoint ( (w/2)-(w/8), 3*h/4 );
-      p.addPoint ( (w/2)-(w/8), h/4 );
-      p.addPoint ( (w/2)-(w/4), h/4 );
-
-      cursor_image = new BufferedImage(cursor_size,cursor_size,BufferedImage.TYPE_4BYTE_ABGR);
-      cg = cursor_image.createGraphics();
-      cg.setColor ( new Color(255,255,255) );
-      cg.fillPolygon ( p );
-      cg.setColor ( new Color(0,0,0) );
-      cg.drawPolygon ( p );
-
-      v_cursor = tk.createCustomCursor ( cursor_image, new Point(cursor_size/2,cursor_size/2), "Vertical" );
-
-      // Create the both cursor
+      // Create the move cursor
 
       int cw2 = w/2;   // Cursor width / 2
       int ch2 = h/2;   // Cursor height / 2
