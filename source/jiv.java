@@ -555,6 +555,7 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 
         for (int i=0; i<actual_file_names.size(); i++) {
           zp.frames.add ( new jiv_frame ( new File (actual_file_names.get(i)), true ) );  /// Note: use i<=n to only load first n images
+          zp.frame_index = 0; // set to the first if any frames are loaded
         }
 
         zp.set_title();
