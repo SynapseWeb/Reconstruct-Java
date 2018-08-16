@@ -54,7 +54,7 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 
   JFrame parent_frame = null;
 
-	static int w=800, h=600;
+	static int w=1024, h=768;
 
   String current_directory = "";
   MyFileChooser file_chooser = null;
@@ -244,6 +244,19 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
     super.mouseMoved ( e );
   }
 
+  public void set_title() {
+    if (this.parent_frame != null) {
+      String title = "No Frames";
+      if (frames != null) {
+        if (frames.size() > 0) {
+          title = "Section: " + (frame_index+1);
+          File f = frames.get(frame_index).f;
+          title += ", File: " + f.getName();
+        }
+      }
+      this.parent_frame.setTitle ( title );
+    }
+  }
 
   // MouseWheelListener methods:
   public void mouseWheelMoved ( MouseWheelEvent e ) {
@@ -259,12 +272,17 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
       //if (modify_mode == true) {
       if (e.isShiftDown()) {
         if (frames != null) {
-          int scroll_wheel_delta = -e.getWheelRotation();
-          frame_index += scroll_wheel_delta;
-          if (frame_index < 0) frame_index = 0;
-          if (frame_index >= frames.size()) frame_index = frames.size()-1;
-          if (this.parent_frame != null) {
-            this.parent_frame.setTitle ( "Section: " + (frame_index+1) );
+          if (frames.size() > 0) {
+            int scroll_wheel_delta = -e.getWheelRotation();
+            frame_index += scroll_wheel_delta;
+            if (frame_index < 0) frame_index = 0;
+            if (frame_index >= frames.size()) frame_index = frames.size()-1;
+            set_title();
+            /*
+            if (this.parent_frame != null) {
+              this.parent_frame.setTitle ( "Section: " + (frame_index+1) );
+            }
+            */
           }
         }
       } else {
@@ -348,16 +366,19 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
             System.out.println ( "You chose this file: " + selected_files[i] );
             this.frames.add ( new jiv_frame ( selected_files[i], true ) );
 		      }
+		      frame_index = this.frames.size() - 1;
 		      if (frame_index < 0) {
 		        frame_index = 0;
 		      }
 	        repaint();
 		    }
 		  }
+		  set_title();
     } else if ( action_source == clear_all_images_menu_item ) {
       this.frames = new ArrayList<jiv_frame>();
       this.frame_index = -1;
       repaint();
+		  set_title();
 		} else if (cmd.equalsIgnoreCase("Exit")) {
 			System.exit ( 0 );
 		}
@@ -417,6 +438,7 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 				
 				zp.setBackground ( new Color (0,0,0) );
 		    zp.file_chooser = new MyFileChooser ( zp.current_directory );
+        zp.set_title();
 
 				f.add ( zp );
         zp.addKeyListener ( zp );
