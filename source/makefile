@@ -41,8 +41,18 @@ BezierTracing.jar: BezierTracing.java makefile
 	javac -nowarn -source 1.6 BezierTracing.java
 	jar -cfe BezierTracing.jar BezierTracing *.class
 
+
+# Note: Using jar to create a jar file changes the SHA1 of the resulting file due to a time stamp of the manifest ... use zip procedure to fix:
+# PlotData.jar: PlotData.java makefile
+#	  javac PlotData.java
+#	  touch -t 201501260000 *.class
+#	  zip -X PlotData.jar META-INF/MANIFEST.MF PlotData.java *.class
+#	  rm -f *.class
+
+
 sha1sum.txt: Reconstruct.jar BezierTracing.jar
 	sha1sum Reconstruct.jar > sha1sum.txt
+	sha1sum jiv.jar >> sha1sum.txt
 	sha1sum BezierTracing.jar >> sha1sum.txt
 
 clean:
