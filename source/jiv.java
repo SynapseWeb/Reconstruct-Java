@@ -50,7 +50,7 @@ class jiv_frame {
 }
 
 
-public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListener, MouseListener, KeyListener {
+public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListener, MouseListener, KeyListener, FilenameFilter {
 
   JFrame parent_frame = null;
 
@@ -384,11 +384,93 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 		}
   }
 
+  /* http://shengwangi.blogspot.com/2015/11/glob-in-java-file-related-match.html
+    Here are the rules for glob:
+        * match any char except a directory boundary
+        ** match any char include a directory boundary
+        ? match any ONE char
+        [] same as regular express, like [0-9] match any ONE digit.
+        {} match a collection of patten separated by comma ','. Such as {A*, b} means either a string start with 'A' or a single char 'b'. 
+  */
+
+  public static boolean matches(String text, String glob) {
+    String rest = null;
+    int pos = glob.indexOf('*');
+    if (pos != -1) {
+      rest = glob.substring(pos + 1);
+      glob = glob.substring(0, pos);
+    }
+
+    if (glob.length() > text.length())
+      return false;
+
+    // handle the part up to the first *
+    for (int i = 0; i < glob.length(); i++)
+      if (glob.charAt(i) != '?' && !glob.substring(i, i + 1).equalsIgnoreCase(text.substring(i, i + 1)))
+        return false;
+
+    // recurse for the part after the first *, if any
+    if (rest == null) {
+      return glob.length() == text.length();
+    } else {
+      for (int i = glob.length(); i <= text.length(); i++) {
+        if (matches(text.substring(i), rest))
+          return true;
+      }
+      return false;
+    }
+  }
+
+  public boolean accept ( File dir, String name ) {
+    /*
+      Tests if a specified file should be included in a file list.
+
+      Parameters:
+          dir - the directory in which the file was found.
+          name - the name of the file.
+      Returns:
+          true if and only if the name should be included in the file list; false otherwise.
+    */
+
+    System.out.println ( "accept called with: " + dir + ", and " + name );
+    return ( true );
+  }
+
 	public static void main ( String[] args ) {
-	  for (int i=0; i<args.length; i++) {
-		  System.out.println ( "Arg[" + i + "] = \"" + args[i] + "\"" );
-		}
+
+    boolean dont_sort = false;
+    boolean start_slide_show = false;
+    double slide_show_dt = 3.0;
+
+	  ArrayList<String> file_name_args = new ArrayList<String>();  // Argument (if any) specifies initial capacity (default 10)
+
+    int arg_index = 0;
+    while (arg_index < args.length) {
+		  System.out.println ( "Arg[" + arg_index + "] = \"" + args[arg_index] + "\"" );
+		  if (args[arg_index].startsWith("-") ) {
+		    if (args[arg_index].equals("-D")) {
+		      dont_sort = true;
+		    } else if (args[arg_index].equals("-s")) {
+		      start_slide_show = true;
+		    } else if (args[arg_index].equals("-d")) {
+		      arg_index++;
+		      slide_show_dt = new Double ( args[arg_index] );
+		      start_slide_show = true;
+		    } else {
+		      System.out.println ( "Unrecognized option: " + args[arg_index] );
+		    }
+		  } else {
+		    file_name_args.add ( args[arg_index] );
+		  }
+		  arg_index++;
+    }
+
+    System.out.println ( "Command line specified " + file_name_args.size() + " file name patterns." );
+
+
 		System.out.println ( "jiv: Use the mouse wheel to zoom, and drag to pan." );
+
+
 		javax.swing.SwingUtilities.invokeLater ( new Runnable() {
 			public void run() {
 			  JFrame f = new JFrame("jiv");
@@ -449,6 +531,7 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 				zp.requestFocus();
 			}
 		} );
+
 	}
 
 }
