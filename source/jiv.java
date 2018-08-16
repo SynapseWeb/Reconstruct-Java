@@ -311,7 +311,7 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
     if (this.parent_frame != null) {
       String title = "No Frames";
       if (frames != null) {
-        if (frames.size() > 0) {
+        if ( (frames.size() > 0) && (frame_index >= 0) ) {
           title = "Section: " + (frame_index+1);
           File f = frames.get(frame_index).f;
           title += ", File: " + f.getName();
@@ -447,6 +447,8 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 		}
   }
 
+	public static ArrayList<String> actual_file_names = new ArrayList<String>();
+
 	public static void main ( String[] args ) {
 
     boolean dont_sort = false;
@@ -454,7 +456,6 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
     double slide_show_dt = 3.0;
 
 	  ArrayList<String> file_name_args = new ArrayList<String>();
-	  ArrayList<String> actual_file_names = new ArrayList<String>();
 
     int arg_index = 0;
     while (arg_index < args.length) {
@@ -551,6 +552,11 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 				
 				zp.setBackground ( new Color (0,0,0) );
 		    zp.file_chooser = new MyFileChooser ( zp.current_directory );
+
+        for (int i=0; i<actual_file_names.size(); i++) {
+          zp.frames.add ( new jiv_frame ( new File (actual_file_names.get(i)), true ) );  /// Note: use i<=n to only load first n images
+        }
+
         zp.set_title();
 
 				f.add ( zp );
