@@ -58,59 +58,62 @@ public class ContourClass {
   public ContourClass ( Element element, TransformClass current_transform ) {
     this.contour_element = element;
     this.contour_name = element.getAttribute("name");
+    // System.out.println ( "  Importing " + this.contour_name );
     String type_str = element.getAttribute("type");
 
-    String points_str = element.getAttribute("points");
-    String xy_str[] = points_str.trim().split(",");
+    if (element.hasAttribute("points")) {
+      String points_str = element.getAttribute("points");
+      String xy_str[] = points_str.trim().split(",");
 
-    String handles_str = element.getAttribute("handles");
-    String hxy_str[] = null;
-    if (handles_str != null) {
-      if (handles_str.trim().length() > 0) {
-        System.out.println ( "======== Read a contour with handles!! =======" );
-        hxy_str = handles_str.trim().split(",");
+      String handles_str = element.getAttribute("handles");
+      String hxy_str[] = null;
+      if (handles_str != null) {
+        if (handles_str.trim().length() > 0) {
+          System.out.println ( "======== Read a contour with handles!! =======" );
+          hxy_str = handles_str.trim().split(",");
+        }
       }
-    }
 
-    // Allocate an ArrayList to hold the double points
-    ArrayList<double[]> stroke = new ArrayList<double[]>(xy_str.length);
-    for (int xyi=0; xyi<xy_str.length; xyi++) {
-      String xy[] = xy_str[xyi].trim().split(" ");
-      double p[] = { Double.parseDouble(xy[0]), Double.parseDouble(xy[1]) };
-      stroke.add ( 0, p ); // Add at the front because Reconstruct store its points backwards!!
-      priority_println ( 20, "              " + xy_str[xyi].trim() + " = " + p[0] + "," + p[1] );
-    }
-    // strokes.add ( stroke );
-    is_bezier = false;
-    if (type_str != null) {
-      if (type_str.equals("bezier")) {
+      // Allocate an ArrayList to hold the double points
+      ArrayList<double[]> stroke = new ArrayList<double[]>(xy_str.length);
+      for (int xyi=0; xyi<xy_str.length; xyi++) {
+        String xy[] = xy_str[xyi].trim().split(" ");
+        double p[] = { Double.parseDouble(xy[0]), Double.parseDouble(xy[1]) };
+        stroke.add ( 0, p ); // Add at the front because Reconstruct store its points backwards!!
+        priority_println ( 20, "              " + xy_str[xyi].trim() + " = " + p[0] + "," + p[1] );
+      }
+      // strokes.add ( stroke );
+      is_bezier = false;
+      if (type_str != null) {
+        if (type_str.equals("bezier")) {
+          is_bezier = true;
+        }
+      }
+
+      ArrayList<double[]> stroke_handles = null;
+      if (hxy_str != null) {
         is_bezier = true;
+        // Allocate an ArrayList to hold the double handles
+        stroke_handles = new ArrayList<double[]>(hxy_str.length);
+        for (int xyi=0; xyi<hxy_str.length; xyi++) {
+          String xy[] = hxy_str[xyi].trim().split(" ");
+          double h[] = { Double.parseDouble(xy[0]), Double.parseDouble(xy[1]), Double.parseDouble(xy[2]), Double.parseDouble(xy[3]) };
+          // stroke_handles.add ( h ); // Add at the end ... just because Reconstruct.exe stores its points backwards doesn't mean the handles must be also!!
+          stroke_handles.add ( 0, h ); // Add at the front because Reconstruct store its points backwards!!
+          priority_println ( 120, "              " + hxy_str[xyi].trim() + " = " + h[0] + "," + h[1] + "," + h[2] + "," + h[3] );
+        }
       }
-    }
 
-    ArrayList<double[]> stroke_handles = null;
-    if (hxy_str != null) {
-      is_bezier = true;
-      // Allocate an ArrayList to hold the double handles
-      stroke_handles = new ArrayList<double[]>(hxy_str.length);
-      for (int xyi=0; xyi<hxy_str.length; xyi++) {
-        String xy[] = hxy_str[xyi].trim().split(" ");
-        double h[] = { Double.parseDouble(xy[0]), Double.parseDouble(xy[1]), Double.parseDouble(xy[2]), Double.parseDouble(xy[3]) };
-        // stroke_handles.add ( h ); // Add at the end ... just because Reconstruct.exe stores its points backwards doesn't mean the handles must be also!!
-        stroke_handles.add ( 0, h ); // Add at the front because Reconstruct store its points backwards!!
-        priority_println ( 120, "              " + hxy_str[xyi].trim() + " = " + h[0] + "," + h[1] + "," + h[2] + "," + h[3] );
+      // ContourClass cc = new ContourClass ( stroke, element.getAttribute("border"), element.getAttribute("closed").trim().equals("true"), is_bezier );
+
+      this.init_bezier_and_closed ( stroke, stroke_handles, element.getAttribute("closed").trim().equals("true") );
+      this.init_color ( element.getAttribute("border") );
+
+      if (hxy_str == null) {
+        this.init_bezier ( is_bezier );
+      } else {
+        this.is_bezier = true;
       }
-    }
-
-    // ContourClass cc = new ContourClass ( stroke, element.getAttribute("border"), element.getAttribute("closed").trim().equals("true"), is_bezier );
-
-    this.init_bezier_and_closed ( stroke, stroke_handles, element.getAttribute("closed").trim().equals("true") );
-    this.init_color ( element.getAttribute("border") );
-
-    if (hxy_str == null) {
-      this.init_bezier ( is_bezier );
-    } else {
-      this.is_bezier = true;
     }
 
     set_mode ( Integer.parseInt ( element.getAttribute("mode").trim() ) );

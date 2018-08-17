@@ -113,7 +113,7 @@ public class SectionClass {
               }
               msg += "]";
               priority_println ( 100, msg );
-              JOptionPane.showMessageDialog(null, msg, "SectionClass: Unhandled Transform", JOptionPane.WARNING_MESSAGE);
+              // JOptionPane.showMessageDialog(null, msg, "SectionClass: Unhandled Transform", JOptionPane.WARNING_MESSAGE);
             }
           }
 
@@ -659,6 +659,11 @@ public class SectionClass {
         }
       }
       g.drawString ( mode_status, 10, y );     y+=20;
+      if (highest_xform_dim > 0) {
+        g.setColor ( new Color ( 255, 63, 63 ) );
+        g.drawString ( "Warning: Transform Dim = " + highest_xform_dim, 10, y );     y+=20;
+        g.setColor ( new Color ( 255, 255, 255 ) );
+      }
 
       if (r.show_coords) {
         String coords_string = "  (" + r.cur_mouse_xi + "," + r.cur_mouse_yi + ") => (" + r.cur_mouse_x + "," + r.cur_mouse_y + ")";
