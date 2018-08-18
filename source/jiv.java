@@ -35,7 +35,11 @@ class jiv_frame {
     if ( load && (f != null) ) {
       try {
         this.image = ImageIO.read(f);
-        this.valid = true;
+        if (this.image == null) {
+          JOptionPane.showMessageDialog(null, "Can't open: " + this.f, "Image Error", JOptionPane.WARNING_MESSAGE);
+        } else {
+          this.valid = true;
+        }
       } catch (Exception oe) {
         this.image = null;
         this.valid = false;
