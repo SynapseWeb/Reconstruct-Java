@@ -814,8 +814,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       // System.out.println ( "Key Pressed, e = " + e );
     }
     //super.keyPressed ( e );
-    }
-    public void keyReleased ( KeyEvent e ) {
+  }
+  public void keyReleased ( KeyEvent e ) {
     // System.out.println ( "Key Released" );
     //super.keyReleased ( e );
   }
