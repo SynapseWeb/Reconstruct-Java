@@ -123,7 +123,7 @@ class glob_filter implements FilenameFilter {
 
 class FileListDialog extends JDialog {
   private JTextArea textArea;
-  private jiv parent_frame;
+  private jiv parent_frame=null;
 
   public FileListDialog(Frame par_frame, jiv parent) {
     super(par_frame, true);
@@ -131,7 +131,7 @@ class FileListDialog extends JDialog {
 
     setTitle("File List");
 
-    textArea = new JTextArea(41, 40);
+    textArea = new JTextArea(41, 80);  // Rows, Columns
 
     JScrollPane scroll_pane = new JScrollPane(textArea);
 
@@ -156,7 +156,15 @@ class FileListDialog extends JDialog {
     addComponentListener(new ComponentAdapter() {
       public void componentShown(ComponentEvent ce) {
         // Build the text from the current model every time it's shown
-        textArea.setText ( "This text should be built from code" );
+        if (parent_frame != null) {
+          // Get the list of files from the parent_frame
+          if (parent_frame.frames != null) {
+            textArea.setText ( "Frames:\n" );
+            for (int fnum=0; fnum<parent_frame.frames.size(); fnum++) {
+              textArea.append ( "File: " + parent_frame.frames.get(fnum).f + "\n" );
+            }
+          }
+        }
         textArea.requestFocusInWindow();
       }
     });
@@ -176,8 +184,8 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
   FileListDialog file_list_dialog = null;
 
 
-	ArrayList<jiv_frame> frames = new ArrayList<jiv_frame>();  // Argument (if any) specifies initial capacity (default 10)
-  int frame_index = -1;
+	public ArrayList<jiv_frame> frames = new ArrayList<jiv_frame>();  // Argument (if any) specifies initial capacity (default 10)
+  public int frame_index = -1;
 
 
 	public void paint_frame (Graphics g) {
