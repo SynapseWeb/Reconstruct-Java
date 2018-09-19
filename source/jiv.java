@@ -40,6 +40,10 @@ class jiv_frame {
         } else {
           this.valid = true;
         }
+      } catch (OutOfMemoryError mem_err) {
+        this.image = null;
+        this.valid = false;
+        JOptionPane.showMessageDialog(null, "Out of Memory for: " + this.f, "Memory Error", JOptionPane.WARNING_MESSAGE);
       } catch (Exception oe) {
         this.image = null;
         this.valid = false;
