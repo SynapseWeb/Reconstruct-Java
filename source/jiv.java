@@ -121,6 +121,49 @@ class glob_filter implements FilenameFilter {
 }
 
 
+class FileListDialog extends JDialog {
+  private JTextArea textArea;
+  private jiv parent_frame;
+
+  public FileListDialog(Frame par_frame, jiv parent) {
+    super(par_frame, true);
+    parent_frame = parent;
+
+    setTitle("File List");
+
+    textArea = new JTextArea(41, 40);
+
+    JScrollPane scroll_pane = new JScrollPane(textArea);
+
+    setContentPane(scroll_pane);
+
+    // Don't perform any default operations on closing
+    setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+
+    // Set the custom closing code
+    addWindowListener(new WindowAdapter() {
+      public void windowClosing(WindowEvent we) {
+        // Build the model from the current text
+        System.out.println ( "Dialog closing with text:" );
+        System.out.println ( textArea.getText() );
+
+
+        setVisible ( false );
+        parent_frame.repaint();
+      }
+    });
+
+    addComponentListener(new ComponentAdapter() {
+      public void componentShown(ComponentEvent ce) {
+        // Build the text from the current model every time it's shown
+        textArea.setText ( "This text should be built from code" );
+        textArea.requestFocusInWindow();
+      }
+    });
+  }
+}
+
+
 public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListener, MouseListener, KeyListener {
 
   JFrame parent_frame = null;
@@ -129,6 +172,9 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 
   String current_directory = "";
   MyFileChooser file_chooser = null;
+
+  FileListDialog file_list_dialog = null;
+
 
 	ArrayList<jiv_frame> frames = new ArrayList<jiv_frame>();  // Argument (if any) specifies initial capacity (default 10)
   int frame_index = -1;
@@ -406,8 +452,8 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 
 
   JMenuItem import_images_menu_item=null;
-  JMenuItem clear_images_menu_item=null;
   JMenuItem clear_all_images_menu_item=null;
+  JMenuItem list_all_images_menu_item=null;
 
 
   // ActionPerformed methods (mostly menu responses):
@@ -450,6 +496,12 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
       this.frame_index = -1;
       repaint();
 		  set_title();
+    } else if ( action_source == list_all_images_menu_item ) {
+      if (file_list_dialog != null) {
+        file_list_dialog.setVisible(true);
+      }
+      //repaint();
+		  //set_title();
 		} else if (cmd.equalsIgnoreCase("Exit")) {
 			System.exit ( 0 );
 		}
@@ -513,11 +565,11 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 
 		javax.swing.SwingUtilities.invokeLater ( new Runnable() {
 			public void run() {
-			  JFrame f = new JFrame("jiv");
-				f.setDefaultCloseOperation ( JFrame.EXIT_ON_CLOSE );
+			  JFrame app_frame = new JFrame("jiv");
+				app_frame.setDefaultCloseOperation ( JFrame.EXIT_ON_CLOSE );
 				
         jiv zp = new jiv();
-        zp.parent_frame = f;
+        zp.parent_frame = app_frame;
         zp.current_directory = System.getProperty("user.dir");
 
 				JMenuBar menu_bar = new JMenuBar();
@@ -531,11 +583,14 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
             series_menu.add ( import_menu );
 
             JMenu clear_menu = new JMenu("Clear");
-              // clear_menu.add ( mi = zp.clear_images_menu_item = new JMenuItem("Image...") );
-              // mi.addActionListener(zp);
               clear_menu.add ( mi = zp.clear_all_images_menu_item = new JMenuItem("All Images") );
               mi.addActionListener(zp);
             series_menu.add ( clear_menu );
+
+            JMenu list_menu = new JMenu("List");
+              list_menu.add ( mi = zp.list_all_images_menu_item = new JMenuItem("All Images") );
+              mi.addActionListener(zp);
+            series_menu.add ( list_menu );
 
             series_menu.add ( mi = new JMenuItem("Print") );
             mi.addActionListener(zp);
@@ -556,7 +611,7 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
             menu_bar.add ( help_menu );
 
 
-				f.setJMenuBar ( menu_bar );
+				app_frame.setJMenuBar ( menu_bar );
 				
 				zp.setBackground ( new Color (0,0,0) );
 		    zp.file_chooser = new MyFileChooser ( zp.current_directory );
@@ -565,14 +620,16 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
           zp.frames.add ( new jiv_frame ( new File (actual_file_names.get(i)), true ) );  /// Note: use i<=n to only load first n images
           zp.frame_index = 0; // set to the first if any frames are loaded
         }
+        zp.file_list_dialog = new FileListDialog(app_frame, zp);
+        zp.file_list_dialog.pack();
 
         zp.set_title();
 
-				f.add ( zp );
+				app_frame.add ( zp );
         zp.addKeyListener ( zp );
-				f.pack();
-				f.setSize ( w, h );
-				f.setVisible ( true );
+				app_frame.pack();
+				app_frame.setSize ( w, h );
+				app_frame.setVisible ( true );
 			  // Request the focus to make the drawing window responsive to keyboard commands without any clicking required
 				zp.requestFocus();
 			}
