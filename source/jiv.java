@@ -31,8 +31,12 @@ class jiv_frame {
 
   jiv_frame ( File f, boolean load ) {
     this.f = f;
+    this.load_file();
+  }
+
+  public void load_file () {
     this.valid = false;
-    if ( load && (f != null) ) {
+    if ( f != null ) {
       try {
         this.image = ImageIO.read(f);
         if (this.image == null) {
@@ -50,6 +54,10 @@ class jiv_frame {
         JOptionPane.showMessageDialog(null, "File error for: " + this.f, "File Path Error", JOptionPane.WARNING_MESSAGE);
       }
     }
+  }
+
+  public void reload() {
+    this.load_file();
   }
 
   public String toString() {
@@ -460,6 +468,7 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 
 
   JMenuItem import_images_menu_item=null;
+  JMenuItem refresh_images_menu_item=null;
   JMenuItem clear_all_images_menu_item=null;
   JMenuItem list_all_images_menu_item=null;
 
@@ -477,6 +486,20 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 	    for (int i=0; i<this.frames.size(); i++) {
         System.out.println ( "  " + this.frames.get(i) );
       }
+    } else if ( action_source == refresh_images_menu_item ) {
+      System.out.println ( "Reloading images" );
+      // Reload the visible frame first for faster response
+      if (frame_index >= 0) {
+        this.frames.get(frame_index).reload();
+      }
+      // Reload all the other frames
+	    for (int i=0; i<this.frames.size(); i++) {
+	      if (i != frame_index) {
+          this.frames.get(i).reload();
+        }
+      }
+      repaint();
+		  set_title();
     } else if ( action_source == import_images_menu_item ) {
 		  file_chooser.setMultiSelectionEnabled(true);
 		  file_chooser.resetChoosableFileFilters();
@@ -584,6 +607,9 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
           JMenuItem mi;
 
           JMenu series_menu = new JMenu("File");
+
+            series_menu.add ( mi = zp.refresh_images_menu_item = new JMenuItem("Refresh") );
+            mi.addActionListener(zp);
 
             JMenu import_menu = new JMenu("Import");
               import_menu.add ( mi = zp.import_images_menu_item = new JMenuItem("Images...") );
