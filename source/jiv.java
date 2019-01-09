@@ -623,6 +623,13 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
               mi.addActionListener(zp);
             series_menu.add ( import_menu );
 
+            // NOTE: Adding the same JMenuItem to multiple JMenus doesn't work
+            //   The explanation given is that a JMenuItem can only have one parent.
+            //   It's not clear that adding a JMenuItem to a JMenu changes parenting,
+            //      but it appears to be true.
+            //   The solution is to use Action objects and create both menu items
+            //      using the same Action object. This hasn't been done here (yet).
+            //   For this reason, clear_all_images_menu_item isn't added here.
             //JMenu clear_menu = new JMenu("Clear");
             //  clear_menu.add ( zp.clear_all_images_menu_item );
             //series_menu.add ( clear_menu );
