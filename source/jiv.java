@@ -608,10 +608,10 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 
           JMenu series_menu = new JMenu("File");
 
-            series_menu.add ( mi = zp.refresh_images_menu_item = new JMenuItem("Refresh") );
-            mi.addActionListener(zp);
+            // series_menu.add ( mi = zp.refresh_images_menu_item = new JMenuItem("Refresh") );
+            // mi.addActionListener(zp);
 
-            series_menu.addSeparator();
+            // series_menu.addSeparator();
 
             series_menu.add ( mi = zp.clear_all_images_menu_item = new JMenuItem("Clear All") );
             mi.addActionListener(zp);
@@ -649,6 +649,8 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 
             menu_bar.add ( series_menu );
 
+          menu_bar.add ( mi = zp.refresh_images_menu_item = new JMenuItem("Refresh") );
+          mi.addActionListener(zp);
 
           JMenu help_menu = new JMenu("Help");
             help_menu.add ( mi = new JMenuItem("Commands") );
