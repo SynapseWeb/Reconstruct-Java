@@ -511,14 +511,17 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 		  if ( returnVal == JFileChooser.APPROVE_OPTION ) {
 		    File selected_files[] = file_chooser.getSelectedFiles();
 		    if (selected_files.length > 0) {
+		      // Use the current size as the new index (if size is 0, then the new index will be 0 which points to the first)
+		      int new_frame_index = this.frames.size();
 		      for (int i=0; i<selected_files.length; i++) {
             System.out.println ( "You chose this file: " + selected_files[i] );
             this.frames.add ( new jiv_frame ( selected_files[i], true ) );
 		      }
-		      frame_index = this.frames.size() - 1;
-		      if (frame_index < 0) {
-		        frame_index = 0;
+		      // Set the frame index to the first file just added
+		      if (new_frame_index >= this.frames.size()) {
+		        new_frame_index = this.frames.size() - 1;
 		      }
+		      frame_index = new_frame_index;
 	        repaint();
 		    }
 		  }
