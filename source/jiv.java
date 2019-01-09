@@ -388,6 +388,7 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
         }
       }
       this.parent_frame.setTitle ( title );
+      System.out.println ( title );
     }
   }
 
