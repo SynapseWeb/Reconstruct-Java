@@ -191,6 +191,9 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 
   FileListDialog file_list_dialog = null;
 
+  int ref_image_w = 1000;
+  int ref_image_h = 1000;
+
 
 	public ArrayList<jiv_frame> frames = new ArrayList<jiv_frame>();  // Argument (if any) specifies initial capacity (default 10)
   public int frame_index = -1;
@@ -201,7 +204,7 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 	  int win_w = win_s.width;
 	  int win_h = win_s.height;
 	  if (recalculate) {
-      set_scale_to_fit ( -100, 100, -100, 100, win_w, win_h );
+      set_scale_to_fit ( 0, ref_image_w, -ref_image_h, 0, win_w, win_h );
 	    recalculate = false;
 	  }
 
@@ -470,9 +473,26 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 
   JMenuItem import_images_menu_item=null;
   JMenuItem refresh_images_menu_item=null;
+  JMenuItem center_image_menu_item=null;
   JMenuItem clear_all_images_menu_item=null;
   JMenuItem list_all_images_menu_item=null;
 
+  public void center_current_image() {
+    if (frames != null) {
+      if (frames.size() > 0) {
+        if (frame_index >= 0) {
+          if (frame_index < frames.size()) {
+            BufferedImage frame_image = frames.get(frame_index).image;
+            if (frame_image != null) {
+              ref_image_w = frame_image.getWidth();
+              ref_image_h = frame_image.getHeight();
+              recalculate = true;
+            }
+          }
+        }
+      }
+    }
+  }
 
   // ActionPerformed methods (mostly menu responses):
 
@@ -488,14 +508,16 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
         System.out.println ( "  " + this.frames.get(i) );
       }
     } else if ( action_source == refresh_images_menu_item ) {
-      System.out.println ( "Reloading images" );
+      System.out.println ( "Reloading all images:" );
       // Reload the visible frame first for faster response
       if (frame_index >= 0) {
+        System.out.println ( "  Reloading image " + frames.get(frame_index).f.getName() );
         this.frames.get(frame_index).reload();
       }
       // Reload all the other frames
 	    for (int i=0; i<this.frames.size(); i++) {
 	      if (i != frame_index) {
+          System.out.println ( "  Reloading image " + frames.get(i).f.getName() );
           this.frames.get(i).reload();
         }
       }
@@ -512,6 +534,7 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 		    File selected_files[] = file_chooser.getSelectedFiles();
 		    if (selected_files.length > 0) {
 		      // Use the current size as the new index (if size is 0, then the new index will be 0 which points to the first)
+		      int num_previous = this.frames.size();
 		      int new_frame_index = this.frames.size();
 		      for (int i=0; i<selected_files.length; i++) {
             System.out.println ( "You chose this file: " + selected_files[i] );
@@ -522,9 +545,18 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 		        new_frame_index = this.frames.size() - 1;
 		      }
 		      frame_index = new_frame_index;
+		      if ( (frame_index >= 0) && (num_previous <= 0) ) {
+		        // Automatically center if there were no previous images
+		        center_current_image();
+		      }
 	        repaint();
 		    }
 		  }
+		  set_title();
+    } else if ( action_source == center_image_menu_item ) {
+      System.out.println ( "Center image" );
+      center_current_image();
+      repaint();
 		  set_title();
     } else if ( action_source == clear_all_images_menu_item ) {
       this.frames = new ArrayList<jiv_frame>();
@@ -610,22 +642,12 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 				JMenuBar menu_bar = new JMenuBar();
           JMenuItem mi;
 
-          JMenu series_menu = new JMenu("File");
-
-            // series_menu.add ( mi = zp.refresh_images_menu_item = new JMenuItem("Refresh") );
-            // mi.addActionListener(zp);
-
-            // series_menu.addSeparator();
-
-            series_menu.add ( mi = zp.clear_all_images_menu_item = new JMenuItem("Clear All") );
-            mi.addActionListener(zp);
-
-            series_menu.addSeparator();
+          JMenu file_menu = new JMenu("File");
 
             JMenu import_menu = new JMenu("Import");
               import_menu.add ( mi = zp.import_images_menu_item = new JMenuItem("Images...") );
               mi.addActionListener(zp);
-            series_menu.add ( import_menu );
+            file_menu.add ( import_menu );
 
             // NOTE: Adding the same JMenuItem to multiple JMenus doesn't work
             //   The explanation given is that a JMenuItem can only have one parent.
@@ -636,25 +658,44 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
             //   For this reason, clear_all_images_menu_item isn't added here.
             //JMenu clear_menu = new JMenu("Clear");
             //  clear_menu.add ( zp.clear_all_images_menu_item );
-            //series_menu.add ( clear_menu );
+            //file_menu.add ( clear_menu );
 
             JMenu list_menu = new JMenu("List");
               list_menu.add ( mi = zp.list_all_images_menu_item = new JMenuItem("All Images") );
               mi.addActionListener(zp);
-            series_menu.add ( list_menu );
+            file_menu.add ( list_menu );
 
-            series_menu.add ( mi = new JMenuItem("Print") );
+            file_menu.add ( mi = new JMenuItem("Print") );
             mi.addActionListener(zp);
 
-            series_menu.addSeparator();
+            file_menu.addSeparator();
 
-            series_menu.add ( mi = new JMenuItem("Exit") );
+            file_menu.add ( mi = zp.clear_all_images_menu_item = new JMenuItem("Clear All") );
             mi.addActionListener(zp);
 
-            menu_bar.add ( series_menu );
+            file_menu.addSeparator();
 
-          menu_bar.add ( mi = zp.refresh_images_menu_item = new JMenuItem("Refresh") );
-          mi.addActionListener(zp);
+            file_menu.add ( mi = new JMenuItem("Exit") );
+            mi.addActionListener(zp);
+
+            menu_bar.add ( file_menu );
+
+          JMenu tools_menu = new JMenu("Images");
+
+            // tools_menu.add ( mi = zp.refresh_images_menu_item = new JMenuItem("Refresh") );
+            // mi.addActionListener(zp);
+
+            // tools_menu.addSeparator();
+
+            tools_menu.add ( mi = zp.refresh_images_menu_item = new JMenuItem("Refresh") );
+            mi.addActionListener(zp);
+
+            tools_menu.addSeparator();
+
+            tools_menu.add ( mi = zp.center_image_menu_item = new JMenuItem("Center") );
+            mi.addActionListener(zp);
+
+            menu_bar.add ( tools_menu );
 
           JMenu help_menu = new JMenu("Help");
             help_menu.add ( mi = new JMenuItem("Commands") );
