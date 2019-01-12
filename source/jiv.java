@@ -474,6 +474,7 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
   JMenuItem import_images_menu_item=null;
   JMenuItem refresh_images_menu_item=null;
   JMenuItem center_image_menu_item=null;
+  JMenuItem zoom_actual_menu_item=null;
   JMenuItem clear_all_images_menu_item=null;
   JMenuItem list_all_images_menu_item=null;
 
@@ -556,6 +557,16 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
     } else if ( action_source == center_image_menu_item ) {
       System.out.println ( "Center image" );
       center_current_image();
+      repaint();
+		  set_title();
+    } else if ( action_source == zoom_actual_menu_item ) {
+      System.out.println ( "Setting zoom and scale to 1.0" );
+      zoom_exp = 0;
+	    scale = 1.0;
+	    scroll_wheel_position = 0;
+	    mx = 1.0;
+	    my = 1.0;
+      recalculate = false;
       repaint();
 		  set_title();
     } else if ( action_source == clear_all_images_menu_item ) {
@@ -693,6 +704,11 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
             tools_menu.addSeparator();
 
             tools_menu.add ( mi = zp.center_image_menu_item = new JMenuItem("Center") );
+            mi.addActionListener(zp);
+
+            tools_menu.addSeparator();
+
+            tools_menu.add ( mi = zp.zoom_actual_menu_item = new JMenuItem("Actual Size") );
             mi.addActionListener(zp);
 
             menu_bar.add ( tools_menu );
