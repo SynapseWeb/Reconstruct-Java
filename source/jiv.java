@@ -588,10 +588,9 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 	public static ArrayList<String> actual_file_names = new ArrayList<String>();
 
   static boolean swap_shift_scroll = false;
+  static String original_file_name = null;
 
 	public static void main ( String[] args ) {
-
-    double slide_show_dt = 3.0;
 
 	  ArrayList<String> file_name_args = new ArrayList<String>();
 
@@ -601,10 +600,9 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 		  if (args[arg_index].startsWith("-") ) {
 		    if (args[arg_index].equals("-s")) {
 		      swap_shift_scroll = true;
-		    } else if (args[arg_index].equals("-d")) {
+		    } else if (args[arg_index].equals("-f")) {
 		      arg_index++;
-		      slide_show_dt = new Double ( args[arg_index] );
-		      // start_slide_show = true;
+		      file_name_args.add ( args[arg_index] );
 		    } else {
 		      System.out.println ( "Unrecognized option: " + args[arg_index] );
 		    }
