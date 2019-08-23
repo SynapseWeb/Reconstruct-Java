@@ -738,6 +738,8 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 				app_frame.setVisible ( true );
 			  // Request the focus to make the drawing window responsive to keyboard commands without any clicking required
 				zp.requestFocus();
+				zp.center_current_image();
+
 			}
 		} );
 
