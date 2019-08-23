@@ -407,7 +407,9 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
       super.mouseWheelMoved ( e );
     } else {
       //if (modify_mode == true) {
-      if (!e.isShiftDown()) {
+      if (e.isShiftDown() == swap_shift_scroll) {
+        super.mouseWheelMoved ( e );
+      } else {
         if (frames != null) {
           if (frames.size() > 0) {
             int scroll_wheel_delta = -e.getWheelRotation();
@@ -422,8 +424,6 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
             */
           }
         }
-      } else {
-        super.mouseWheelMoved ( e );
       }
     }
     repaint();
@@ -587,10 +587,10 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
 
 	public static ArrayList<String> actual_file_names = new ArrayList<String>();
 
+  static boolean swap_shift_scroll = false;
+
 	public static void main ( String[] args ) {
 
-    boolean dont_sort = false;
-    boolean start_slide_show = false;
     double slide_show_dt = 3.0;
 
 	  ArrayList<String> file_name_args = new ArrayList<String>();
@@ -599,14 +599,12 @@ public class jiv extends ZoomPanLib implements ActionListener, MouseMotionListen
     while (arg_index < args.length) {
 		  System.out.println ( "Arg[" + arg_index + "] = \"" + args[arg_index] + "\"" );
 		  if (args[arg_index].startsWith("-") ) {
-		    if (args[arg_index].equals("-D")) {
-		      dont_sort = true;
-		    } else if (args[arg_index].equals("-s")) {
-		      start_slide_show = true;
+		    if (args[arg_index].equals("-s")) {
+		      swap_shift_scroll = true;
 		    } else if (args[arg_index].equals("-d")) {
 		      arg_index++;
 		      slide_show_dt = new Double ( args[arg_index] );
-		      start_slide_show = true;
+		      // start_slide_show = true;
 		    } else {
 		      System.out.println ( "Unrecognized option: " + args[arg_index] );
 		    }
