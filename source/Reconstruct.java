@@ -103,6 +103,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   boolean show_arrows = false;
   boolean show_handles = true;
   boolean show_coords = false;
+  boolean show_glitch = false;
 
   boolean modify_mode = false;
   boolean editing_mode = false;
@@ -122,7 +123,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
   int line_padding = 1;
   int new_trace_color = 0xff0000;
-  
+
   SeriesClass series = null;
   ContourClass active_contour = null;
 
@@ -207,7 +208,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
 
   //  MouseListener methods:
-  
+
 
   Cursor current_cursor = null;
   Cursor h_cursor = null;
@@ -681,6 +682,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   JMenuItem show_arrows_menu_item = null;
   JMenuItem show_handles_menu_item = null;
   JMenuItem show_coords_menu_item = null;
+  JMenuItem show_glitch_menu_item = null;
 
   JMenuItem export_handles_menu_item = null;
 
@@ -1128,6 +1130,10 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     } else if ( action_source == show_coords_menu_item ) {
       JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
       show_coords = item.getState();
+      repaint();
+    } else if ( action_source == show_glitch_menu_item ) {
+      JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
+      show_glitch = item.getState();
       repaint();
     } else if ( action_source == export_handles_menu_item ) {
       JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
@@ -1659,6 +1665,11 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
         extras_menu.addSeparator();
 
+        extras_menu.add ( zp.show_glitch_menu_item = mi = new JCheckBoxMenuItem("Show Glitch", zp.show_glitch) );
+        mi.addActionListener(zp);
+
+        extras_menu.addSeparator();
+
         JMenu mode_menu = new JMenu("Mode");
           bg = new ButtonGroup();
           /*
@@ -1719,7 +1730,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       menu_bar.add ( help_menu );
 
         f.setJMenuBar ( menu_bar );
-        
+
         zp.setBackground ( new Color (0,0,0) );
         zp.file_chooser = new MyFileChooser ( zp.current_directory );
 

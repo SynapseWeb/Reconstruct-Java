@@ -330,7 +330,7 @@ public class ContourClass {
       for (int i=0; i<n; i++) {
         prev = (n+i-1)%n;
         next = (n+i+1)%n;
-        // double seg_to_adjust[][] = 
+        // double seg_to_adjust[][] =
         //// CubicCurve2D.Double seg_to_adjust = curves.get(i);
         // Adjust the h0 handle
         if ( (closed || (i > 0)) && (stroke_points.size() > i) && (handle_points.size() > i) ) {
@@ -355,7 +355,7 @@ public class ContourClass {
           // h0.y = ctrly1
           // h1.x = ctrlx2
           // h1.y = ctrly2
-          // CubicCurve2D.Double(double x1, double y1, double ctrlx1, double ctrly1, double ctrlx2, double ctrly2, double x2, double y2) 
+          // CubicCurve2D.Double(double x1, double y1, double ctrlx1, double ctrly1, double ctrlx2, double ctrly2, double x2, double y2)
           /*
           CubicCurve2D.Double prev_seg = curves.get((n+i-1)%n);
           double cdx = seg_to_adjust.x2 - prev_seg.x1;
@@ -739,7 +739,53 @@ public class ContourClass {
             }
           }
 
+        }
 
+        // Show and print "glitch" points when requested
+        if (r.show_glitch) {
+          // priority_println ( 150, "   Glitch!!" );
+          double p2[] = null;
+          double rp1[] = new double[2];
+          double rp2[] = new double[2];
+          double l1 = 0;
+          double l2 = 0;
+          double norm = 0;
+          double angle = 0;
+          boolean had_glitch = false;
+
+          g.setColor ( new Color ( 200, 200, 255 ) );
+          int l = stroke_points.size();
+          //// TODO: Remove duplicate points which otherwise mask potential glitches
+          for (int j=0; j<l; j++) {
+            int prev_j = (j+l-1) % l;
+            int next_j = (j+1) % l;
+            p0 = stroke_points.get(j);
+            p1 = stroke_points.get(prev_j);
+            p2 = stroke_points.get(next_j);
+            // System.out.println ( "Points: (" + p1[0] + "," + p1[1] + "), (" + p0[0] + "," + p0[1] + "), (" + p2[0] + "," + p2[1] + ")" );
+            // Translate coordinates of p1 and p2 to place origin at p0
+            rp1[0] = p1[0]-p0[0];
+            rp1[1] = p1[1]-p0[1];
+            rp2[0] = p2[0]-p0[0];
+            rp2[1] = p2[1]-p0[1];
+            // Calculate norms
+            l1 = Math.sqrt ( (rp1[0]*rp1[0]) + (rp1[1]*rp1[1]) );
+            l2 = Math.sqrt ( (rp2[0]*rp2[0]) + (rp2[1]*rp2[1]) );
+            norm = l1 * l2;
+            if (norm != 0) {
+              angle = Math.acos(((rp1[0]*rp2[0])+(rp1[1]*rp2[1]))/(l1*l2));
+              if (Math.abs(angle) < 0.3) {
+                had_glitch = true;
+                priority_println ( 150, "Glitch Point in " + this.contour_name + " at (" + p0[0] + "," + p0[1] + ")" );
+                int x = r.x_to_pxi(p0[0]-dx);
+                int y = r.y_to_pyi(dy-p0[1]);
+                g.drawOval ( x-30, y-30, 2*30, 2*30 );
+              }
+            }
+          }
+          if (had_glitch) {
+            priority_println ( 150, "" );
+          }
         }
 
       }
