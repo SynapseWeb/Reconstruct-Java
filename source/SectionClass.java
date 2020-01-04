@@ -178,6 +178,8 @@ public class SectionClass {
       } // end for (int cn=0; cn<child_nodes.getLength(); cn++)
     }
 
+    priority_println ( 999, "============== Checking for images in " + this.file_name + " ==============" );
+
     priority_println ( 50, "============== Section File " + this.file_name + " ==============" );
     priority_println ( 50, "SectionClass: This section is index " + section_element.getAttribute("index") );
     priority_println ( 50, "===========================================" );
@@ -567,29 +569,31 @@ public class SectionClass {
 
   public BufferedImage get_image() throws OutOfMemoryError {
     if (section_image == null) {
-      try {
-        priority_println ( 50, " SectionClass.get_image: Opening ... " + this.image_file_names[0] );
-        File image_file = new File ( this.image_file_names[0] );
-        this.section_image = ImageIO.read(image_file);
-      } catch (OutOfMemoryError mem_err) {
-        // this.series.image_frame = null;
-        priority_println ( 100, "SectionClass.get_image: **** Out of Memory Error while opening an image file:\n   " + this.image_file_names[0] );
-        throw ( mem_err );
-      } catch (Exception oe) {
-        // this.series.image_frame = null;
-        boolean found = false;
-        for (int i=0; i<bad_image_file_names.size(); i++) {
-          String s = bad_image_file_names.get(i);
-          if (this.image_file_names[0].equals(s)) {
-            found = true;
-            break;
+      if (this.image_file_names.length > 0) {
+        try {
+          priority_println ( 50, " SectionClass.get_image: Opening ... " + this.image_file_names[0] );
+          File image_file = new File ( this.image_file_names[0] );
+          this.section_image = ImageIO.read(image_file);
+        } catch (OutOfMemoryError mem_err) {
+          // this.series.image_frame = null;
+          priority_println ( 100, "SectionClass.get_image: **** Out of Memory Error while opening an image file:\n   " + this.image_file_names[0] );
+          throw ( mem_err );
+        } catch (Exception oe) {
+          // this.series.image_frame = null;
+          boolean found = false;
+          for (int i=0; i<bad_image_file_names.size(); i++) {
+            String s = bad_image_file_names.get(i);
+            if (this.image_file_names[0].equals(s)) {
+              found = true;
+              break;
+            }
           }
-        }
-        if (!found) {
-          // Notify of missing file and put in list to be ignored in the future
-          priority_println ( 100, "SectionClass.get_image: Error while opening an image file:\n   " + this.image_file_names[0] );
-          JOptionPane.showMessageDialog(null, "Cannot open " + this.image_file_names[0], "SectionClass: File Error", JOptionPane.WARNING_MESSAGE);
-          bad_image_file_names.add ( this.image_file_names[0] );
+          if (!found) {
+            // Notify of missing file and put in list to be ignored in the future
+            priority_println ( 100, "SectionClass.get_image: Error while opening an image file:\n   " + this.image_file_names[0] );
+            JOptionPane.showMessageDialog(null, "Cannot open " + this.image_file_names[0], "SectionClass: File Error", JOptionPane.WARNING_MESSAGE);
+            bad_image_file_names.add ( this.image_file_names[0] );
+          }
         }
       }
     }
