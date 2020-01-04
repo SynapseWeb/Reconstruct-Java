@@ -752,6 +752,7 @@ public class ContourClass {
           double norm = 0;
           double angle = 0;
           boolean had_glitch = false;
+          double glitch_angle = Math.PI * r.glitch_angle_degrees / 180;
 
           g.setColor ( new Color ( 200, 200, 255 ) );
           int l = stroke_points.size();
@@ -774,7 +775,7 @@ public class ContourClass {
             norm = l1 * l2;
             if (norm != 0) {
               angle = Math.acos(((rp1[0]*rp2[0])+(rp1[1]*rp2[1]))/(l1*l2));
-              if (Math.abs(angle) < 0.3) {
+              if (Math.abs(angle) < glitch_angle) {
                 had_glitch = true;
                 priority_println ( 150, "Glitch Point in " + this.contour_name + " at (" + p0[0] + "," + p0[1] + ")" );
                 int x = r.x_to_pxi(p0[0]-dx);

@@ -123,6 +123,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
   int line_padding = 1;
   int new_trace_color = 0xff0000;
+  double glitch_angle_degrees = 45.0;
 
   SeriesClass series = null;
   ContourClass active_contour = null;
@@ -683,6 +684,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   JMenuItem show_handles_menu_item = null;
   JMenuItem show_coords_menu_item = null;
   JMenuItem show_glitch_menu_item = null;
+  JMenuItem glitch_options_menu_item=null;
 
   JMenuItem export_handles_menu_item = null;
 
@@ -1134,6 +1136,17 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     } else if ( action_source == show_glitch_menu_item ) {
       JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
       show_glitch = item.getState();
+      System.out.println ( "Show Glitch = " + show_glitch );
+      repaint();
+    } else if ( action_source == glitch_options_menu_item ) {
+      // Open the Glitch Options Dialog
+      String response = JOptionPane.showInputDialog(null, "Enter Glitch Angle in degrees (" + glitch_angle_degrees + "):", "Glitch Options", JOptionPane.QUESTION_MESSAGE);
+      if (response != null) {
+        if (response.length() > 0) {
+          glitch_angle_degrees = Double.parseDouble ( response );
+          System.out.println ( "Glitch detection angle = " + glitch_angle_degrees );
+        }
+      }
       repaint();
     } else if ( action_source == export_handles_menu_item ) {
       JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
@@ -1666,6 +1679,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
         extras_menu.addSeparator();
 
         extras_menu.add ( zp.show_glitch_menu_item = mi = new JCheckBoxMenuItem("Show Glitch", zp.show_glitch) );
+        mi.addActionListener(zp);
+        extras_menu.add ( zp.glitch_options_menu_item = mi = new JMenuItem("Glitch Options ...") );
         mi.addActionListener(zp);
 
         extras_menu.addSeparator();
