@@ -301,7 +301,21 @@ public class SeriesClass {
     return ( closest );
   }
 
+  public double[][] find_bezier_triplet ( double p[], int section_index ) {
+    double triplet[][] = null;
+    if (sections != null) {
+      if (section_index < sections.length) {
+        triplet = sections[section_index].find_bezier_triplet ( p );
+      }
+    }
+    return ( triplet );
+  }
+
   public double[][] find_bezier_triplet ( double p[] ) {
+    return ( find_bezier_triplet(p, section_index) );
+  }
+
+  public double[][] find_bezier_triplet_all ( double p[] ) {
     if (sections != null) {
       for (int i=0; i<sections.length; i++) {
         double triplet[][] = sections[i].find_bezier_triplet ( p );
@@ -311,6 +325,14 @@ public class SeriesClass {
       }
     }
     return ( null );
+  }
+
+  public void insert_point ( double[] p ) {
+    System.out.println ( "Series is inserting point in section " + section_index );
+  }
+
+  public void delete_point ( double[] p ) {
+    System.out.println ( "Series is deleting point in section " + section_index );
   }
 
   public void clear_strokes() {

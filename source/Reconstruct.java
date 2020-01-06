@@ -107,6 +107,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
   boolean modify_mode = false;
   boolean editing_mode = false;
+  boolean insert_mode = false;
   boolean delete_mode = false;
 
   boolean center_draw = false;
@@ -416,6 +417,10 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
             if (delete_mode) {
               System.out.println ( "Deleting point at mouse " + closest[0] + "," + closest[1] );
               delete_mode = false;
+              //return;
+            } else if (insert_mode) {
+              System.out.println ( "Inserting point at mouse " + closest[0] + "," + closest[1] );
+              insert_mode = false;
               //return;
             } else {
               if (rect_dist < 6) {
@@ -748,9 +753,16 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     } else if (Character.toUpperCase(e.getKeyChar()) == 'P') {
     } else if (Character.toUpperCase(e.getKeyChar()) == 'A') {
       System.out.println ( "Add a point between two nearest points" );
+    } else if (Character.toUpperCase(e.getKeyChar()) == 'I') {
+      //System.out.println ( "Insert at the nearest point" );
+      //System.out.println ( "KeyEvent = " + e );
+      delete_mode = false;
+      insert_mode = true;
+      System.out.println ( "Click to insert a point" );
     } else if (Character.toUpperCase(e.getKeyChar()) == 'D') {
       //System.out.println ( "Delete the nearest point" );
       //System.out.println ( "KeyEvent = " + e );
+      insert_mode = false;
       delete_mode = true;
       System.out.println ( "Click to delete a point" );
     } else if (Character.toUpperCase(e.getKeyChar()) == 'N') {
