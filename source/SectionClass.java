@@ -645,7 +645,7 @@ public class SectionClass {
       // g.drawString ( "Image Magnification = " + image_magnification, 10, y );   y+=20;
       String mode_status = "";
       if (r.modify_mode && r.editing_mode) {
-        mode_status += "Modify by Editing";
+        mode_status += "Modify by Moving/Inserting/Deleting";
       } else if (r.modify_mode) {
         mode_status += "Modify by Drawing";
         if (r.bezier_draw) {

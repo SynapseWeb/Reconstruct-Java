@@ -107,6 +107,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
   boolean modify_mode = false;
   boolean editing_mode = false;
+  boolean delete_mode = false;
 
   boolean center_draw = false;
   boolean segment_draw = true;
@@ -412,18 +413,24 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
             double closest_px = x_to_pxi(closest[0]);
             double closest_py = y_to_pyi(closest[1]);
             double rect_dist = Math.min ( Math.abs(e.getX()-closest_px), Math.abs(e.getY()-closest_py) );
-            if (rect_dist < 6) {
-              active_point = closest;
-              if (triplet != null) {
-                active_h0 = triplet[0];
-                active_cp = triplet[1];
-                active_h1 = triplet[2];
-              }
+            if (delete_mode) {
+              System.out.println ( "Deleting point at mouse " + closest[0] + "," + closest[1] );
+              delete_mode = false;
+              //return;
             } else {
-              active_point = null;
-              active_h0 = null;
-              active_cp = null;
-              active_h1 = null;
+              if (rect_dist < 6) {
+                active_point = closest;
+                if (triplet != null) {
+                  active_h0 = triplet[0];
+                  active_cp = triplet[1];
+                  active_h1 = triplet[2];
+                }
+              } else {
+                active_point = null;
+                active_h0 = null;
+                active_cp = null;
+                active_h1 = null;
+              }
             }
             repaint();
           }
@@ -742,7 +749,10 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     } else if (Character.toUpperCase(e.getKeyChar()) == 'A') {
       System.out.println ( "Add a point between two nearest points" );
     } else if (Character.toUpperCase(e.getKeyChar()) == 'D') {
-      System.out.println ( "Delete the nearest point" );
+      //System.out.println ( "Delete the nearest point" );
+      //System.out.println ( "KeyEvent = " + e );
+      delete_mode = true;
+      System.out.println ( "Click to delete a point" );
     } else if (Character.toUpperCase(e.getKeyChar()) == 'N') {
       System.out.println ( "Begin drawing a new trace" );
       // New trace mode is modify_mode but not editing_mode

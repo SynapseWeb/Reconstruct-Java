@@ -266,7 +266,22 @@ public class SeriesClass {
     }
   }
 
+  public double[] find_closest ( double p[], int section_index ) {
+    double closest[] = null;
+    double closest_dist_sq = Double.MAX_VALUE;
+    if (sections != null) {
+      if (section_index < sections.length) {
+        closest = sections[section_index].find_closest ( p );
+      }
+    }
+    return ( closest );
+  }
+
   public double[] find_closest ( double p[] ) {
+    return ( find_closest(p, section_index) );
+  }
+
+  public double[] find_closest_all ( double p[] ) {
     double closest[] = null;
     double closest_dist_sq = Double.MAX_VALUE;
     if (sections != null) {
