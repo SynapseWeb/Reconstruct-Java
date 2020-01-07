@@ -857,7 +857,8 @@ public class ContourClass {
   public void insert_point (  int closest_i, double[] p ) {
     System.out.println ( "Contour inserting point (" + p[0] + "," + p[1] + ") at " + closest_i );
     if (handle_points != null) {
-      System.out.println ( "Error: Cannot insert points into a Bezier curve yet." );
+      System.out.println ( "Warning: Cannot insert points into a Bezier curve yet." );
+      JOptionPane.showMessageDialog(null, "Cannot insert points into a Bezier curve yet.", "Warning:", JOptionPane.WARNING_MESSAGE);
     } else {
       if ( closest_i < stroke_points.size() ) {
         stroke_points.add ( closest_i, p );
@@ -868,7 +869,8 @@ public class ContourClass {
   public void insert_point_in_line (  int closest_i, double[] p ) {
     System.out.println ( "Contour inserting point (" + p[0] + "," + p[1] + ") in line at " + closest_i );
     if (handle_points != null) {
-      System.out.println ( "Error: Cannot insert points into a Bezier curve yet." );
+      System.out.println ( "Warning: Cannot insert points into a Bezier curve yet." );
+      JOptionPane.showMessageDialog(null, "Cannot insert points into a Bezier curve yet.", "Warning:", JOptionPane.WARNING_MESSAGE);
     } else {
       // This should be a more complex algorithm to find the best place to insert a new point
       // But for now, just use the closest.
@@ -922,7 +924,8 @@ public class ContourClass {
   public void delete_point ( int i ) {
     System.out.println ( "Contour deleting point " + i );
     if (handle_points != null) {
-      System.out.println ( "Error: Cannot delete points from a Bezier curve yet." );
+      System.out.println ( "Warning: Cannot delete points from a Bezier curve yet." );
+      JOptionPane.showMessageDialog(null, "Cannot delete points from a Bezier curve yet.", "Warning:", JOptionPane.WARNING_MESSAGE);
     } else {
       if ( i < stroke_points.size() ) {
         stroke_points.remove ( i );

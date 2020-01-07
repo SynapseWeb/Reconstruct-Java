@@ -99,6 +99,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   JFrame parent_frame = null;
   static int w=1200, h=1000;
 
+  int selection_radius = 5;
+
   boolean show_points = true;
   boolean show_arrows = false;
   boolean show_handles = true;
@@ -112,7 +114,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
   boolean center_draw = false;
   boolean segment_draw = true;
-  boolean bezier_draw = true;
+  boolean bezier_draw = false;
   boolean bezier_locked = true;
 
   boolean export_handles = true;
@@ -481,7 +483,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
             double closest_py = y_to_pyi(closest[1]);
             double rect_dist = Math.min ( Math.abs(e.getX()-closest_px), Math.abs(e.getY()-closest_py) );
             if (delete_mode) {
-              if (rect_dist < 6) {
+              if (rect_dist < selection_radius) {
                 System.out.println ( "Deleting point at mouse " + closest[0] + "," + closest[1] );
                 series.delete_point ( closest );
                 delete_mode = false;
@@ -494,7 +496,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
               insert_mode = false;
               set_cursor();
             } else {
-              if (rect_dist < 6) {
+              if (rect_dist < selection_radius) {
                 active_point = closest;
                 if (triplet != null) {
                   active_h0 = triplet[0];
@@ -729,6 +731,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
 
 
+  JMenuItem draw_only_menu_item = null;
   JMenuItem about_menu_item = null;
   JMenuItem menu_overview_menu_item = null;
   JMenuItem mouse_clicks_menu_item = null;
@@ -743,6 +746,11 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   JCheckBoxMenuItem segment_draw_menu_item = null;
   JCheckBoxMenuItem bezier_draw_menu_item = null;
   JCheckBoxMenuItem bezier_locked_menu_item = null;
+
+  JRadioButtonMenuItem sel_rad_1 = null;
+  JRadioButtonMenuItem sel_rad_5 = null;
+  JRadioButtonMenuItem sel_rad_10 = null;
+  JRadioButtonMenuItem sel_rad_15 = null;
 
   JMenuItem new_series_menu_item=null;
   JMenuItem open_series_menu_item=null;
@@ -957,6 +965,26 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
                 "Reconstruct Java provides some useful functionality, but most of its features are \n" +
                 "not fully implemented in this version.";
       JOptionPane.showMessageDialog(null, s, "About Reconstruct Java", JOptionPane.INFORMATION_MESSAGE);
+    } else if ( action_source == draw_only_menu_item ) {
+      String s =
+                "To create a project with 5 empty sections:\n" +
+                "\n" +
+                "  Series / New  (give it a new name ending with \".ser\")\n" +
+                "  Program / Debug / New Empty Sections\n" +
+                "\n" +
+                "It will complain that it cannot open the file named:\n" +
+                "\n" +
+                "    \"File_that_does_not_exist.jpg\"\n" +
+                "\n" +
+                "Click \"OK\" to dismiss the dialog box.\n" +
+                "\n" +
+                "The project will now have 5 empty sections with no images.\n" +
+                "This can be useful for testing various drawing capabilities.\n" +
+                "\n" +
+                "Note that for adding and deleting points, Bezier drawing must be off:\n" +
+                "\n" +
+                "  Extras / Mode / Bezier Drawing";
+      JOptionPane.showMessageDialog(null, s, "Create a drawing only project", JOptionPane.INFORMATION_MESSAGE);
     } else if ( action_source == menu_overview_menu_item ) {
       String s =
                 "Most menu items are inoperable except the following:\n" +
@@ -1100,10 +1128,10 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
       bezier_draw = item.getState();
       if (bezier_draw) {
-      segment_draw = true;
-      segment_draw_menu_item.setState ( segment_draw );
-      current_cursor = Cursor.getPredefinedCursor ( Cursor.HAND_CURSOR );
-    }
+        segment_draw = true;
+        segment_draw_menu_item.setState ( segment_draw );
+        current_cursor = Cursor.getPredefinedCursor ( Cursor.HAND_CURSOR );
+      }
       repaint();
     } else if ( action_source == bezier_locked_menu_item ) {
       JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
@@ -1216,7 +1244,22 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     } else if ( action_source == line_menu_2_item ) {
       line_padding = 2;
       repaint();
-
+    } else if ( action_source == sel_rad_1 ) {
+      System.out.println ( "Setting selection radius to 1" );
+      selection_radius = 1;
+      repaint();
+    } else if ( action_source == sel_rad_5 ) {
+      System.out.println ( "Setting selection radius to 5" );
+      selection_radius = 5;
+      repaint();
+    } else if ( action_source == sel_rad_10 ) {
+      System.out.println ( "Setting selection radius to 10" );
+      selection_radius = 10;
+      repaint();
+    } else if ( action_source == sel_rad_15 ) {
+      System.out.println ( "Setting selection radius to 15" );
+      selection_radius = 15;
+      repaint();
     } else if ( action_source == show_points_menu_item ) {
       JCheckBoxMenuItem item = (JCheckBoxMenuItem)e.getSource();
       show_points = item.getState();
@@ -1352,10 +1395,13 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     } else if ( action_source == add_section_menu_item ) {
       if (this.new_series_file_name == null) {
         System.out.println ( "Save as a new series first" );
+        JOptionPane.showMessageDialog(null, "Save as a New series before adding sections.\nSeries / New...", "Note:", JOptionPane.WARNING_MESSAGE);
       } else {
+        System.out.println ( "Making dummy sections" );
         this.series = new SeriesClass ( this.new_series_file_name );
-        // this.series.import_images ( image_files );
         this.series.make_dummy_sections ( 5, 1024, 768 );
+        bezier_draw = false;
+        bezier_draw_menu_item.setState ( bezier_draw );
       }
     } else if ( action_source == list_sections_menu_item ) {
       System.out.println ( "Sections: ..." );
@@ -1828,12 +1874,34 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
         extras_menu.addSeparator();
 
+        JMenu sel_radius_menu = new JMenu("Select Radius");
+          JRadioButtonMenuItem rbi = null;
+          bg = new ButtonGroup();
+          sel_radius_menu.add ( zp.sel_rad_1 = rbi = new JRadioButtonMenuItem("1", false) );
+          rbi.addActionListener(zp);
+          bg.add ( rbi );
+          sel_radius_menu.add ( zp.sel_rad_5 = rbi = new JRadioButtonMenuItem("5", true) );
+          rbi.addActionListener(zp);
+          bg.add ( rbi );
+          sel_radius_menu.add ( zp.sel_rad_10 = rbi = new JRadioButtonMenuItem("10", false) );
+          rbi.addActionListener(zp);
+          bg.add ( rbi );
+          sel_radius_menu.add ( zp.sel_rad_15 = rbi = new JRadioButtonMenuItem("15", false) );
+          rbi.addActionListener(zp);
+          bg.add ( rbi );
+        extras_menu.add ( sel_radius_menu );
+
+        extras_menu.addSeparator();
+
         extras_menu.add ( zp.purge_images_menu_item = mi = new JMenuItem("Purge Images") );
         mi.addActionListener(zp);
 
       menu_bar.add ( extras_menu );
 
         JMenu help_menu = new JMenu("Help");
+        help_menu.add ( zp.draw_only_menu_item = mi = new JMenuItem("Draw Only...") );
+        mi.addActionListener(zp);
+        help_menu.addSeparator();
         help_menu.add ( zp.about_menu_item = mi = new JMenuItem("About...") );
         mi.addActionListener(zp);
         help_menu.add ( zp.menu_overview_menu_item = mi = new JMenuItem("Menu Items...") );
@@ -1852,6 +1920,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
         mi.addActionListener(zp);
         help_menu.add ( zp.version_menu_item = mi = new JMenuItem("Version...") );
         mi.addActionListener(zp);
+
       menu_bar.add ( help_menu );
 
         f.setJMenuBar ( menu_bar );
