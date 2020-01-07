@@ -486,14 +486,12 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
               if (rect_dist < selection_radius) {
                 System.out.println ( "Deleting point at mouse " + closest[0] + "," + closest[1] );
                 series.delete_point ( closest );
-                delete_mode = false;
                 set_cursor();
               }
             } else if (insert_mode) {
               double p[] = { px_to_x(e.getX()), -py_to_y(e.getY()) };
               System.out.println ( "Inserting point at mouse " + p[0] + "," + p[1] );
               series.insert_point ( p );
-              insert_mode = false;
               set_cursor();
             } else {
               if (rect_dist < selection_radius) {
@@ -837,8 +835,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       //System.out.println ( "Insert at the nearest point" );
       //System.out.println ( "KeyEvent = " + e );
       if (modify_mode && editing_mode) {
-        insert_mode = true;
         delete_mode = false;
+        insert_mode = !insert_mode;
         set_cursor();
         System.out.println ( "Click to insert a point" );
       }
@@ -847,7 +845,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       //System.out.println ( "KeyEvent = " + e );
       if (modify_mode && editing_mode) {
         insert_mode = false;
-        delete_mode = true;
+        delete_mode = !delete_mode;
         set_cursor();
         System.out.println ( "Click to delete a single point" );
       }
