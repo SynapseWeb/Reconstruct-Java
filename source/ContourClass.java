@@ -235,10 +235,12 @@ public class ContourClass {
       double p[] = stroke_points.get(j);
       priority_println ( 150, "   Contour Point " + j + " = [" + p[0] + "," + p[1] + "]" );
     }
-    for (int j=0; j<handle_points.size(); j++) {
-      double hh[][] = handle_points.get(j);
-      priority_println ( 150, "     Contour Handle[0] " + j + " = [" + hh[0][0] + "," + hh[0][1] + "]" );
-      priority_println ( 150, "     Contour Handle[1] " + j + " = [" + hh[1][0] + "," + hh[1][1] + "]" );
+    if (handle_points != null) {
+      for (int j=0; j<handle_points.size(); j++) {
+        double hh[][] = handle_points.get(j);
+        priority_println ( 150, "     Contour Handle[0] " + j + " = [" + hh[0][0] + "," + hh[0][1] + "]" );
+        priority_println ( 150, "     Contour Handle[1] " + j + " = [" + hh[1][0] + "," + hh[1][1] + "]" );
+      }
     }
     priority_println ( 150, "   Contour Area = " + (0.5 * twice_area()) );
   }
@@ -268,32 +270,34 @@ public class ContourClass {
 
 
   public void fix_handles() {
-    // Rearrange the handle points to fix an ordering problem
-    int nh = handle_points.size();
+    if (is_bezier) {
+      // Rearrange the handle points to fix an ordering problem
+      int nh = handle_points.size();
 
-    ArrayList<double[]> old_handle_points_list = new ArrayList<double[]>();
-    for (int i=0; i<nh; i++) {
-      double h[][] = handle_points.get(i);
-      for (int j=0; j<2; j++) {
-        old_handle_points_list.add ( h[j] );
+      ArrayList<double[]> old_handle_points_list = new ArrayList<double[]>();
+      for (int i=0; i<nh; i++) {
+        double h[][] = handle_points.get(i);
+        for (int j=0; j<2; j++) {
+          old_handle_points_list.add ( h[j] );
+        }
       }
+
+      ArrayList<double[]> new_handle_points_list = new ArrayList<double[]>();
+      for (int i=0; i<(2*nh); i++) {
+        new_handle_points_list.add ( old_handle_points_list.get((i+(2*nh)-1)%(2*nh)) );
+      }
+
+      ArrayList<double[][]> rearranged_handle_points = new ArrayList<double[][]>();
+
+      for (int i=0; i<nh; i++) {
+        double h[][] = new double[2][2];
+        h[0] = new_handle_points_list.get(2*i);
+        h[1] = new_handle_points_list.get((2*i)+1);
+        rearranged_handle_points.add ( h );
+      }
+
+      handle_points = rearranged_handle_points;
     }
-
-    ArrayList<double[]> new_handle_points_list = new ArrayList<double[]>();
-    for (int i=0; i<(2*nh); i++) {
-      new_handle_points_list.add ( old_handle_points_list.get((i+(2*nh)-1)%(2*nh)) );
-    }
-
-    ArrayList<double[][]> rearranged_handle_points = new ArrayList<double[][]>();
-
-    for (int i=0; i<nh; i++) {
-      double h[][] = new double[2][2];
-      h[0] = new_handle_points_list.get(2*i);
-      h[1] = new_handle_points_list.get((2*i)+1);
-      rearranged_handle_points.add ( h );
-    }
-
-    handle_points = rearranged_handle_points;
   }
 
 
@@ -852,65 +856,77 @@ public class ContourClass {
 
   public void insert_point (  int closest_i, double[] p ) {
     System.out.println ( "Contour inserting point (" + p[0] + "," + p[1] + ") at " + closest_i );
-    if ( closest_i < stroke_points.size() ) {
-      stroke_points.add ( closest_i, p );
+    if (handle_points != null) {
+      System.out.println ( "Error: Cannot insert points into a Bezier curve yet." );
+    } else {
+      if ( closest_i < stroke_points.size() ) {
+        stroke_points.add ( closest_i, p );
+      }
     }
   }
 
   public void insert_point_in_line (  int closest_i, double[] p ) {
     System.out.println ( "Contour inserting point (" + p[0] + "," + p[1] + ") in line at " + closest_i );
-    // This should be a more complex algorithm to find the best place to insert a new point
-    // But for now, just use the closest.
-    int n = stroke_points.size();
-    System.out.println ( "Contour contains " + n + " points." );
-    if ( (closest_i >= 0) && (closest_i < n) ) {
-      // The value of closest_i is a legal index in stroke_points
-      int insert_at = 0;
-      if (n == 0) {
-        // There are no points, so just add this one
-        insert_at = 0;
-      } else if (n == 1) {
-        // There is only one point, so add this one as the second (there is no "direction")
-        insert_at = 1;
-      } else if (n == 2) {
-        // There are only two points, so add this one as the third (makes a loop either way)
-        insert_at = 2;
-      } else {
-        // There are more than two points in the array, so find the best location
-        int before = closest_i - 1;
-        int after = closest_i + 1;
-        while (before < 0) before = before + n;
-        while (after >= n) after  = after  - n;
-
-        System.out.println ( "Point indexes: " + before + ", " + closest_i + ", " + after );
-
-        double[] pc = stroke_points.get(closest_i);
-        double[] pb = stroke_points.get(before);
-        double[] pa = stroke_points.get(after);
-        double dx, dy;
-
-        dx = pb[0] - p[0];
-        dy = pb[1] - p[1];
-        double dist_pb_p = Math.sqrt ( (dx*dx) + (dy*dy) );
-
-        dx = pb[0] - pc[0];
-        dy = pb[1] - pc[1];
-        double dist_pb_pc = Math.sqrt ( (dx*dx) + (dy*dy) );
-
-        if (dist_pb_p < dist_pb_pc) {
-          insert_at = closest_i;
+    if (handle_points != null) {
+      System.out.println ( "Error: Cannot insert points into a Bezier curve yet." );
+    } else {
+      // This should be a more complex algorithm to find the best place to insert a new point
+      // But for now, just use the closest.
+      int n = stroke_points.size();
+      System.out.println ( "Contour contains " + n + " points." );
+      if ( (closest_i >= 0) && (closest_i < n) ) {
+        // The value of closest_i is a legal index in stroke_points
+        int insert_at = 0;
+        if (n == 0) {
+          // There are no points, so just add this one
+          insert_at = 0;
+        } else if (n == 1) {
+          // There is only one point, so add this one as the second (there is no "direction")
+          insert_at = 1;
+        } else if (n == 2) {
+          // There are only two points, so add this one as the third (makes a loop either way)
+          insert_at = 2;
         } else {
-          insert_at = closest_i + 1;
+          // There are more than two points in the array, so find the best location
+          int before = closest_i - 1;
+          int after = closest_i + 1;
+          while (before < 0) before = before + n;
+          while (after >= n) after  = after  - n;
+
+          System.out.println ( "Point indexes: " + before + ", " + closest_i + ", " + after );
+
+          double[] pc = stroke_points.get(closest_i);
+          double[] pb = stroke_points.get(before);
+          double[] pa = stroke_points.get(after);
+          double dx, dy;
+
+          dx = pb[0] - p[0];
+          dy = pb[1] - p[1];
+          double dist_pb_p = Math.sqrt ( (dx*dx) + (dy*dy) );
+
+          dx = pb[0] - pc[0];
+          dy = pb[1] - pc[1];
+          double dist_pb_pc = Math.sqrt ( (dx*dx) + (dy*dy) );
+
+          if (dist_pb_p < dist_pb_pc) {
+            insert_at = closest_i;
+          } else {
+            insert_at = closest_i + 1;
+          }
         }
+        stroke_points.add ( insert_at, p );
       }
-      stroke_points.add ( insert_at, p );
     }
   }
 
   public void delete_point ( int i ) {
     System.out.println ( "Contour deleting point " + i );
-    if ( i < stroke_points.size() ) {
-      stroke_points.remove ( i );
+    if (handle_points != null) {
+      System.out.println ( "Error: Cannot delete points from a Bezier curve yet." );
+    } else {
+      if ( i < stroke_points.size() ) {
+        stroke_points.remove ( i );
+      }
     }
   }
 
