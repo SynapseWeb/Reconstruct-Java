@@ -857,6 +857,56 @@ public class ContourClass {
     }
   }
 
+  public void insert_point_in_line (  int closest_i, double[] p ) {
+    System.out.println ( "Contour inserting point (" + p[0] + "," + p[1] + ") in line at " + closest_i );
+    // This should be a more complex algorithm to find the best place to insert a new point
+    // But for now, just use the closest.
+    int n = stroke_points.size();
+    System.out.println ( "Contour contains " + n + " points." );
+    if ( (closest_i >= 0) && (closest_i < n) ) {
+      // The value of closest_i is a legal index in stroke_points
+      int insert_at = 0;
+      if (n == 0) {
+        // There are no points, so just add this one
+        insert_at = 0;
+      } else if (n == 1) {
+        // There is only one point, so add this one as the second (there is no "direction")
+        insert_at = 1;
+      } else if (n == 2) {
+        // There are only two points, so add this one as the third (makes a loop either way)
+        insert_at = 2;
+      } else {
+        // There are more than two points in the array, so find the best location
+        int before = closest_i - 1;
+        int after = closest_i + 1;
+        while (before < 0) before = before + n;
+        while (after >= n) after  = after  - n;
+
+        System.out.println ( "Point indexes: " + before + ", " + closest_i + ", " + after );
+
+        double[] pc = stroke_points.get(closest_i);
+        double[] pb = stroke_points.get(before);
+        double[] pa = stroke_points.get(after);
+        double dx, dy;
+
+        dx = pb[0] - p[0];
+        dy = pb[1] - p[1];
+        double dist_pb_p = Math.sqrt ( (dx*dx) + (dy*dy) );
+
+        dx = pb[0] - pc[0];
+        dy = pb[1] - pc[1];
+        double dist_pb_pc = Math.sqrt ( (dx*dx) + (dy*dy) );
+
+        if (dist_pb_p < dist_pb_pc) {
+          insert_at = closest_i;
+        } else {
+          insert_at = closest_i + 1;
+        }
+      }
+      stroke_points.add ( insert_at, p );
+    }
+  }
+
   public void delete_point ( int i ) {
     System.out.println ( "Contour deleting point " + i );
     if ( i < stroke_points.size() ) {

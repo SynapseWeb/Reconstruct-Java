@@ -489,7 +489,7 @@ public class SectionClass {
     System.out.println ( "Closest contour is " + indexes[0] + ", and closest point is at " + indexes[1] );
     if (indexes != null) {
       ContourClass contour = contours.get(indexes[0]);
-      contour.insert_point ( indexes[1], p );
+      contour.insert_point_in_line ( indexes[1], p );
     }
   }
 
