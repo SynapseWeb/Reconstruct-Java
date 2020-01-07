@@ -485,6 +485,12 @@ public class SectionClass {
 
   public void insert_point ( double[] p ) {
     System.out.println ( "Section is inserting point " + p[0] + "," + p[1] );
+    int indexes[] = this.find_closest_indexes(p);
+    System.out.println ( "Closest contour is " + indexes[0] + ", and closest point is at " + indexes[1] );
+    if (indexes != null) {
+      ContourClass contour = contours.get(indexes[0]);
+      contour.insert_point ( indexes[1], p );
+    }
   }
 
   public void delete_point ( double[] p ) {

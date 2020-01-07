@@ -850,6 +850,13 @@ public class ContourClass {
     return ( closest_index );
   }
 
+  public void insert_point (  int closest_i, double[] p ) {
+    System.out.println ( "Contour inserting point (" + p[0] + "," + p[1] + ") at " + closest_i );
+    if ( closest_i < stroke_points.size() ) {
+      stroke_points.add ( closest_i, p );
+    }
+  }
+
   public void delete_point ( int i ) {
     System.out.println ( "Contour deleting point " + i );
     if ( i < stroke_points.size() ) {

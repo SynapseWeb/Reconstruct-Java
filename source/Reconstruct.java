@@ -183,6 +183,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   public void set_cursor() {
     if ( (modify_mode && editing_mode && delete_mode) ) {
       setCursor ( x_cursor );
+    } else if ( (modify_mode && editing_mode && insert_mode) ) {
+      setCursor ( a_cursor );
     } else if (!modify_mode) {
       // This is move mode
       current_cursor = b_cursor;
@@ -220,6 +222,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   Cursor v_cursor = null;
   Cursor b_cursor = null;
   Cursor x_cursor = null;
+  Cursor a_cursor = null;
   int cursor_size = 33;
 
   public void mouseEntered ( MouseEvent e ) {
@@ -367,7 +370,37 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     cg.setColor ( new Color(0,0,0) );
     cg.drawPolygon ( p );
 
-    x_cursor = tk.createCustomCursor ( cursor_image, new Point(cursor_size/2,cursor_size/2), "Both" );
+    x_cursor = tk.createCustomCursor ( cursor_image, new Point(cursor_size/2,cursor_size/2), "X" );
+
+    // Create the + cursor
+
+    p = new Polygon();
+    p.addPoint ( 1,1 );  // Upper/Right in center crossing
+    p.addPoint ( cw2, 1 );
+    p.addPoint ( cw2, -1 );
+
+    p.addPoint (  1, -1 );  // Lower/Right of center crossing
+    p.addPoint (  1, -ch2 );
+    p.addPoint ( -1, -ch2 );
+
+    p.addPoint ( -1, -1 );  // Lower/Left of center crossing
+    p.addPoint ( -cw2, -1 );
+    p.addPoint ( -cw2, 1 );
+
+    p.addPoint ( -1, 1 );  // Upper/left of center crossing
+    p.addPoint ( -1, ch2 );
+    p.addPoint (  1, ch2 );
+
+    p.translate ( w/2, h/2 );
+
+    cursor_image = new BufferedImage(cursor_size,cursor_size,BufferedImage.TYPE_4BYTE_ABGR);
+    cg = cursor_image.createGraphics();
+    cg.setColor ( new Color(255,255,255) );
+    cg.fillPolygon ( p );
+    cg.setColor ( new Color(0,0,0) );
+    cg.drawPolygon ( p );
+
+    a_cursor = tk.createCustomCursor ( cursor_image, new Point(cursor_size/2,cursor_size/2), "+" );
 
   }
 
@@ -455,12 +488,11 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
                 set_cursor();
               }
             } else if (insert_mode) {
-              if (rect_dist < 6) {
-                System.out.println ( "Inserting point at mouse " + closest[0] + "," + closest[1] );
-                series.insert_point ( closest );
-                insert_mode = false;
-                set_cursor();
-              }
+              double p[] = { px_to_x(e.getX()), -py_to_y(e.getY()) };
+              System.out.println ( "Inserting point at mouse " + p[0] + "," + p[1] );
+              series.insert_point ( p );
+              insert_mode = false;
+              set_cursor();
             } else {
               if (rect_dist < 6) {
                 active_point = closest;
@@ -507,8 +539,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
             }
             double p[] = { px_to_x(e.getX()), py_to_y(e.getY()) };
             if (center_draw) {
-            p[0] = px_to_x(getSize().width / 2);
-            p[1] = py_to_y(getSize().height / 2);
+              p[0] = px_to_x(getSize().width / 2);
+              p[1] = py_to_y(getSize().height / 2);
             }
             // System.out.println ( "Adding point " + p[0] + "," + p[1] );
             double contour_point[] = { p[0], -p[1] };
@@ -794,9 +826,12 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
       System.out.println ( "Add a point between two nearest points" );
       //System.out.println ( "Insert at the nearest point" );
       //System.out.println ( "KeyEvent = " + e );
-      delete_mode = false;
-      insert_mode = true;
-      System.out.println ( "Click to insert a point" );
+      if (modify_mode && editing_mode) {
+        insert_mode = true;
+        delete_mode = false;
+        set_cursor();
+        System.out.println ( "Click to insert a point" );
+      }
     } else if ( (Character.toUpperCase(e.getKeyChar()) == 'X') || (Character.toUpperCase(e.getKeyChar()) == 'D') ) {
       //System.out.println ( "Delete the nearest point" );
       //System.out.println ( "KeyEvent = " + e );
