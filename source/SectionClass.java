@@ -32,7 +32,7 @@ public class SectionClass {
 
   BufferedImage section_image = null;
   String image_file_names[] = new String[0];
-  ArrayList<String> bad_image_file_names = new ArrayList<String>();
+  public static ArrayList<String> bad_image_file_names = new ArrayList<String>();
 
   int highest_xform_dim = 0;
 

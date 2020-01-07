@@ -791,6 +791,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   JMenuItem dump_areas_menu_item=null;
   JMenuItem clear_menu_item=null;
   JMenuItem fix_menu_item=null;
+  JMenuItem add_section_menu_item=null;
+
 
   JMenuItem exit_menu_item=null;
 
@@ -1347,6 +1349,14 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
         this.series = new SeriesClass ( this.new_series_file_name );
         this.series.import_images ( image_files );
       }
+    } else if ( action_source == add_section_menu_item ) {
+      if (this.new_series_file_name == null) {
+        System.out.println ( "Save as a new series first" );
+      } else {
+        this.series = new SeriesClass ( this.new_series_file_name );
+        // this.series.import_images ( image_files );
+        this.series.make_dummy_sections ( 5, 1024, 768 );
+      }
     } else if ( action_source == list_sections_menu_item ) {
       System.out.println ( "Sections: ..." );
     } else if ( action_source == exit_menu_item ) {
@@ -1482,6 +1492,8 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
           debug_menu.add ( zp.clear_menu_item = mi = new JMenuItem("Clear") );
           mi.addActionListener(zp);
           debug_menu.add ( zp.fix_menu_item = mi = new JMenuItem("Fix Handles") );
+          mi.addActionListener(zp);
+          debug_menu.add ( zp.add_section_menu_item = mi = new JMenuItem("New Empty Sections") );
           mi.addActionListener(zp);
         program_menu.add ( debug_menu );
 

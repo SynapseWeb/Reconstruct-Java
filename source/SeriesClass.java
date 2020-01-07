@@ -215,6 +215,47 @@ public class SeriesClass {
     }
   }
 
+  public void make_dummy_sections ( int num_sections, int w, int h ) {
+    // This version builds its own XML files to eventually use "load_from_xml".
+
+    if (series_file_name != null) {
+      SectionClass.bad_image_file_names = new ArrayList<String>();
+      SectionClass.bad_image_file_names.add ( "File_that_does_not_exist.jpg" );
+
+      System.out.println ( "Gemerating empty sections for " + series_file_name );
+      File series_file = new File(series_file_name);
+      String series_prefix = series_file_name.substring(0,series_file_name.length()-3);  // Subtract off the "ser" at the end of "name.ser"
+
+      BufferedImage section_image = null;
+      for (int i=0; i<num_sections; i++) {
+        System.out.println ( "  Generating section " + series_prefix + (i+1) );
+        try {
+          // section_image = ImageIO.read(image_files[i]); // TODO: It would be nice to NOT have to read all files at this time.
+          // w = section_image.getWidth()-1;  // Reconstruct uses w-1 in its Section Files
+          // h = section_image.getHeight()-1; // Reconstruct uses h-1 in its Section Files
+          DataOutputStream f = new DataOutputStream ( new FileOutputStream ( series_prefix + (i+1) ) );
+          f.writeBytes ( ReconstructDefaults.convert_newlines ( ReconstructDefaults.default_section_file_string_1a ) );
+          f.writeBytes ( ReconstructDefaults.convert_newlines ( ""+(i+1) ) );
+          f.writeBytes ( ReconstructDefaults.convert_newlines ( ReconstructDefaults.default_section_file_string_1b ) );
+          f.writeBytes ( ReconstructDefaults.convert_newlines ( "File_that_does_not_exist.jpg" ) );
+          f.writeBytes ( ReconstructDefaults.convert_newlines ( ReconstructDefaults.default_section_file_string_2 ) );
+          f.writeBytes ( ReconstructDefaults.convert_newlines ( "0 0,\n" ) );
+          f.writeBytes ( ReconstructDefaults.convert_newlines ( "	  " + w + " 0,\n" ) );
+          f.writeBytes ( ReconstructDefaults.convert_newlines ( "	  " + w + " " + h + ",\n" ) );
+          f.writeBytes ( ReconstructDefaults.convert_newlines ( "	  0 " + h + ",\n" ) );
+          f.writeBytes ( ReconstructDefaults.convert_newlines ( ReconstructDefaults.default_section_file_string_3 ) );
+          f.close();
+        } catch (Exception e) {
+          System.out.println ( "Error writing to section file " + (i+1) + " into " + series_prefix + (i+1) );
+          System.out.println ( "  Exception: " + e );
+        }
+      }
+      this.load_from_xml ( series_file );
+    } else {
+      JOptionPane.showMessageDialog(null, "Create a Series before importing images", "Cannot Import Images", JOptionPane.INFORMATION_MESSAGE);
+    }
+  }
+
   public void dump_xml() {
     System.out.println ( "============== Begin Series ================" );
     XML_Parser.dump_doc(this.series_doc);
