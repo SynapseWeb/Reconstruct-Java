@@ -424,7 +424,7 @@ public class SectionClass {
     }
   }
 
-  public double[] find_closest( double p[] ) {
+  public double[] find_closest ( double p[] ) {
     double closest[] = null;
     double closest_dist_sq = Double.MAX_VALUE;
     if (contours != null) {
@@ -445,6 +445,31 @@ public class SectionClass {
     return ( closest );
   }
 
+  public int[] find_closest_indexes ( double p[] ) {
+    int indexes[] = null;
+    double closest[] = null;
+    double closest_dist_sq = Double.MAX_VALUE;
+    if (contours != null) {
+      for (int i=0; i<contours.size(); i++) {
+        ContourClass contour = contours.get(i);
+        double closest_in_contour[] = contour.find_closest ( p );
+        if (closest_in_contour != null) {
+          double dx = p[0]-closest_in_contour[0];
+          double dy = p[1]-closest_in_contour[1];
+          double dist_sq = (dx*dx) + (dy*dy);
+          if ( (closest == null) || (dist_sq < closest_dist_sq) ) {
+            closest = closest_in_contour;
+            closest_dist_sq = dist_sq;
+            indexes = new int[2];
+            indexes[0] = i;
+            indexes[1] = contour.find_closest_index( p );
+          }
+        }
+      }
+    }
+    return ( indexes );
+  }
+
   public double[][] find_bezier_triplet ( double p[] ) {
     if (contours != null) {
       for (int i=0; i<contours.size(); i++) {
@@ -456,6 +481,20 @@ public class SectionClass {
       }
     }
     return ( null );
+  }
+
+  public void insert_point ( double[] p ) {
+    System.out.println ( "Section is inserting point " + p[0] + "," + p[1] );
+  }
+
+  public void delete_point ( double[] p ) {
+    System.out.println ( "Section is deleting point " + p[0] + "," + p[1] );
+    int indexes[] = this.find_closest_indexes(p);
+    System.out.println ( "Closest contour is " + indexes[0] + ", and closest point is at " + indexes[1] );
+    if (indexes != null) {
+      ContourClass contour = contours.get(indexes[0]);
+      contour.delete_point ( indexes[1] );
+    }
   }
 
   public void dump_strokes() {

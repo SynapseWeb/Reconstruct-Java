@@ -328,11 +328,21 @@ public class SeriesClass {
   }
 
   public void insert_point ( double[] p ) {
-    System.out.println ( "Series is inserting point in section " + section_index );
+    if (sections != null) {
+      if (section_index < sections.length) {
+        System.out.println ( "Series is inserting point in section " + section_index );
+        sections[section_index].insert_point ( p );
+      }
+    }
   }
 
   public void delete_point ( double[] p ) {
-    System.out.println ( "Series is deleting point in section " + section_index );
+    if (sections != null) {
+      if (section_index < sections.length) {
+        System.out.println ( "Series is deleting point in section " + section_index );
+        sections[section_index].delete_point ( p );
+      }
+    }
   }
 
   public void clear_strokes() {

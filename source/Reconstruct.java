@@ -415,13 +415,17 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
             double closest_py = y_to_pyi(closest[1]);
             double rect_dist = Math.min ( Math.abs(e.getX()-closest_px), Math.abs(e.getY()-closest_py) );
             if (delete_mode) {
-              System.out.println ( "Deleting point at mouse " + closest[0] + "," + closest[1] );
-              delete_mode = false;
-              //return;
+              if (rect_dist < 6) {
+                System.out.println ( "Deleting point at mouse " + closest[0] + "," + closest[1] );
+                series.delete_point ( closest );
+                delete_mode = false;
+              }
             } else if (insert_mode) {
-              System.out.println ( "Inserting point at mouse " + closest[0] + "," + closest[1] );
-              insert_mode = false;
-              //return;
+              if (rect_dist < 6) {
+                System.out.println ( "Inserting point at mouse " + closest[0] + "," + closest[1] );
+                series.insert_point ( closest );
+                insert_mode = false;
+              }
             } else {
               if (rect_dist < 6) {
                 active_point = closest;
@@ -751,15 +755,14 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
         }
       }
     } else if (Character.toUpperCase(e.getKeyChar()) == 'P') {
-    } else if (Character.toUpperCase(e.getKeyChar()) == 'A') {
+    } else if ( (Character.toUpperCase(e.getKeyChar()) == 'A') || (Character.toUpperCase(e.getKeyChar()) == 'I') ) {
       System.out.println ( "Add a point between two nearest points" );
-    } else if (Character.toUpperCase(e.getKeyChar()) == 'I') {
       //System.out.println ( "Insert at the nearest point" );
       //System.out.println ( "KeyEvent = " + e );
       delete_mode = false;
       insert_mode = true;
       System.out.println ( "Click to insert a point" );
-    } else if (Character.toUpperCase(e.getKeyChar()) == 'D') {
+    } else if ( (Character.toUpperCase(e.getKeyChar()) == 'X') || (Character.toUpperCase(e.getKeyChar()) == 'D') ) {
       //System.out.println ( "Delete the nearest point" );
       //System.out.println ( "KeyEvent = " + e );
       insert_mode = false;

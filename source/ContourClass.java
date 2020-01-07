@@ -828,6 +828,35 @@ public class ContourClass {
     return ( closest );
   }
 
+  public int find_closest_index( double p[] ) {
+    // System.out.println ( "Contour looking for closest to " + p[0] + ", " + p[1] );
+    int closest_index = -1;
+    double closest[] = null;
+    double closest_dist_sq = Double.MAX_VALUE;
+    if (stroke_points != null) {
+      for (int i=0; i<stroke_points.size(); i++) {
+        double stroke_point[] = stroke_points.get(i);
+        double dx = p[0]-stroke_point[0];
+        double dy = p[1]-stroke_point[1];
+        double dist_sq = (dx*dx) + (dy*dy);
+        // System.out.println ( "Checking " + stroke_point[0] + ", " + stroke_point[1] );
+        if ( (closest == null) || (dist_sq < closest_dist_sq) ) {
+          closest_index = i;
+          closest = stroke_point;
+          closest_dist_sq = dist_sq;
+        }
+      }
+    }
+    return ( closest_index );
+  }
+
+  public void delete_point ( int i ) {
+    System.out.println ( "Contour deleting point " + i );
+    if ( i < stroke_points.size() ) {
+      stroke_points.remove ( i );
+    }
+  }
+
   public double[][] find_bezier_triplet ( double query_point[] ) {
     // This function is passed a query point that should be either a contour point or a contour handle
     // This function returns an array of 3 points: [ h0, p, h1 ] where one of those points matches the original query point
