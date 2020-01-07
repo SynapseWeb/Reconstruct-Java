@@ -181,7 +181,9 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
 
   public void set_cursor() {
-    if (!modify_mode) {
+    if ( (modify_mode && editing_mode && delete_mode) ) {
+      setCursor ( x_cursor );
+    } else if (!modify_mode) {
       // This is move mode
       current_cursor = b_cursor;
       setCursor ( current_cursor );
@@ -217,6 +219,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
   Cursor h_cursor = null;
   Cursor v_cursor = null;
   Cursor b_cursor = null;
+  Cursor x_cursor = null;
   int cursor_size = 33;
 
   public void mouseEntered ( MouseEvent e ) {
@@ -336,6 +339,36 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
 
     b_cursor = tk.createCustomCursor ( cursor_image, new Point(cursor_size/2,cursor_size/2), "Both" );
 
+    // Create the x cursor
+
+    p = new Polygon();
+    p.addPoint ( 0, 2 );  // Top of center crossing
+    p.addPoint ( cw2-2, ch2 );
+    p.addPoint ( cw2, ch2-2 );
+
+    p.addPoint ( 2, 0 );  // Right of center crossing
+    p.addPoint ( cw2, -(ch2-2) );
+    p.addPoint ( cw2-2, -ch2 );
+
+    p.addPoint ( 0, -2 );  // Bottom of center crossing
+    p.addPoint ( -(cw2-2), -ch2 );
+    p.addPoint ( -cw2, -(ch2-2) );
+
+    p.addPoint ( -2, 0 );  // Left of center crossing
+    p.addPoint ( -cw2, ch2-2 );
+    p.addPoint ( -(cw2-2), ch2 );
+
+    p.translate ( w/2, h/2 );
+
+    cursor_image = new BufferedImage(cursor_size,cursor_size,BufferedImage.TYPE_4BYTE_ABGR);
+    cg = cursor_image.createGraphics();
+    cg.setColor ( new Color(255,255,255) );
+    cg.fillPolygon ( p );
+    cg.setColor ( new Color(0,0,0) );
+    cg.drawPolygon ( p );
+
+    x_cursor = tk.createCustomCursor ( cursor_image, new Point(cursor_size/2,cursor_size/2), "Both" );
+
   }
 
   if (current_cursor == null) {
@@ -419,12 +452,14 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
                 System.out.println ( "Deleting point at mouse " + closest[0] + "," + closest[1] );
                 series.delete_point ( closest );
                 delete_mode = false;
+                set_cursor();
               }
             } else if (insert_mode) {
               if (rect_dist < 6) {
                 System.out.println ( "Inserting point at mouse " + closest[0] + "," + closest[1] );
                 series.insert_point ( closest );
                 insert_mode = false;
+                set_cursor();
               }
             } else {
               if (rect_dist < 6) {
@@ -765,9 +800,12 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     } else if ( (Character.toUpperCase(e.getKeyChar()) == 'X') || (Character.toUpperCase(e.getKeyChar()) == 'D') ) {
       //System.out.println ( "Delete the nearest point" );
       //System.out.println ( "KeyEvent = " + e );
-      insert_mode = false;
-      delete_mode = true;
-      System.out.println ( "Click to delete a point" );
+      if (modify_mode && editing_mode) {
+        insert_mode = false;
+        delete_mode = true;
+        set_cursor();
+        System.out.println ( "Click to delete a single point" );
+      }
     } else if (Character.toUpperCase(e.getKeyChar()) == 'N') {
       System.out.println ( "Begin drawing a new trace" );
       // New trace mode is modify_mode but not editing_mode
