@@ -15,7 +15,7 @@ public class ZoomPanLib extends Panel implements MouseListener, MouseMotionListe
 	int scroll_wheel_position = 0; // Counts the amount of "rolling" that's happened so far
 	int px_offset = 0; // Amount to offset the screen coordinates in x
 	int py_offset = 0; // Amount to offset the screen coordinates in y
-	
+
 	double zoom_base = 1.3;  // This controls how fast the screen zooms
 	double zoom_exp = 0;     // This will increment and decrement with the mouse wheel
 	double scale = 1.0;      // scale = zoom_base ^ zoom_exp;
@@ -55,17 +55,17 @@ public class ZoomPanLib extends Panel implements MouseListener, MouseMotionListe
 	  zoom_exp = -scroll_wheel_position;
     scale = Math.pow(zoom_base, zoom_exp);
     mx = my = scale;
-    
+
     int width_of_points = (int) ( (x_max * mx) - (x_min * mx) );
     int height_of_points = (int) ( (y_max * my) - (y_min * my) );
 
     // For centering, start with offsets = 0 and work back
     px_offset = 0;
     py_offset = 0;
-    
+
     px_offset = - x_to_pxi(x_min);
     py_offset = - y_to_pyi(y_min);
-    
+
     px_offset += (w - width_of_points) / 2;
     py_offset += (h - height_of_points) / 2;
   }
@@ -166,7 +166,7 @@ public class ZoomPanLib extends Panel implements MouseListener, MouseMotionListe
 	}
 
   //  MouseListener methods:
-  
+
   protected int mouse_down_x = 0;
   protected int mouse_down_y = 0;
 
@@ -222,7 +222,7 @@ public class ZoomPanLib extends Panel implements MouseListener, MouseMotionListe
 			public void run() {
 			  JFrame f = new JFrame("Zoom and Pan Demonstration");
 				f.setDefaultCloseOperation ( JFrame.EXIT_ON_CLOSE );
-				
+
 				ZoomPanLib zp_top = new ZoomPanLib();
 				zp_top.setBackground ( new Color (0,0,0) );
 				zp_top.addMouseListener ( zp_top );

@@ -399,7 +399,7 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     cg = cursor_image.createGraphics();
     cg.setColor ( new Color(255,255,255) );
     cg.fillPolygon ( p );
-    cg.setColor ( new Color(0,0,0) );
+    cg.setColor ( new Color(255,255,255) );
     cg.drawPolygon ( p );
 
     a_cursor = tk.createCustomCursor ( cursor_image, new Point(cursor_size/2,cursor_size/2), "+" );
@@ -721,7 +721,15 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
           this.parent_frame.setTitle ( "Series: " + this.series.get_short_name() + ", Section: " + (section_index+1) );
         }
       } else {
+        if (super.scroll_wheel_position < -75) {
+          super.scroll_wheel_position = -75;
+        }
+        if (super.scroll_wheel_position > 75) {
+          super.scroll_wheel_position = 75;
+        }
         super.mouseWheelMoved ( e );
+        System.out.println ( "Scale = " + super.scale );
+        System.out.println ( "Wheel = " + super.scroll_wheel_position );
       }
     }
     repaint();
