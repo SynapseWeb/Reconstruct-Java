@@ -151,12 +151,22 @@ public class Reconstruct extends ZoomPanLib implements ActionListener, MouseList
     g.drawLine ( xoffset+this.x_to_pxi(x0),   yoffset+this.y_to_pyi(y0),  xoffset+this.x_to_pxi(x1),  yoffset+this.y_to_pyi(y1) );
   }
 
+  double[] bounds = { -10, 10, -10, 10 };
+
   public void paint_frame (Graphics g) {
     Dimension win_s = getSize();
     int win_w = win_s.width;
     int win_h = win_s.height;
     if (recalculate) {
-      set_scale_to_fit ( -10, 10, -10, 10, win_w, win_h );
+      if (series != null) {
+        bounds = series.get_bounds();
+      }
+      if (bounds == null) {
+        double[] def_bounds = { -10, 10, -10, 10 };
+        bounds = def_bounds;
+      }
+      System.out.println ( "Bounds = " + bounds[0] + ",  " + bounds[1] + ",  " + bounds[2] + ",  " + bounds[3] );
+      set_scale_to_fit ( bounds[0], bounds[1], bounds[2], bounds[3], win_w, win_h );
       recalculate = false;
     }
     if (this.series != null) {

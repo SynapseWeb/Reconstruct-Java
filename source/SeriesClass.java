@@ -55,6 +55,32 @@ public class SeriesClass {
     this.load_from_xml ( series_file );
   }
 
+  public double[] get_bounds() {
+    // Interpreted as xmin, xmax, ymin, ymax
+    System.out.println ( "series.get_bounds() called" );
+    double[] current_bounds = null;
+    if (sections != null) {
+      for (int i=0; i<sections.length; i++) {
+        double[] sect_bounds = sections[i].get_bounds();
+        if (sect_bounds != null) {
+          if (current_bounds == null) {
+            current_bounds = new double[4];
+            current_bounds[0] = sect_bounds[0];
+            current_bounds[1] = sect_bounds[1];
+            current_bounds[2] = sect_bounds[2];
+            current_bounds[3] = sect_bounds[3];
+          } else {
+            if (sect_bounds[0] < current_bounds[0]) current_bounds[0] = sect_bounds[0]; // minx
+            if (sect_bounds[1] > current_bounds[1]) current_bounds[1] = sect_bounds[1]; // maxx
+            if (sect_bounds[2] < current_bounds[2]) current_bounds[2] = sect_bounds[2]; // miny
+            if (sect_bounds[3] > current_bounds[3]) current_bounds[3] = sect_bounds[3]; // maxy
+          }
+        }
+      }
+    }
+    return ( current_bounds );
+  }
+
   public void load_from_xml ( File series_file ) {
     this.series_path = series_file.getParent();
 

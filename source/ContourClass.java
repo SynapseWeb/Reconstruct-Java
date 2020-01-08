@@ -797,6 +797,31 @@ public class ContourClass {
     }
   }
 
+  public double[] get_bounds() {
+    // Interpreted as xmin, xmax, ymin, ymax
+    System.out.println ( "contour.get_bounds() called" );
+    double[] bounds = null;
+    if (stroke_points != null) {
+      for (int i=0; i<stroke_points.size(); i++) {
+        double stroke_point[] = stroke_points.get(i);
+        if (bounds == null) {
+          bounds = new double[4];
+          bounds[0] = stroke_point[0];
+          bounds[1] = stroke_point[0];
+          bounds[2] = stroke_point[1];
+          bounds[3] = stroke_point[1];
+        } else {
+          if (stroke_point[0] < bounds[0]) bounds[0] = stroke_point[0]; // minx
+          if (stroke_point[0] > bounds[1]) bounds[1] = stroke_point[0]; // maxx
+          if (stroke_point[1] < bounds[2]) bounds[2] = stroke_point[1]; // miny
+          if (stroke_point[1] > bounds[3]) bounds[3] = stroke_point[1]; // maxy
+        }
+      }
+    }
+    return ( bounds );
+  }
+
+
   public double[] find_closest( double p[] ) {
     // System.out.println ( "Contour looking for closest to " + p[0] + ", " + p[1] );
     double closest[] = null;

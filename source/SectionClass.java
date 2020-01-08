@@ -424,6 +424,33 @@ public class SectionClass {
     }
   }
 
+  public double[] get_bounds() {
+    // Interpreted as xmin, xmax, ymin, ymax
+    System.out.println ( "section.get_bounds() called" );
+    double[] current_bounds = null;
+    if (contours != null) {
+      for (int i=0; i<contours.size(); i++) {
+        ContourClass contour = contours.get(i);
+        double[] cont_bounds = contour.get_bounds();
+        if (cont_bounds != null) {
+          if (current_bounds == null) {
+            current_bounds = new double[4];
+            current_bounds[0] = cont_bounds[0];
+            current_bounds[1] = cont_bounds[1];
+            current_bounds[2] = cont_bounds[2];
+            current_bounds[3] = cont_bounds[3];
+          } else {
+            if (cont_bounds[0] < current_bounds[0]) current_bounds[0] = cont_bounds[0]; // minx
+            if (cont_bounds[1] > current_bounds[1]) current_bounds[1] = cont_bounds[1]; // maxx
+            if (cont_bounds[2] < current_bounds[2]) current_bounds[2] = cont_bounds[2]; // miny
+            if (cont_bounds[3] > current_bounds[3]) current_bounds[3] = cont_bounds[3]; // maxy
+          }
+        }
+      }
+    }
+    return ( current_bounds );
+  }
+
   public double[] find_closest ( double p[] ) {
     double closest[] = null;
     double closest_dist_sq = Double.MAX_VALUE;
