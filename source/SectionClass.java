@@ -166,9 +166,20 @@ public class SectionClass {
                 if (grandchild.getNodeName() == "Contour") {
                   priority_println ( 40, "      SectionClass: Grandchild " + gn + " is a trace contour" );
                   priority_println ( 40, "         SectionClass: Contour name is: " + ((Element)grandchild).getAttribute("name") );
-                  ContourClass cc = new ContourClass ( (Element)grandchild, current_transform );
-                  contours.add ( cc );
-                  priority_println ( 40, "         SectionClass: Contour points: " + ((Element)grandchild).getAttribute("points") );
+
+                  Element contour_element = (Element)grandchild;
+                  if (contour_element.hasAttribute("points")) {
+                    String points_str = contour_element.getAttribute("points");
+                    if (points_str.trim().length() > 0) {
+                      ContourClass cc = new ContourClass ( (Element)grandchild, current_transform );
+                      contours.add ( cc );
+                      priority_println ( 40, "         SectionClass: Contour points: " + ((Element)grandchild).getAttribute("points") );
+                    } else {
+                      priority_println ( 99, "         SectionClass: Contour points: Contour with zero points is ignored." );
+                    }
+                  } else {
+                    priority_println ( 99, "         SectionClass: Contour points: Contour without a \"points\" attribute is ignored." );
+                  }
                 }
               }
             }
