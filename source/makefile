@@ -1,4 +1,4 @@
-all: ZoomPanLib.class Reconstruct.jar BezierTracing.jar ZoomPanDraw.jar jiv.jar sha1sum.txt
+all: ZoomPanLib.class Reconstruct.jar BezierTracing.jar ZoomPanDraw.jar jiv.jar sha1sum.txt reconstruct
 
 AlignSWiFT.class: AlignSWiFT.java makefile
 	javac -nowarn -source 1.6 AlignSWiFT.java
@@ -27,6 +27,9 @@ ReconstructDefaults.class: ReconstructDefaults.java makefile
 Reconstruct.jar: Reconstruct.java ZoomPanLib.class XML_Parser.class TransformClass.class SeriesClass.class SectionClass.class ContourClass.class ReconstructDefaults.class AlignSWiFT.class makefile
 	javac Reconstruct.java
 	jar -cfe Reconstruct.jar Reconstruct *.class
+
+reconstruct: Reconstruct.jar makefile
+	echo '#!/usr/bin/java -jar' | cat - Reconstruct.jar > reconstruct ; chmod +x reconstruct
 
 ZoomPanDraw.jar: ZoomPanDraw.java ZoomPanLib.java makefile
 	javac -nowarn -source 1.6 ZoomPanDraw.java
@@ -59,4 +62,5 @@ clean:
 	rm -f *.jar
 	rm -f *.class
 	rm -f *~
+	rm -f reconstruct
 
